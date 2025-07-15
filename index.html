@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anass Assim - DevOps & System Administrator</title>
+    <link rel="icon" type="image/x-icon" href="assets/img/anass1.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.rings.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-out',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'slide-right': 'slideRight 0.8s ease-out',
+                        'scale-in': 'scaleIn 0.5s ease-out',
+                        'bounce-gentle': 'bounceGentle 2s ease-in-out infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'typing': 'typing 3.5s steps(40, end), blink 0.75s step-end infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        slideRight: {
+                            '0%': { opacity: '0', transform: 'translateX(-30px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' }
+                        },
+                        scaleIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.9)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' }
+                        },
+                        bounceGentle: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' }
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 20px rgba(14, 165, 233, 0.5)' },
+                            '100%': { boxShadow: '0 0 30px rgba(14, 165, 233, 0.8)' }
+                        },
+                        typing: {
+                            '0%': { width: '0' },
+                            '100%': { width: '100%' }
+                        },
+                        blink: {
+                            '0%, 50%': { borderColor: 'transparent' },
+                            '51%, 100%': { borderColor: '#0ea5e9' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #e0f2fe 100%);
+        }
+
+        /* Enhanced Navigation */
+        .nav-link {
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #0ea5e9, #3b82f6);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::before {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            color: #0ea5e9;
+            transform: translateY(-2px);
+        }
+
+        /* Smooth Section Transitions */
+        .section-fade {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .section-fade.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Enhanced Cards */
+        .hover-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .hover-card:hover {
+            transform: translateY(-15px) rotateX(5deg);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Skill Progress Animation */
+        .skill-progress {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-progress::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Glowing Button Effect */
+        .btn-glow {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .btn-glow::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-glow:hover::before {
+            left: 100%;
+        }
+
+        /* Typing Effect */
+        .typing-effect {
+            border-right: 2px solid #0ea5e9;
+            white-space: nowrap;
+            overflow: hidden;
+            animation: typing 3.5s steps(40, end), blink 0.75s step-end infinite;
+        }
+
+        /* Parallax Effect */
+        .parallax {
+            transform: translateZ(0);
+            will-change: transform;
+        }
+
+        /* Enhanced Image Hover */
+        .image-hover {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-hover::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(14, 165, 233, 0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .image-hover:hover::after {
+            transform: translateX(100%);
+        }
+
+        /* Timeline Animation */
+        .timeline-item {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .timeline-item.animate {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Project Card 3D Effect */
+        .project-card {
+            perspective: 1000px;
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: rotateY(-5deg) rotateX(5deg);
+        }
+
+        .project-content {
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+        }
+
+        .project-card:hover .project-content {
+            transform: translateZ(30px);
+        }
+
+        /* Loading Animation */
+        .loading-bar {
+            width: 0;
+            animation: loading 2s ease-in-out forwards;
+        }
+
+        @keyframes loading {
+            to { width: var(--progress); }
+        }
+
+        /* Stagger Animation */
+        .stagger-item {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: staggerIn 0.6s ease forwards;
+        }
+
+        .stagger-item:nth-child(1) { animation-delay: 0.1s; }
+        .stagger-item:nth-child(2) { animation-delay: 0.2s; }
+        .stagger-item:nth-child(3) { animation-delay: 0.3s; }
+        .stagger-item:nth-child(4) { animation-delay: 0.4s; }
+        .stagger-item:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes staggerIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Magnetic Effect */
+        .magnetic {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, #0ea5e9, #3b82f6, #8b5cf6);
+            z-index: 1000;
+            transition: width 0.1s ease;
+        }
+/* Dual Image Hover Effect */
+.dual-image-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.primary-image {
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.secondary-image {
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    z-index: 2;
+}
+
+.group:hover .primary-image {
+    opacity: 0;
+}
+
+.group:hover .secondary-image {
+    opacity: 1;
+}
+
+/* Alternative fade effect (you can choose one) */
+.dual-image-container .primary-image {
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dual-image-container .secondary-image {
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Cross-fade effect */
+.group:hover .dual-image-container .primary-image {
+    opacity: 0;
+    transform: scale(1.05) rotate(2deg);
+}
+
+.group:hover .dual-image-container .secondary-image {
+    opacity: 1;
+    transform: scale(1.05) rotate(-2deg);
+}
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 overflow-x-hidden">
+    <!-- Scroll Progress Indicator -->
+    <div class="scroll-indicator"></div>
+
+    <!-- Enhanced Header -->
+    <header class="fixed top-0 w-full z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-white/20" id="navbar">
+        <nav class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <a href="#home" class="text-2xl font-bold text-sky-600 hover:scale-105 transition-transform duration-300">
+                    Anass Assim
+                </a>
+                
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="nav-link text-slate-700 font-medium">Home</a>
+                    <a href="#skills" class="nav-link text-slate-700 font-medium">Skills</a>
+                    <a href="#experience" class="nav-link text-slate-700 font-medium">Experience</a>
+                    <a href="#projects" class="nav-link text-slate-700 font-medium">Projects</a>
+                    <a href="#contact" class="nav-link text-slate-700 font-medium">Contact</a>
+                </div>
+
+                <button id="mobile-menu-button" class="md:hidden text-slate-700 hover:text-sky-600 transition-colors">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 border-t border-slate-200">
+                <div class="flex flex-col space-y-2 pt-4">
+                    <a href="#home" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Home</a>
+                    <a href="#skills" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Skills</a>
+                    <a href="#experience" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Experience</a>
+                    <a href="#projects" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Projects</a>
+                    <a href="#contact" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Contact</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Enhanced Hero Section -->
+    <section id="home" class="min-h-screen flex items-center justify-center pt-20 relative overflow-hidden">
+        <!-- Animated Background Elements -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-sky-400/20 to-blue-600/20 rounded-full animate-float"></div>
+            <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-purple-400/20 to-pink-600/20 rounded-full animate-float" style="animation-delay: -1s;"></div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- Left Content -->
+                <div class="space-y-8 animate-slide-right">
+                    <div class="animate-fade-in">
+                        <span class="inline-block px-4 py-2 bg-gradient-to-r from-sky-100 to-blue-100 text-sky-700 rounded-full text-sm font-medium mb-6 animate-bounce-gentle">
+                            🚀 Welcome to my portfolio
+                        </span>
+                    </div>
+                    
+                    <h1 class="text-4xl lg:text-6xl font-bold text-slate-900 leading-tight">
+                        Hi, I'm <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-blue-600 animate-glow">Anass Assim</span>!
+                    </h1>
+                    
+                    <div class="text-xl lg:text-2xl text-slate-700 font-light typing-effect">
+                        DevOps Junior & System Administrator
+                    </div>
+                    
+                    <p class="text-lg text-slate-600 leading-relaxed max-w-xl animate-slide-up">
+                        Passionate about cloud infrastructure, automation, and building scalable systems. 
+                        I transform complex technical challenges into elegant, efficient solutions.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row gap-4 animate-scale-in">
+                        <a href="assets/doc/CV.pdf" class="btn-glow bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white font-semibold py-4 px-8 rounded-xl inline-flex items-center justify-center transition-all duration-300 transform hover:scale-105 hover:shadow-xl" target="_blank">
+                            <i class="fas fa-download mr-3"></i>
+                            Download CV
+                        </a>
+                        <a href="#contact" class="border-2 border-sky-600 text-sky-600 hover:bg-sky-600 hover:text-white font-semibold py-4 px-8 rounded-xl inline-flex items-center justify-center transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+                            <i class="fas fa-envelope mr-3"></i>
+                            Get In Touch
+                        </a>
+                    </div>
+
+                    <div class="flex gap-6 animate-fade-in">
+                        <a href="https://www.linkedin.com/in/anass-assim/" class="magnetic text-slate-400 hover:text-sky-600 text-2xl transition-all duration-300 transform hover:scale-125 hover:rotate-12" target="_blank">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="https://github.com/ciscoAnass" class="magnetic text-slate-400 hover:text-slate-700 text-2xl transition-all duration-300 transform hover:scale-125 hover:rotate-12" target="_blank">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="https://wa.me/662055990" class="magnetic text-slate-400 hover:text-green-500 text-2xl transition-all duration-300 transform hover:scale-125 hover:rotate-12" target="_blank">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Content - Enhanced Image -->
+                <div class="flex justify-center lg:justify-end animate-slide-up">
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-sky-400 to-blue-500 rounded-3xl transform rotate-6 scale-105 opacity-20 group-hover:rotate-12 transition-transform duration-500"></div>
+                        <div class="absolute inset-0 bg-gradient-to-bl from-purple-400 to-pink-500 rounded-3xl transform -rotate-6 scale-105 opacity-20 group-hover:-rotate-12 transition-transform duration-500"></div>
+                        <div class="relative image-hover dual-image-container">
+                            <!-- Primary Image (Default) -->
+                            <img src="assets/img/anass1.png" 
+                                alt="Anass Assim" 
+                                class="primary-image relative w-80 h-80 lg:w-96 lg:h-96 object-cover rounded-3xl shadow-2xl border-4 border-white transform transition-all duration-500 group-hover:scale-105">
+                            
+                            <!-- Secondary Image (Hover) -->
+                            <img src="assets/img/anass2.png" 
+                                alt="Anass Assim - Hover" 
+                                class="secondary-image absolute inset-0 w-80 h-80 lg:w-96 lg:h-96 object-cover rounded-3xl shadow-2xl border-4 border-white transform transition-all duration-500 opacity-0 group-hover:opacity-100 group-hover:scale-105">
+                        </div>
+                        <!-- Floating Elements -->
+                        <div class="absolute -top-4 -right-4 w-8 h-8 bg-sky-500 rounded-full animate-bounce-gentle opacity-80"></div>
+                        <div class="absolute -bottom-4 -left-4 w-6 h-6 bg-purple-500 rounded-full animate-bounce-gentle opacity-80" style="animation-delay: -0.5s;"></div>
+                    </div>
+                </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce-gentle">
+            <div class="w-6 h-10 border-2 border-slate-400 rounded-full flex justify-center">
+                <div class="w-1 h-3 bg-slate-400 rounded-full mt-2 animate-bounce"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced Skills Section -->
+    <section id="skills" class="py-20 bg-gradient-to-br from-slate-50 to-sky-50 section-fade">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-slate-800 mb-4">My Expertise</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-sky-500 to-blue-500 mx-auto rounded-full"></div>
+                <p class="text-slate-600 mt-4 max-w-2xl mx-auto">Specialized in modern DevOps practices, cloud infrastructure, and system administration</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- DevOps Skills -->
+  <!-- DevOps Skills -->
+<div class="hover-card bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-white/50 shadow-xl stagger-item">
+    <div class="flex items-center mb-6">
+        <div class="w-12 h-12 bg-gradient-to-br from-sky-500 to-blue-600 rounded-xl flex items-center justify-center mr-4">
+            <i class="fas fa-cloud text-white text-xl"></i>
+        </div>
+        <div>
+            <span class="text-sm uppercase tracking-wider text-slate-500 font-semibold">Platform</span>
+            <h3 class="text-2xl font-bold text-slate-800">DevOps</h3>
+        </div>
+    </div>
+
+    <div class="space-y-4">
+        <div class="skill-item">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-700 font-medium">Azure</span>
+                <span class="text-slate-800 font-semibold">80%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
+                <div class="loading-bar bg-gradient-to-r from-sky-500 to-blue-600 h-3 rounded-full" style="--progress: 80%;"></div>
+            </div>
+        </div>
+
+        <div class="skill-item">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-700 font-medium">AWS</span>
+                <span class="text-slate-800 font-semibold">70%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
+                <div class="loading-bar bg-gradient-to-r from-sky-500 to-blue-600 h-3 rounded-full" style="--progress: 70%;"></div>
+            </div>
+        </div>
+
+        <div class="skill-item">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-700 font-medium">Docker</span>
+                <span class="text-slate-800 font-semibold">90%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
+                <div class="loading-bar bg-gradient-to-r from-sky-500 to-blue-600 h-3 rounded-full" style="--progress: 90%;"></div>
+            </div>
+        </div>
+
+        <div class="skill-item">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-700 font-medium">Ansible & Terraform</span>
+                <span class="text-slate-800 font-semibold">90%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
+                <div class="loading-bar bg-gradient-to-r from-sky-500 to-blue-600 h-3 rounded-full" style="--progress: 90%;"></div>
+            </div>
+        </div>
+
+        <div class="skill-item">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-700 font-medium">Grafana & Nagios</span>
+                <span class="text-slate-800 font-semibold">90%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
+                <div class="loading-bar bg-gradient-to-r from-sky-500 to-blue-600 h-3 rounded-full" style="--progress: 90%;"></div>
+            </div>
+        </div>
+
+        <div class="skill-item">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-700 font-medium">CI/CD Pipelines</span>
+                <span class="text-slate-800 font-semibold">70%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
+                <div class="loading-bar bg-gradient-to-r from-sky-500 to-blue-600 h-3 rounded-full" style="--progress: 70%;"></div>
+            </div>
+        </div>
+
+        <div class="skill-item">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-700 font-medium">Git</span>
+                <span class="text-slate-800 font-semibold">100%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
+                <div class="loading-bar bg-gradient-to-r from-sky-500 to-blue-600 h-3 rounded-full" style="--progress: 100%;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Programming Skills -->
+<div class="hover-card bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-white/50 shadow-xl stagger-item">
+    <div class="flex items-center mb-6">
+        <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mr-4">
+            <i class="fas fa-code text-white text-xl"></i>
+        </div>
+        <div>
+            <span class="text-sm uppercase tracking-wider text-slate-500 font-semibold">Development</span>
+            <h3 class="text-2xl font-bold text-slate-800">Programming</h3>
+        </div>
+    </div>
+
+    <div class="space-y-4">
+        <div class="skill-item">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-700 font-medium">Python</span>
+                <span class="text-slate-800 font-semibold">70%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
+                <div class="loading-bar bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full" style="--progress: 70%;"></div>
+            </div>
+        </div>
+
+        <div class="skill-item">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-700 font-medium">GO</span>
+                <span class="text-slate-800 font-semibold">70%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
+                <div class="loading-bar bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full" style="--progress: 70%;"></div>
+            </div>
+        </div>
+
+        <div class="skill-item">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-700 font-medium">Bash</span>
+                <span class="text-slate-800 font-semibold">80%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
+                <div class="loading-bar bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full" style="--progress: 80%;"></div>
+            </div>
+        </div>
+
+        <div class="skill-item">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-700 font-medium">SQL</span>
+                <span class="text-slate-800 font-semibold">70%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
+                <div class="loading-bar bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full" style="--progress: 70%;"></div>
+            </div>
+        </div>
+
+        <div class="skill-item">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-700 font-medium">HTML & CSS</span>
+                <span class="text-slate-800 font-semibold">70%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
+                <div class="loading-bar bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full" style="--progress: 70%;"></div>
+            </div>
+        </div>
+
+        <div class="skill-item">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-700 font-medium">JavaScript</span>
+                <span class="text-slate-800 font-semibold">50%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
+                <div class="loading-bar bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full" style="--progress: 50%;"></div>
+            </div>
+        </div>
+
+        <div class="skill-item">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-700 font-medium">JSON & XML</span>
+                <span class="text-slate-800 font-semibold">90%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
+                <div class="loading-bar bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full" style="--progress: 90%;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Administration -->
+<div class="hover-card bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-white/50 shadow-xl stagger-item">
+    <div class="flex items-center mb-6">
+        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mr-4">
+            <i class="fas fa-server text-white text-xl"></i>
+        </div>
+        <div>
+            <span class="text-sm uppercase tracking-wider text-slate-500 font-semibold">Infrastructure</span>
+            <h3 class="text-2xl font-bold text-slate-800">System & Network Admin</h3>
+        </div>
+    </div>
+
+    <div class="space-y-4">
+        <div class="skill-item">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-700 font-medium">Linux Administration</span>
+                <span class="text-slate-800 font-semibold">90%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
+                <div class="loading-bar bg-gradient-to-r from-purple-500 to-pink-600 h-3 rounded-full" style="--progress: 90%;"></div>
+            </div>
+        </div>
+
+        <div class="skill-item">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-700 font-medium">Windows Server (2003-2022)</span>
+                <span class="text-slate-800 font-semibold">60%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
+                <div class="loading-bar bg-gradient-to-r from-purple-500 to-pink-600 h-3 rounded-full" style="--progress: 60%;"></div>
+            </div>
+        </div>
+
+        <div class="skill-item">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-700 font-medium">Windows Client</span>
+                <span class="text-slate-800 font-semibold">90%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
+                <div class="loading-bar bg-gradient-to-r from-purple-500 to-pink-600 h-3 rounded-full" style="--progress: 90%;"></div>
+            </div>
+        </div>
+
+        <div class="skill-item">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-700 font-medium">Computer maintenance</span>
+                <span class="text-slate-800 font-semibold">80%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
+                <div class="loading-bar bg-gradient-to-r from-purple-500 to-pink-600 h-3 rounded-full" style="--progress: 80%;"></div>
+            </div>
+        </div>
+
+        <div class="skill-item">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-700 font-medium">Network Protocols</span>
+                <span class="text-slate-800 font-semibold">90%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
+                <div class="loading-bar bg-gradient-to-r from-purple-500 to-pink-600 h-3 rounded-full" style="--progress: 90%;"></div>
+            </div>
+        </div>
+
+        <div class="skill-item">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-700 font-medium">Security Hardening</span>
+                <span class="text-slate-800 font-semibold">60%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
+                <div class="loading-bar bg-gradient-to-r from-purple-500 to-pink-600 h-3 rounded-full" style="--progress: 60%;"></div>
+            </div>
+        </div>
+        <div class="skill-item">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-700 font-medium">Proxmox & Vmware</span>
+                <span class="text-slate-800 font-semibold">80%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
+                <div class="loading-bar bg-gradient-to-r from-purple-500 to-pink-600 h-3 rounded-full" style="--progress: 80%;"></div>
+            </div>
+        </div>    
+    </div>
+</div>
+
+
+    </section>
+
+
+    <!-- Enhanced Experience Section -->
+    <section id="experience" class="py-20 bg-white section-fade">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-slate-800 mb-4">Professional Journey</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-sky-500 to-blue-500 mx-auto rounded-full"></div>
+                <p class="text-slate-600 mt-4">My career progression and key achievements</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto">
+                <div class="relative">
+                    <!-- Timeline Line -->
+                    <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-sky-500 to-blue-600"></div>
+
+                    <!-- Experience Items -->
+                    <div class="space-y-12">
+                        <div class="timeline-item relative pl-20">
+                            <div class="absolute left-6 w-4 h-4 bg-sky-500 rounded-full border-4 border-white shadow-lg animate-pulse"></div>
+                            <div class="hover-card bg-gradient-to-br from-white to-sky-50/30 rounded-xl p-6 border border-sky-200/50 shadow-lg">
+                                <div class="flex items-start gap-4">
+                                    <img src="assets/img/oga.jpg" 
+                                         alt="OGA.ai" 
+                                         class="w-12 h-12 rounded-full border-2 border-sky-200">
+                                    <div class="flex-1">
+                                        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
+                                            <h3 class="text-xl font-bold text-slate-800">DevOps Junior - OGA.ai</h3>
+                                            <span class="text-sky-600 font-medium text-sm">Mar 2025 – Jun 2025</span>
+                                        </div>
+                                        <p class="text-slate-600 leading-relaxed">
+Contributed to automating CI/CD pipelines using Azure DevOps and Terraform. Supported infrastructure provisioning and lifecycle management on Azure, ensuring high availability and scalability. Monitored and analyzed system performance with Grafana, and collaborated on .NET microservices projects using Docker for efficient containerization and deployment.
+                                        </p>
+                                        <div class="flex flex-wrap gap-2 mt-4">
+                                            <span class="px-3 py-1 bg-sky-100 text-sky-700 rounded-full text-xs font-medium">Azure</span>
+                                            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">Docker</span>
+                                            <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">Terraform</span>
+                                            <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">Grafana</span>
+                                            <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">CI/CD</span>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item relative pl-20">
+                            <div class="absolute left-6 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg"></div>
+                            <div class="hover-card bg-gradient-to-br from-white to-blue-50/30 rounded-xl p-6 border border-blue-200/50 shadow-lg">
+                                <div class="flex items-start gap-4">
+                                    <img src="assets/img/nasdev.png" 
+                                         alt="NasDev Technology" 
+                                         class="w-12 h-12 rounded-full border-2 border-blue-200">
+                                    <div class="flex-1">
+                                        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
+                                            <h3 class="text-xl font-bold text-slate-800">IT Specialist - NasDev Technology</h3>
+                                            <span class="text-blue-600 font-medium text-sm">Nov 2024 – Mar 2025</span>
+                                        </div>
+                                        <p class="text-slate-600 leading-relaxed">
+                                            Developed custom websites for small businesses using WordPress, Shopify, and Bootstrap. 
+                                            Configured cloud-based solutions with AWS, automated routine tasks with Ansible.
+                                        </p>
+                                        <div class="flex flex-wrap gap-2 mt-4">
+                                            <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">AWS</span>
+                                            <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">Ansible</span>
+                                            <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium">WordPress</span>
+                                            <span class="px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-xs font-medium">Shopify</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item relative pl-20">
+                            <div class="absolute left-6 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg"></div>
+                            <div class="hover-card bg-gradient-to-br from-white to-blue-50/30 rounded-xl p-6 border border-blue-200/50 shadow-lg">
+                                <div class="flex items-start gap-4">
+                                    <img src="assets/img/casaconfig.png" 
+                                         alt="CasaConfig.ma" 
+                                         class="w-12 h-12 rounded-full border-2 border-blue-200">
+                                    <div class="flex-1">
+                                        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
+                                            <h3 class="text-xl font-bold text-slate-800">Equipment Assembly Technician - CasaConfig.ma</h3>
+                                            <span class="text-blue-600 font-medium text-sm">Jun 2024 – Sep 2024</span>
+                                        </div>
+                                        <p class="text-slate-600 leading-relaxed">
+                                            Assembled and configured custom computer hardware for clients, including desktops and servers. Installed operating systems, optimized BIOS settings, and ensured compatibility of components. Performed troubleshooting, hardware diagnostics, and system upgrades
+                                        </p>
+                                        <div class="flex flex-wrap gap-2 mt-4">
+                                            <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">Hardware</span>
+                                            <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">Troubleshooting</span>
+                                            <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium">BIOS</span>
+                                            <span class="px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-xs font-medium">Maintenance</span>
+                                            <span class="px-3 py-1 bg-cyan-100 text-cyan-700 rounded-full text-xs font-medium">Microsoft O.S</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item relative pl-20">
+                            <div class="absolute left-6 w-4 h-4 bg-purple-500 rounded-full border-4 border-white shadow-lg"></div>
+                            <div class="hover-card bg-gradient-to-br from-white to-purple-50/30 rounded-xl p-6 border border-purple-200/50 shadow-lg">
+                                <div class="flex items-start gap-4">
+                                    <img src="assets/img/digitalhard.png" 
+                                         alt="Digital Hard" 
+                                         class="w-12 h-12 rounded-full border-2 border-purple-200">
+                                    <div class="flex-1">
+                                        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
+                                            <h3 class="text-xl font-bold text-slate-800">System Administrator - Digital Hard</h3>
+                                            <span class="text-purple-600 font-medium text-sm">Mar 2021 – Sep 2022</span>
+                                        </div>
+                                        <p class="text-slate-600 leading-relaxed">
+                                            Configured and maintained Windows and Linux servers. Managed virtual machines using VMware, 
+                                            automated system tasks with PowerShell and Bash, monitored infrastructure with Nagios.
+                                        </p>
+                                        <div class="flex flex-wrap gap-2 mt-4">
+                                            <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">VMware</span>
+                                            <span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-medium">Nagios</span>
+                                            <span class="px-3 py-1 bg-cyan-100 text-cyan-700 rounded-full text-xs font-medium">PowerShell</span>
+                                            <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium">Linux</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="certifications" class="py-20 bg-slate-100">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-12 text-slate-800">Certifications</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="certifications-grid">
+                <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center text-center border border-slate-200">
+                    <img src="assets/img/cisco.png" alt="Certification 2" class="w-20 h-20 mb-4 rounded-full">
+                    <h3 class="text-xl font-semibold mb-2 text-slate-800">CCNA 2</h3>
+                    <p class="text-sm text-slate-600 mb-1">Cisco Networking Academy</p>
+                    <p class="text-xs text-slate-500 mb-4">Issued: Jun 2025</p>
+                        <div class="flex justify-center mb-4">
+                            <div class="flex space-x-1">
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                            </div>
+                        </div>
+                    <a href="assets/doc/ccna2.pdf" class="mt-auto bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium py-2 px-4 rounded-lg inline-block transition duration-300" target="_blank">
+                        <i class="fas fa-download mr-2"></i>Download Certificate
+                    </a>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center text-center border border-slate-200">
+                    <img src="assets/img/aptis.png" alt="Certification 1" class="w-20 h-20 mb-4 rounded-full">
+                    <h3 class="text-xl font-semibold mb-2 text-slate-800">Aptis B2-C1 : Test of English for International Communication</h3>
+                    <p class="text-sm text-slate-600 mb-1">British Council</p>
+                    <p class="text-xs text-slate-500 mb-4">Issued: Dec 2024</p>
+                        <div class="flex justify-center mb-4">
+                            <div class="flex space-x-1">
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-gray-300"></i>
+                            </div>
+                        </div>
+                    <a href="https://credentials.britishcouncil.org/7db3c58d-29e3-4c8b-899b-b25a4bbc824d?key=5c3748475b6342766bfc9c53c2959564dc600262416b98bedf9dcf40c257ef98" class="mt-auto bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium py-2 px-4 rounded-lg inline-block transition duration-300" target="_blank">
+                        <i class="fas fa-download mr-2"></i>Download Certificate
+                    </a>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center text-center border border-slate-200">
+                    <img src="assets/img/cisco.png" alt="Certification 2" class="w-20 h-20 mb-4 rounded-full">
+                    <h3 class="text-xl font-semibold mb-2 text-slate-800">CCNA 1 </h3>
+                    <p class="text-sm text-slate-600 mb-1">Cisco Networking Academy</p>
+                    <p class="text-xs text-slate-500 mb-4">Issued: Dec 2024</p>
+                        <div class="flex justify-center mb-4">
+                            <div class="flex space-x-1">
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-gray-300"></i>
+                            </div>
+                        </div>
+                    <a href="assets/doc/ccna1.pdf" class="mt-auto bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium py-2 px-4 rounded-lg inline-block transition duration-300" target="_blank">
+                        <i class="fas fa-download mr-2"></i>Download Certificate
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Enhanced Projects Section -->
+    <section id="projects" class="py-20 bg-gradient-to-br from-slate-50 to-sky-50 section-fade">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-slate-800 mb-4">Featured Projects</h2>
+                <div class="w-48 h-1 bg-gradient-to-r from-sky-500 to-blue-500 mx-auto rounded-full"></div>
+                <p class="text-slate-600 mt-4">Showcasing my latest work and achievements</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Project 1 -->
+                <div class="project-card group">
+                    <div class="project-content bg-white rounded-2xl overflow-hidden shadow-xl border border-white/50 hover:shadow-2xl transition-all duration-500">
+                        <div class="relative overflow-hidden">
+                            <img src="assets/img/Project-Flooky.png" 
+                                 alt="Flooky AI" 
+                                 class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <div class="absolute bottom-4 left-4 right-4">
+                                    <div class="flex space-x-2">
+                                        <span class="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs">AI</span>
+                                        <span class="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs">Chatbot</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-xl font-bold text-slate-800">Flooky AI</h3>
+                                <div class="flex items-center text-green-600">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                                    <span class="text-sm font-medium">Live</span>
+                                </div>
+                            </div>
+                            
+                            <p class="text-slate-600 text-sm leading-relaxed mb-4">
+                                Flooky-AI is a Python app using Claude AI to automate daily tasks like finance, HR, and document processing—all with a focus on privacy and simplicity.
+                            </p>
+
+                            <div class="flex items-center justify-between">
+                                <div class="flex space-x-2">
+                                    <span class="w-3 h-3 bg-blue-500 rounded-full"></span>
+                                    <span class="w-3 h-3 bg-green-500 rounded-full"></span>
+                                    <span class="w-3 h-3 bg-yellow-500 rounded-full"></span>
+                                </div>
+                                <a href="https://github.com/ciscoAnass/Flooky-AI" class="text-sky-600 hover:text-sky-700 font-medium text-sm transition-colors duration-200 flex items-center group-hover:translate-x-2 transition-transform duration-300" target="_blank">
+                                    Live Demo <i class="fas fa-external-link-alt ml-2"></i>
+
+                                </a>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="project-card group">
+                    <div class="project-content bg-white rounded-2xl overflow-hidden shadow-xl border border-white/50 hover:shadow-2xl transition-all duration-500">
+                        <div class="relative overflow-hidden">
+                            <img src="assets/img/Project-Python.jpg" 
+                                 alt="Infrastructure Automation" 
+                                 class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <div class="absolute bottom-4 left-4 right-4">
+                                    <div class="flex space-x-2">
+                                        <span class="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs">DevOps</span>
+                                        <span class="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs">Automation</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-xl font-bold text-slate-800">Ultimate Python Project</h3>
+                                <div class="flex items-center text-orange-600">
+                                    <div class="w-2 h-2 bg-orange-500 rounded-full mr-2 animate-pulse"></div>
+                                    <span class="text-sm font-medium">In Progress</span>
+                                </div>
+                            </div>
+                            
+                            <p class="text-slate-600 text-sm leading-relaxed mb-4">
+                                AI-powered Python app designed to streamline daily tasks and boost productivity by reducing time spent on routine activities.
+                            </p>
+
+                            <div class="flex items-center justify-between">
+                                <div class="flex space-x-2">
+                                    <span class="w-3 h-3 bg-purple-500 rounded-full"></span>
+                                    <span class="w-3 h-3 bg-orange-500 rounded-full"></span>
+                                    <span class="w-3 h-3 bg-red-500 rounded-full"></span>
+                                </div>
+                                <a href="#" class="text-sky-600 hover:text-sky-700 font-medium text-sm transition-colors duration-200 flex items-center group-hover:translate-x-2 transition-transform duration-300">
+                                    View Details <i class="fas fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="project-card group">
+                    <div class="project-content bg-white rounded-2xl overflow-hidden shadow-xl border border-white/50 hover:shadow-2xl transition-all duration-500">
+                        <div class="relative overflow-hidden">
+                            <img src="assets/img/Project-Autotax.png" 
+                                 alt="Monitoring Dashboard" 
+                                 class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <div class="absolute bottom-4 left-4 right-4">
+                                    <div class="flex space-x-2">
+                                        <span class="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs">Monitoring</span>
+                                        <span class="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs">Analytics</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-xl font-bold text-slate-800">AutoTax</h3>
+                                <div class="flex items-center text-blue-600">
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                                    <span class="text-sm font-medium">Deployed</span>
+                                </div>
+                            </div>
+                            
+                            <p class="text-slate-600 text-sm leading-relaxed mb-4">
+                                Financial analytics platform built with Python, delivered to Vision Up Ltd. Provides real-time insights, reporting, and automation tailored for financial operations.
+                            </p>
+
+                            <div class="flex items-center justify-between">
+                                <div class="flex space-x-2">
+                                    <span class="w-3 h-3 bg-cyan-500 rounded-full"></span>
+                                    <span class="w-3 h-3 bg-indigo-500 rounded-full"></span>
+                                    <span class="w-3 h-3 bg-pink-500 rounded-full"></span>
+                                </div>
+                                <a href="https://www.linkedin.com/feed/update/urn:li:activity:7283002047384227840/" class="text-sky-600 hover:text-sky-700 font-medium text-sm transition-colors duration-200 flex items-center group-hover:translate-x-2 transition-transform duration-300" target="_blank">
+                                    View Details <i class="fas fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced Testimonials Section -->
+    <section id="testimonials" class="py-20 bg-gradient-to-br from-slate-50 to-sky-50 section-fade">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-slate-800 mb-4">What People Say</h2>
+                <div class="w-48 h-1 bg-gradient-to-r from-sky-500 to-blue-500 mx-auto rounded-full"></div>
+                <p class="text-slate-600 mt-4">Feedback from colleagues and clients</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="hover-card bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-white/50 shadow-xl">
+                    <div class="mb-6">
+                        <div class="text-sky-500 mb-4">
+                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M13 14.725c0-5.141 3.892-10.519 10-11.725l.984 2.126c-2.215.835-4.163 3.742-4.38 5.746 2.491.392 4.396 2.547 4.396 5.149 0 3.182-2.584 4.979-5.199 4.979-3.015 0-5.801-2.305-5.801-6.275zm-13 0c0-5.141 3.892-10.519 10-11.725l.984 2.126c-2.215.835-4.163 3.742-4.38 5.746 2.491.392 4.396 2.547 4.396 5.149 0 3.182-2.584 4.979-5.199 4.979-3.015 0-5.801-2.305-5.801-6.275z"/>
+                            </svg>
+                        </div>
+                        <p class="text-slate-600 text-lg leading-relaxed italic">
+                            "Anass has completely transformed our workflow. His expertise in DevOps and system administration has significantly increased our team's productivity and system reliability."
+                        </p>
+                    </div>
+                    <div class="flex items-center">
+                        <img src="assets/img/PM.jpg" 
+                             alt="Sarah Johnson" 
+                             class="w-12 h-12 rounded-full mr-4 border-2 border-sky-200">
+                        <div>
+                            <h4 class="font-semibold text-slate-800">S.H</h4>
+                            <p class="text-slate-500 text-sm">Product Manager, Vision Up Ltd</p>
+                            <div class="flex mt-1">
+                                <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                <i class="fas fa-star text-yellow-400 text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hover-card bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-white/50 shadow-xl">
+                    <div class="mb-6">
+                        <div class="text-sky-500 mb-4">
+                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M13 14.725c0-5.141 3.892-10.519 10-11.725l.984 2.126c-2.215.835-4.163 3.742-4.38 5.746 2.491.392 4.396 2.547 4.396 5.149 0 3.182-2.584 4.979-5.199 4.979-3.015 0-5.801-2.305-5.801-6.275zm-13 0c0-5.141 3.892-10.519 10-11.725l.984 2.126c-2.215.835-4.163 3.742-4.38 5.746 2.491.392 4.396 2.547 4.396 5.149 0 3.182-2.584 4.979-5.199 4.979-3.015 0-5.801-2.305-5.801-6.275z"/>
+                            </svg>
+                        </div>
+                        <p class="text-slate-600 text-lg leading-relaxed italic">
+                            “Anass is a fast learner with a strong grasp of Sys Adminsitration fundamentals. He approaches every task with dedication and a great attitude. A promising junior with a bright future.”
+                        </p>
+                    </div>
+                    <div class="flex items-center">
+                        <img src="assets/img/CEO.jpg" 
+                             alt="Michael Chen" 
+                             class="w-12 h-12 rounded-full mr-4 border-2 border-sky-200">
+                        <div>
+                            <h4 class="font-semibold text-slate-800">M.A</h4>
+                            <p class="text-slate-500 text-sm">Tech lead, Digital Hard</p>
+                            <div class="flex mt-1">
+                                <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                <i class="fas fa-star text-yellow-400 text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+    </section>
+
+
+
+
+    <section id="current-focus" class="py-20 current-focus-body-bg">
+    <div class="container mx-auto px-6 text-center mb-12">
+         <h2 class="text-3xl font-bold text-slate-800">Languages & Location</h2>
+            <div class="w-72 h-1 bg-gradient-to-r from-sky-500 to-blue-500 mx-auto rounded-full"></div>
+         <p class="text-slate-600 mt-2">A glimpse at the many languages I speak and where I’m currently based..</p>
+    </div>
+    <div class="max-w-6xl w-full flex flex-col md:flex-row gap-6 mx-auto px-4">
+        <div class="w-full md:w-1/2 rounded-lg overflow-hidden shadow-xl border border-gray-700">
+            <div class="bg-gray-800 px-4 py-2 flex items-center justify-between border-b border-gray-700">
+                <div class="flex items-center">
+                    <div class="flex space-x-2 mr-4">
+                        <div class="w-2.5 h-2.5 rounded-full bg-red-500 border border-red-600"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-yellow-500 border border-yellow-600"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-green-500 border border-green-600"></div>
+                    </div>
+                    <div class="text-gray-300 font-medium text-sm">languages.py</div>
+                </div>
+                <button class="text-gray-400 hover:text-gray-100 px-2 py-0.5 rounded border border-gray-600 hover:bg-gray-700 transition text-xs">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                    </svg>
+                    Copy
+                </button>
+            </div>
+            
+            <div class="bg-gray-800 flex divide-x divide-gray-700 text-sm">
+                <div class="bg-gray-900 text-gray-500 py-3 px-2 text-right select-none w-10">
+                        <div>1</div> <div>2</div> <div>3</div> <div>4</div> <div>5</div> <div>6</div> <div>7</div> <div>8</div> <div>9</div> <div>10</div> <div>11</div> <div>12</div> <div>13</div> <div>14</div> <div>15</div> <div>16</div> <div>17</div> <div>18</div> <div>19</div> <div>20</div> <div>21</div> <div>22</div> <div>23</div> <div>24</div> <div>25</div> <div>26</div> <div>27</div> <div>28</div> <div>29</div> <div>30</div> <div>31</div> <div>32</div> <div>33</div> <div>34</div>
+                </div>
+                
+            <div class="py-3 px-3 overflow-auto w-full bg-gray-800">
+                <pre class="whitespace-pre-wrap"><code><span class="text-purple-400">import</span> <span class="text-yellow-300">folium</span>
+            <span class="text-purple-400">import</span> <span class="text-yellow-300">flask</span>
+            <span class="text-purple-400">import</span> <span class="text-yellow-300">locale</span>
+            <span class="text-purple-400">import</span> <span class="text-yellow-300">webbrowser</span>
+
+            <span class="text-green-400"># Hello World in 4 languages</span>
+            <span class="text-gray-300">print</span>(<span class="text-amber-400">"English: Hello World 🇬🇧"</span>)
+            <span class="text-gray-300">print</span>(<span class="text-amber-400">"Spanish: Hola Mundo 🇪🇸"</span>)
+            <span class="text-gray-300">print</span>(<span class="text-amber-400">"French: Bonjour le Monde 🇫🇷"</span>)
+            <span class="text-gray-300">print</span>(<span class="text-amber-400">"Arabic: أهلاً بالعالم 🇸🇦"</span>)
+
+            <span class="text-gray-300">print</span>(<span class="text-amber-400">"\nWhere I am:"</span>)
+
+            <span class="text-green-400"># My location coordinates</span>
+            <span class="text-teal-300">my_coords</span> = [<span class="text-orange-400">37.389288</span>, <span class="text-orange-400">-5.984614</span>]
+            <span class="text-teal-300">city</span> = <span class="text-amber-400">"Seville, Spain"</span>
+
+            <span class="text-gray-300">print</span>(<span class="text-amber-400">f"📍 Currently in: </span><span class="text-blue-400">{</span><span class="text-teal-300">city</span><span class="text-blue-400">}</span><span class="text-amber-400">"</span>)
+            <span class="text-gray-300">print</span>(<span class="text-amber-400">f"🌍 Coordinates: </span><span class="text-blue-400">{</span><span class="text-teal-300">my_coords</span><span class="text-blue-400">}</span><span class="text-amber-400">"</span>)
+
+            <span class="text-green-400"># Create interactive map</span>
+            <span class="text-teal-300">portfolio_map</span> = <span class="text-yellow-300">folium</span>.<span class="text-yellow-300">Map</span>(<span class="text-orange-400">location</span>=<span class="text-teal-300">my_coords</span>, <span class="text-orange-400">zoom_start</span>=<span class="text-orange-400">12</span>)
+
+            <span class="text-green-400"># Add location marker</span>
+            <span class="text-yellow-300">folium</span>.<span class="text-yellow-300">Marker</span>(
+                <span class="text-teal-300">my_coords</span>, 
+                <span class="text-orange-400">popup</span>=<span class="text-amber-400">f"📍 </span><span class="text-blue-400">{</span><span class="text-teal-300">city</span><span class="text-blue-400">}</span><span class="text-amber-400">"</span>,
+                <span class="text-orange-400">tooltip</span>=<span class="text-amber-400">"My Location"</span>
+            ).<span class="text-yellow-300">add_to</span>(<span class="text-teal-300">portfolio_map</span>)
+
+            <span class="text-green-400"># Save the map</span>
+            <span class="text-teal-300">portfolio_map</span>.<span class="text-yellow-300">save</span>(<span class="text-amber-400">'my_portfolio_map.html'</span>)
+            <span class="text-gray-300">print</span>(<span class="text-amber-400">"\n🗺️ Portfolio map created successfully!"</span>)</code></pre>
+            </div>
+            </div>
+            
+            <div class="bg-gray-950 p-3 border-t border-gray-800 text-xs">
+                <div class="text-gray-300">
+                    <div class="mb-1"><span class="text-green-400">$</span> git commit -m "feat: implement auto-detection of user language"</div>
+                    <div class="mb-1 text-blue-300">> Pushing to origin/main...</div>
+                    <div class="text-green-400">> Deployment successful!</div>
+                </div>
+            </div>
+            
+            <div class="bg-gray-800 px-3 py-1 border-t border-gray-700 flex justify-between items-center text-gray-400 text-xs">
+                <div class="flex items-center space-x-3">
+                    <span>Python</span>
+                    <span>UTF-8</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span>Ln 10, Col 23</span>
+                    <span>Spaces: 2</span>
+                    <span>12 lines</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full md:w-1/2 rounded-lg overflow-hidden shadow-xl border border-slate-300 flex flex-col bg-white">
+            <div class="bg-slate-200 px-4 py-2 flex items-center space-x-2 border-b border-slate-300">
+                <div class="flex space-x-1.5">
+                    <div class="w-2.5 h-2.5 rounded-full bg-red-400 border border-red-500/50"></div>
+                    <div class="w-2.5 h-2.5 rounded-full bg-yellow-400 border border-yellow-500/50"></div>
+                    <div class="w-2.5 h-2.5 rounded-full bg-green-400 border border-green-500/50"></div>
+                </div>
+                <div class="flex-1 bg-white rounded-md px-3 py-1 flex items-center border border-slate-300">
+                    <svg class="w-3 h-3 text-slate-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    <span class="text-slate-600 text-xs">https://www.ciscoanass.github.io/languages</span>
+                </div>
+            </div>
+            
+            <div class="flex-1 bg-white p-6">
+                <h1 class="text-2xl font-bold mb-3 text-slate-800">Languages i do Speak</h1>
+                <div class="border border-sky-200 rounded-lg p-4 bg-sky-50/50 shadow-md">
+                <h2 class="text-xl font-semibold text-sky-700"><img src="https://flagcdn.com/w20/us.png" alt="US Flag" class="inline-block w-5 h-auto mr-1"> Hello World!!!</h2>
+                <span class="text-xs bg-sky-100 text-sky-700 px-2 py-0.5 rounded-full">English</span>
+                </div>
+                
+                <div class="border border-sky-200 rounded-lg p-4 bg-sky-50/50 shadow-md">
+                <h2 class="text-xl font-semibold text-sky-700"><img src="https://flagcdn.com/w20/es.png" alt="Spain Flag" class="inline-block w-5 h-auto mr-1"> Hola Mundo!!</h2>
+                    <span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full ml-1">Spanish</span>
+                </div>
+
+                <div class="border border-sky-200 rounded-lg p-4 bg-sky-50/50 shadow-md">
+                <h2 class="text-xl font-semibold text-sky-700"><img src="https://flagcdn.com/w20/fr.png" alt="France Flag" class="inline-block w-5 h-auto mr-1">Bonjour le Monde!!</h2>
+                    <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full ml-1">French</span>
+                </div>
+
+
+                <div class="border border-sky-200 rounded-lg p-4 bg-sky-50/50 shadow-md">
+                <h2 class="text-xl font-semibold text-sky-700"><img src="https://flagcdn.com/w20/sa.png" alt="Saudi Arabia Flag" class="inline-block w-5 h-auto mr-1">!! مرحبا بالعالم</h2>
+                    <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full ml-1">Arabic</span>
+                </div>
+                                
+                <div class="mt-6">
+                        <h2 class="text-xl font-bold mb-3 text-slate-800">My Location</h2>
+                        <div class="relative border border-sky-200 rounded-lg overflow-hidden shadow-md">
+                            <iframe 
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7850.708857439783!2d-5.987002323581783!3d37.38977753424301!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd126c1d16be962d%3A0xe99b49a179599680!2sPl.%20de%20San%20Agust%C3%ADn%2C%206%2C%20Casco%20Antiguo%2C%2041003%20Sevilla!5e1!3m2!1ses!2ses!4v1751655900294!5m2!1ses!2ses" 
+                                width="100%" 
+                                height="300" 
+                                style="border:0;" 
+                                allowfullscreen="" 
+                                loading="lazy" 
+                                referrerpolicy="no-referrer-when-downgrade"
+                                class="w-full">
+                            </iframe>
+                            
+                            <!-- Decorative image overlay -->
+                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <div class="bg-white rounded-full p-2 shadow-lg border-2 border-sky-200">
+                                    <img src="assets/img/anass3.png" alt="Anass" class="w-24 h-24 rounded-full object-cover">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+        </div>
+    </section>
+
+
+
+
+    <!-- Enhanced Contact Section -->
+    
+    <section id="contact" class="py-20 contact-body-bg">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-slate-800 mb-4">Contact Me</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-sky-500 to-blue-500 mx-auto rounded-full"></div>
+                <p class="text-slate-600 mt-4">Feedback from colleagues and clients</p>
+            </div>
+        <div class="container mx-auto px-4">
+             <div class="max-w-6xl w-full contact-card-container-bg rounded-xl overflow-hidden shadow-2xl border flex flex-col lg:flex-row mx-auto">
+                <div class="lg:w-3/5 flex flex-col">
+                    <div class="relative flex-grow contact-visualization-bg" id="vanta-canvas-contact">
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-sky-50/50 to-sky-50/90 md:via-transparent md:to-sky-50/90"></div>
+                        <div class="absolute top-8 left-8 z-10 p-4">
+                            <span class="px-2 py-1 contact-welcome-badge-bg rounded-full text-xs contact-welcome-badge-text mb-2 inline-block">GET IN TOUCH</span>
+                            <h2 class="text-4xl font-bold contact-title-text">Let's Connect<br>& Collaborate</h2>
+                            <div class="h-1 w-16 contact-divider mt-3 rounded-full"></div>
+                            <p class="mt-4 contact-description-text max-w-xs">Interested in working together or have a question? Feel free to reach out using the form.</p>
+                        </div>
+                         <div class="absolute bottom-8 left-8 contact-status-bg backdrop-blur-sm rounded-lg px-3 py-2 z-10">
+                            <div class="flex space-x-4 text-xs contact-status-text">
+                                <div class="flex items-center">
+                                    <span class="w-2 h-2 rounded-full bg-green-400 mr-1.5"></span>
+                                    <span>Available for Opportunities</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-8 bg-slate-50">
+                        <h3 class="text-xl font-semibold contact-form-title mb-6">Send Me a Message</h3>
+                        <form action="#" method="POST" class="space-y-5">
+                            <div class="space-y-2">
+                                <label for="name" class="block text-sm font-medium contact-label">Full Name</label>
+                                <input type="text" id="name" name="name" class="contact-input" required>
+                            </div>
+                            <div class="space-y-2">
+                                <label for="email" class="block text-sm font-medium contact-label">Email Address</label>
+                                <input type="email" id="email" name="email" class="contact-input" required>
+                            </div>
+                            <div class="space-y-2">
+                                <label for="message" class="block text-sm font-medium contact-label">Message</label>
+                                <textarea id="message" name="message" rows="4" class="contact-input" required></textarea>
+                            </div>
+                            <div class="pt-2">
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="lg:w-2/5 p-4 sm:p-6 md:p-8 flex items-center justify-center business-card-column-bg">
+                    <div class="w-full max-w-sm mx-auto">
+                        <div class="bg-gray-900 rounded-lg overflow-hidden shadow-2xl transform transition-all hover:scale-105">
+                            <div class="px-4 py-2 bg-gray-800 flex items-center">
+                                <div class="flex space-x-2">
+                                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                </div>
+                                <div class="mx-auto text-gray-400 text-sm">BusinessCard.json</div>
+                                <div class="text-gray-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="bg-gray-700 px-4 py-1 text-sm text-white flex">
+                                <span>BusinessCard.json</span>
+                            </div>
+                            <div class="p-5 font-mono text-sm">
+                                <div class="flex">
+                                    <span class="text-gray-500 w-7">1</span>
+                                    <span class="text-white">{</span>
+                                </div>
+                                <div class="flex ml-4">
+                                    <span class="text-gray-500 w-7">2</span>
+                                    <span class="text-pink-400">"name"</span>
+                                    <span class="text-white">: </span>
+                                    <span class="text-yellow-300">"Anass Assim"</span>
+                                    <span class="text-white">,</span>
+                                </div>
+                                <div class="flex ml-4">
+                                    <span class="text-gray-500 w-7">3</span>
+                                    <span class="text-pink-400">"title"</span>
+                                    <span class="text-white">: </span>
+                                    <span class="text-yellow-300">"DevOps Junior & Sys Admin"</span>
+                                    <span class="text-white">,</span>
+                                </div>
+                                <div class="flex ml-4">
+                                    <span class="text-gray-500 w-7">4</span>
+                                    <span class="text-pink-400">"email"</span>
+                                    <span class="text-white">: </span>
+                                    <span class="text-yellow-300">"hello@anass-assim.com"</span>
+                                    <span class="text-white">,</span>
+                                </div>
+                                <div class="flex ml-4">
+                                    <span class="text-gray-500 w-7">5</span>
+                                    <span class="text-pink-400">"phone"</span>
+                                    <span class="text-white">: </span>
+                                    <span class="text-yellow-300">"+34 662 055 990"</span>
+                                </div>
+                                <div class="flex ml-4">
+                                    <span class="text-gray-500 w-7">6</span>
+                                    <span class="text-pink-400">"linkedin"</span>
+                                    <span class="text-white">: </span>
+                                    <span class="text-yellow-300">"anass-assim"</span>
+                                </div>
+                                <div class="flex ml-4">
+                                    <span class="text-gray-500 w-7">7</span>
+                                    <span class="text-pink-400">"github"</span>
+                                    <span class="text-white">: </span>
+                                    <span class="text-yellow-300">"@ciscoAnass"</span>
+                                </div>
+                                <div class="flex">
+                                    <span class="text-gray-500 w-7">6</span>
+                                    <span class="text-white">}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                            <!-- Trust Indicators -->
+            <div class="mt-16 text-center">
+                <p class="text-slate-500 mb-8">Trusted by professionals from leading companies</p>
+                <div class="flex justify-center items-center space-x-12 opacity-60">
+                    <div class="text-2xl font-bold text-slate-400">OGA.ai</div>
+                    <div class="text-2xl font-bold text-slate-400">NasDev</div>
+                    <div class="text-2xl font-bold text-slate-400">Digital Hard</div>
+                    <div class="text-2xl font-bold text-slate-400">CasaConfig</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+
+    <!-- Enhanced Footer -->
+    <footer class="py-12 bg-slate-900 text-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center">
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold mb-4">Anass Assim</h3>
+                    <p class="text-slate-400 max-w-md mx-auto">
+                        DevOps Junior & System Administrator passionate about creating efficient, scalable solutions.
+                    </p>
+                </div>
+
+                <div class="flex justify-center space-x-6 mb-8">
+                    <a href="https://www.linkedin.com/in/anass-assim/" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="https://github.com/ciscoAnass" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://x.com/ciscoAnass" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fa-brands fa-x-twitter"></i>
+                    </a>
+                    <a href="mailto:anass.assim.2010@gmail.com" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fas fa-envelope"></i>
+                    </a>    
+                </div>
+
+                <div class="border-t border-slate-800 pt-8">
+                    <p class="text-slate-400 text-sm">
+                        &copy; <span id="currentYear">2025</span> Anass Assim. All rights reserved.
+                    </p>
+                    <p class="text-slate-500 text-xs mt-2">
+                        Built with passion using modern web technologies
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <script src="assets/js/main.js"></script>
+</body>
+</html>progress">
