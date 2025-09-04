@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Terminal - CiscoAnass</title>
+  <meta name="description" content="Cisco Anass | DevOps Student — Terminal-style portfolio" />
+  <style>
+    :root{
+      --bg: #000;
+      --pane: #0a0a0a;
+      --pane-2: #111;
+      --text: #e8e8e8;
+      --text-dim: #9a9a9a;
+      --accent: #ffffff;    /* links */
+      --prompt: #34C759;    /* macOS green prompt */
+      --border: #1a1a1a;
+      --shadow: 0 28px 60px rgba(0,0,0,.65), 0 2px 10px rgba(0,0,0,.45);
+      --radius: 16px;
+    }
+
+    *{ box-sizing: border-box; }
+    html, body{ height:100%; }
+    body{
+      margin:0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", Monaco, "Ubuntu Mono", monospace;
+      line-height:1.6;
+      display:grid;
+      place-items:center;
+    }
+
+    .wrap{ width:min(1280px, 96vw); margin:32px auto; transition: transform .25s ease, filter .25s ease; }
+    .wrap:hover{ transform: translateY(-2px); filter: saturate(1.02); }
+
+    .window{ border-radius: var(--radius); background: var(--pane); box-shadow: var(--shadow); overflow:hidden; border:1px solid var(--border); }
+
+    .titlebar{ padding:12px 14px; display:flex; align-items:center; gap:10px; background: var(--pane-2); border-bottom:1px solid var(--border); user-select:none; }
+    .traffic{ display:flex; gap:8px; }
+    .dot{ width:12px; height:12px; border-radius:50%; }
+    .traffic .dot:nth-child(1){ background: radial-gradient(circle at 30% 30%, #ff9a9a, #ff5f57); box-shadow:0 0 8px rgba(255,95,87,.5); }
+    .traffic .dot:nth-child(2){ background: radial-gradient(circle at 30% 30%, #fff1a1, #fdbc2e); box-shadow:0 0 8px rgba(253,188,46,.45); }
+    .traffic .dot:nth-child(3){ background: radial-gradient(circle at 30% 30%, #a7ffbd, #28c840); box-shadow:0 0 8px rgba(40,200,64,.45); }
+
+    .title{ margin-left:8px; font-weight:600; color:var(--text-dim); letter-spacing:.3px; }
+
+    .terminal{ height: min(82vh, 820px); min-height:560px; padding:22px 18px 16px; overflow:auto; scroll-behavior:smooth; font-size:17px; }
+
+    .line{ white-space: pre-wrap; word-break: break-word; }
+    .dim{ color: var(--text-dim); }
+    .accent{ color: var(--accent); }
+    .ok{ color: #b7f0b2; }
+    .err{ color: #ff7b7b; }
+    .ub{ font-weight:700; text-decoration: underline; }
+    .chip{ display:inline-block; margin:.2rem .5rem .2rem 0; padding:.12rem .5rem; border-radius:999px; background:#121212; border:1px solid #232323; color:#dcdcdc; font-size:.95rem; }
+
+    a{ color: var(--accent); text-decoration: none; border-bottom:1px dashed #2a2a2a; }
+    a:hover{ text-decoration: underline; }
+
+    .prompt-row{ display:flex; align-items:center; gap:10px; }
+    .prompt{ color: var(--prompt); }
+    .input{ flex:1; min-width:240px; background:transparent; border:none; color:var(--text); outline:none; font:inherit; caret-color: var(--prompt); padding:0; margin:0; }
+
+    /* white icon copy button */
+    .icon-btn{ background:transparent; border:none; padding:.1rem .2rem; cursor:pointer; vertical-align: middle; }
+    .icon-btn svg{ width:16px; height:16px; fill:#fff; opacity:.95; transition: transform .12s ease, opacity .12s ease; }
+    .icon-btn:hover svg{ transform: scale(1.1); opacity:1; }
+
+    /* green chevron prefix */
+    .gt{ color: var(--prompt); font-weight:700; }
+
+    .cursor{ display:inline-block; width:8px; height:1.2em; transform:translateY(.2em); background: var(--prompt); margin-left:2px; animation: blink 1s step-end infinite; }
+    @keyframes blink{ 50%{ opacity:0; } }
+
+    .footer{ text-align:center; color: var(--text-dim); font-size:.95rem; margin-top:14px; }
+
+    @media (max-width: 560px){ .terminal{ font-size:15.5px; padding:16px 12px; } .wrap{ width:98vw; } }
+    @media (prefers-reduced-motion: reduce){ .wrap{ transition:none; } .cursor{ animation:none; } }
+  </style>
+</head>
+<body>
+  <main class="wrap" aria-label="Terminal Portfolio">
+    <section class="window" role="region" aria-label="macOS terminal window">
+      <header class="titlebar">
+        <div class="traffic" aria-hidden="true">
+          <span class="dot" title="Close"></span>
+          <span class="dot" title="Minimize"></span>
+          <span class="dot" title="Zoom"></span>
+        </div>
+        <div class="title">Cisco — portfolio: ~</div>
+      </header>
+      <div id="terminal" class="terminal" aria-live="polite" aria-atomic="false"></div>
+    </section>
+    <div class="footer">Type <span class="accent">help</span> to see commands • <span class="chip">theme pro | classic | matrix | amber</span> <span class="chip">speed 0-30</span></div>
+  </main>
+
+  <script>
+    // ===========================
+    // Config
+    // ===========================
+    const PROFILE = {
+      name: 'CiscoAnass',
+      role: 'DevOps & Sys Admin',
+      location: 'Seville, Spain - 37.389175, -5.984527',
+      skills: [
+        'Linux','Docker','Azure','CI/CD','Git','IaC','Python/GO/Bash'
+      ],
+      projects: [
+        { name: 'KubeWatch', url: '#', desc: 'Kubernetes cluster monitor with Prometheus + Grafana dashboards', stack:['K8s','Prometheus','Grafana'] },
+        { name: 'GitOps Pipelines', url: '#', desc: 'ArgoCD + GitHub Actions CI/CD for microservices', stack:['ArgoCD','Actions','Docker'] },
+        { name: 'Terraform VPC Module', url: '#', desc: 'Reusable AWS VPC IaC with testing', stack:['Terraform','AWS','tflint'] }
+      ],
+      contact: {
+        email: 'hello@anassasiim.com',
+        phone: '+34 662 055 990',
+        github: 'https://github.com/ciscoAnass',
+        linkedin: 'https://www.linkedin.com/in/anass-assim',
+        cv: 'https://anassasiim.com/assets/doc/CV.pdf'
+      },
+      socials: [
+        { key:'in', label:'LinkedIn', url:'https://www.linkedin.com/in/anass-assim' },
+        { key:'gh', label:'GitHub', url:'https://github.com/ciscoAnass' },
+        { key:'web', label:'Website', url:'https://anassasiim.com' }
+      ]
+    };
+
+    // Inline SVG icons (white)
+    const clipboardSvg = `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M16 2h-2.2a2 2 0 0 0-3.6 0H8a2 2 0 0 0-2 2v1H5a2 2 0 0 0-2 2v11a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4V7a2 2 0 0 0-2-2h-1V4a2 2 0 0 0-2-2Zm-4-1a1 1 0 0 1 1 1v2h-2V2a1 1 0 0 1 1-1ZM7 7V5h10v2H7Z"/>
+      </svg>`;
+    const checkSvg = `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/>
+      </svg>`;
+
+    // ===========================
+    // Terminal engine
+    // ===========================
+    const term = document.getElementById('terminal');
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+    let TYPE_SPEED = 6; // lower = faster
+
+    function createLine(html = ''){ const div = document.createElement('div'); div.className = 'line'; div.innerHTML = html; term.appendChild(div); term.scrollTop = term.scrollHeight; return div; }
+
+    async function typeHtml(el, html, speed = TYPE_SPEED){ let i = 0; while(i < html.length){ if(html[i] === '<'){ const close = html.indexOf('>', i); if(close === -1) break; el.insertAdjacentHTML('beforeend', html.slice(i, close+1)); i = close + 1; } else { el.appendChild(document.createTextNode(html[i])); i++; await sleep(speed); } term.scrollTop = term.scrollHeight; } }
+
+    function promptRow(){
+      const row = document.createElement('div'); row.className = 'prompt-row';
+      const who = document.createElement('span'); who.className = 'prompt'; who.textContent = 'ciscoanass@guest:~$';
+      const input = document.createElement('input'); input.className = 'input';
+      input.setAttribute('aria-label','Type a command then press Enter');
+      input.autocapitalize = 'off'; input.autocomplete = 'off'; input.autocorrect = 'off'; input.spellcheck = false;
+      row.appendChild(who); row.appendChild(document.createTextNode(' ')); row.appendChild(input);
+      term.appendChild(row); term.scrollTop = term.scrollHeight; input.focus();
+      return { row, input };
+    }
+
+    const history = []; let historyIndex = -1;
+
+    function registerPrompt(onSubmit){
+      const { row, input } = promptRow();
+      function handleSubmit(){
+        const cmd = input.value.trim();
+        history.push(cmd); historyIndex = history.length;
+        const echo = document.createElement('div'); echo.className = 'line';
+        echo.innerHTML = `<span class="prompt">ciscoanass@guest:~$</span> ${escapeHtml(cmd)}`;
+        term.replaceChild(echo, row);
+        onSubmit(cmd);
+      }
+      input.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter'){ e.preventDefault(); handleSubmit(); }
+        else if(e.key === 'ArrowUp'){ e.preventDefault(); if(historyIndex > 0){ historyIndex--; input.value = history[historyIndex] || ''; } }
+        else if(e.key === 'ArrowDown'){ e.preventDefault(); if(historyIndex < history.length){ historyIndex++; input.value = history[historyIndex] || ''; if(historyIndex === history.length) input.value = ''; } }
+        else if(e.key === 'Tab'){ e.preventDefault(); const partial = input.value.trim(); if(!partial) return; const match = COMMANDS.map(c=>c.name).find(n => n.startsWith(partial)); if(match) input.value = match + ' '; }
+      });
+      term.addEventListener('mousedown', ()=> input.focus());
+    }
+
+    function escapeHtml(str){
+      return str.replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[s]));
+    }
+
+    // helper: prefixed output lines
+    function out(text){ createLine(`<span class="gt">&gt;</span> ${escapeHtml(text)}`); }
+    function outHtml(html){ createLine(`<span class="gt">&gt;</span> ${html}`); }
+
+    // newPrompt (fix for earlier ReferenceError)
+    function newPrompt(){
+      registerPrompt(async (cmd)=>{
+        if(!cmd){ return newPrompt(); }
+        const fn = runCommand(cmd);
+        if(!fn){
+          createLine(`<span class="err">Command not found:</span> ${escapeHtml(cmd)}. Try <span class="accent">help</span>.`);
+          return newPrompt();
+        }
+        await fn.run(cmd);
+      });
+    }
+
+    // Copy icon delegation
+    term.addEventListener('click', async (e)=>{
+      const btn = e.target.closest('[data-copy]');
+      if(!btn) return;
+      try{
+        await navigator.clipboard.writeText(btn.getAttribute('data-copy'));
+        const prev = btn.innerHTML; btn.innerHTML = checkSvg;
+        setTimeout(()=> btn.innerHTML = prev, 1400);
+      }catch{/* ignore */}
+    });
+
+    // ===========================
+    // Commands
+    // ===========================
+    const COMMANDS = [
+      { name: 'help', run: help },
+      { name: 'neofetch', run: neofetch },
+      { name: 'email', run: emailCmd },
+      { name: 'phone', run: phoneCmd },
+      { name: 'linkedin', run: ()=>{ outHtml(`in → <a href="${PROFILE.contact.linkedin}" target="_blank" rel="noopener">${PROFILE.contact.linkedin}</a>`); newPrompt(); } },
+      { name: 'github',  run: ()=>{ outHtml(`gh → <a href="${PROFILE.contact.github}" target="_blank" rel="noopener">${PROFILE.contact.github}</a>`); newPrompt(); } },
+      { name: 'location',run: ()=>{ out(PROFILE.location); newPrompt(); } },
+      { name: 'cv',      run: ()=>{ outHtml(`cv → <a href="${PROFILE.contact.cv}" target="_blank" rel="noopener">${PROFILE.contact.cv}</a>`); newPrompt(); } },
+      { name: 'ls', run: ls },
+      { name: 'ls /skills', run: ls },
+      { name: 'echo', run: echoCmd },
+      { name: 'ping', run: pingCmd },
+      { name: 'portscan', run: portscanCmd },
+      { name: 'clear', run: clearTerm },
+      { name: 'ssh', run: sshCmd },
+      { name: 'curl', run: curlCmd },
+      { name: 'sudo', run: sudoCmd },
+      { name: 'cat', run: catCmd },
+      { name: 'about', run: about },
+      { name: 'skills', run: skills },
+      { name: 'projects', run: projects },
+      { name: 'contact', run: contact },
+      { name: 'theme', run: theme },
+      { name: 'speed', run: speedCmd },
+      { name: 'selftest', run: selftest }
+    ];
+
+    function runCommand(cmd){ const base = cmd.trim().split(/\s+/)[0].toLowerCase(); return COMMANDS.find(c => c.name === base); }
+
+    // ===== help =====
+    async function help(){
+      const lines = [
+        'Available commands:',
+        '  help               – this list',
+        '  neofetch           – system identity card',
+        '  email | phone      – show & copy contact',
+        '  linkedin | github  – show links',
+        '  location           – where I am',
+        '  cv                 – résumé link',
+        '  ls                 – list endpoints',
+        '  ls /skills         – list Skills',
+        '  echo <text>        – say something',
+        '  ping <host>        – fake ping',
+        '  portscan <host>    – quick open ports',
+        '  clear              – clean the terminal',
+        "  ssh anass          – handshake",
+        '  curl /connect      – mailto',
+        '  sudo hire-anass    – short pitch',
+        '  cat mission.txt    – personal mission',
+        '  selftest           – run built-in checks'
+      ];
+      lines.forEach(createLine); newPrompt();
+    }
+
+    // ===== identity/info =====
+    async function emailCmd(){
+      outHtml(`<span class="ub">${PROFILE.contact.email}</span> <button class="icon-btn" data-copy="${PROFILE.contact.email}" aria-label="Copy email">${clipboardSvg}</button>`);
+      newPrompt();
+    }
+    async function phoneCmd(){
+      outHtml(`<span class="ub">${PROFILE.contact.phone}</span> <button class="icon-btn" data-copy="${PROFILE.contact.phone}" aria-label="Copy phone">${clipboardSvg}</button>`);
+      newPrompt();
+    }
+
+    // ===== lists =====
+    function ls(cmd){
+      const arg = (cmd.split(/\s+/)[1]||'').toLowerCase();
+      if(!arg){
+        createLine('/social'); createLine('/skills'); createLine('/contact'); createLine('/lab');
+        return newPrompt();
+      }
+      if(arg === '/social'){
+        createLine('Social:');
+        PROFILE.socials.forEach(s=> createLine(`  ${s.key} → <a href="${s.url}" target="_blank" rel="noopener">${s.url}</a>`));
+        return newPrompt();
+      }
+      if(arg === '/skills'){
+        createLine('Skills:');
+        const cats = {
+          'Languages': ['Python','Bash','GO','SQL','javaScript'],
+          'Cloud': ['Azure','AWS'],
+          'Containers': ['Docker','Kubernetes'],
+          'IaC': ['Terraform','Ansible','ARM'],
+          'CI/CD': ['Azure Pipeline','Jenkins'],
+          'Monitorization': ['Prometheus','Grafana','Nagios'],
+          'Virtualization': ['Proxmox','VMware','Hyper-V','VirtualBox'],
+          'Web': ['NGINX','Apache'],
+          'OS': ['Linux','Windows Client/Server','MacOS']
+        };
+        Object.entries(cats).forEach(([k,arr])=>{
+          createLine(`  ${k}: ` + arr.map(x=>`<span class="chip">${x}</span>`).join(' '));
+        });
+        return newPrompt();
+      }
+      if(arg === '/contact'){
+        emailCmd(); phoneCmd(); return;
+      }
+      if(arg === '/lab'){
+        createLine('Lab projects:');
+        PROFILE.projects.forEach((p,i)=>{
+          const tags = (p.stack||[]).map(t=>`<span class="chip">${t}</span>`).join(' ');
+          createLine(`  ${String(i+1).padStart(2,'0')}. <a href="${p.url}" target="_blank" rel="noopener">${p.name}</a> — <span class="dim">${p.desc||''}</span> ${tags}`);
+        });
+        return newPrompt();
+      }
+      createLine(`<span class="err">ls:</span> cannot access '${escapeHtml(arg)}': No such file or directory`);
+      newPrompt();
+    }
+
+    // ===== echo =====
+    function echoCmd(cmd){
+      const idx = cmd.indexOf(' ');
+      const txt = idx === -1 ? '' : cmd.slice(idx+1).trim();
+      out(txt);
+      newPrompt();
+    }
+
+    // ===== ping =====
+    async function pingCmd(cmd){
+      const host = (cmd.split(/\s+/)[1]||'').toLowerCase();
+      if(!host){ out('usage: ping <host>'); return newPrompt(); }
+      if(host === '127.0.0.1'){
+        createLine('PING 127.0.0.1 (93.184.216.34): 56 data bytes');
+        await sleep(90); createLine('64 bytes from 127.0.0.1: icmp_seq=1 ttl=57 time=26.4 ms');
+        await sleep(90); createLine('64 bytes from 127.0.0.1: icmp_seq=2 ttl=57 time=30.3 ms');
+        await sleep(90); createLine('64 bytes from 127.0.0.1: icmp_seq=3 ttl=57 time=17.6 ms');
+        await sleep(90); createLine('64 bytes from 127.0.0.1: icmp_seq=4 ttl=57 time=35.7 ms');
+        createLine('\n--- 127.0.0.1 ping statistics ---');
+        createLine('4 packets transmitted, 4 received, 0% packet loss');
+        createLine('round-trip min/avg/max = 15.0/27.5/45.0 ms');
+        return newPrompt();
+      }
+      if(host === 'anassasiim.com'){
+        createLine('PING anassasiim.com (93.184.216.34): 56 data bytes');
+        await sleep(90); createLine('64 bytes from anassasiim.com: icmp_seq=1 ttl=57 time=44.5 ms');
+        await sleep(90); createLine('64 bytes from anassasiim.com: icmp_seq=2 ttl=57 time=23.2 ms');
+        await sleep(90); createLine('64 bytes from anassasiim.com: icmp_seq=3 ttl=57 time=43.9 ms');
+        await sleep(90); createLine('64 bytes from anassasiim.com: icmp_seq=4 ttl=57 time=39.2 ms');
+        createLine('\n--- anassasiim.com ping statistics ---');
+        createLine('4 packets transmitted, 4 received, 0% packet loss');
+        createLine('round-trip min/avg/max = 15.0/37.7/45.0 ms');
+        return newPrompt();
+      }
+      // generic simulation
+      const ip = `${Math.floor(Math.random()*223)+1}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`;
+      createLine(`PING ${escapeHtml(host)} (${ip}): 56 data bytes`);
+      for(let i=1;i<=4;i++){ await sleep(90); const t = (15+Math.random()*30).toFixed(1); createLine(`64 bytes from ${escapeHtml(host)}: icmp_seq=${i} ttl=57 time=${t} ms`); }
+      createLine(`\n--- ${escapeHtml(host)} ping statistics ---`);
+      createLine('4 packets transmitted, 4 received, 0% packet loss');
+      const avg = (25+Math.random()*15).toFixed(1);
+      createLine(`round-trip min/avg/max = 15.0/${avg}/45.0 ms`);
+      newPrompt();
+    }
+
+    // ===== portscan =====
+    async function portscanCmd(cmd){
+      const host = (cmd.split(/\s+/)[1]||'').toLowerCase();
+      if(!host){ out('usage: portscan <host>'); return newPrompt(); }
+      createLine(`Fast scan on ${escapeHtml(host)}…`);
+      await sleep(120);
+      if(host === '127.0.0.1'){
+        createLine('22/tcp open ssh');
+        createLine('80/tcp open http');
+        createLine('443/tcp open https');
+        createLine('8080/tcp open http-proxy');
+      } else {
+        const ports = [22,80,443,8080,3000,5432];
+        ports.slice(0,4).forEach(p=> createLine(`${p}/tcp open ${p===22?'ssh':p===443?'https':'http'}`));
+      }
+      newPrompt();
+    }
+
+    // ===== misc =====
+    function clearTerm(){ term.innerHTML = ''; newPrompt(); }
+
+    function sshCmd(cmd){
+      const user = (cmd.split(/\s+/)[1]||'').toLowerCase();
+      if(user !== 'anass'){ createLine('<span class="err">ssh:</span> permission denied'); return newPrompt(); }
+      out('Establishing secure connection… ✅ Hello there! Type ‘email’ or ‘curl /connect’ to reach me.');
+      newPrompt();
+    }
+
+    function curlCmd(cmd){
+      const path = (cmd.split(/\s+/)[1]||'');
+      if(path === '/connect'){ outHtml(`<a href="mailto:${PROFILE.contact.email}">${PROFILE.contact.email}</a>`); }
+      else { createLine('<span class="err">curl:</span> unsupported endpoint'); }
+      newPrompt();
+    }
+
+    async function sudoCmd(cmd){
+      const arg = (cmd.split(/\s+/)[1]||'').toLowerCase();
+      if(arg !== 'hire-anass'){ createLine('<span class="err">sudo:</span> command requires: hire-anass'); return newPrompt(); }
+      out('🔐 Privilege escalated. Installing value: Cloud automation, clean IaC, calm on-calls, and documentation that actually helps.');
+      newPrompt();
+    }
+
+    function catCmd(cmd){
+      const path = (cmd.split(/\s+/)[1]||'');
+      if(path === 'mission.txt'){
+        createLine('Mission:');
+        createLine('  Build reliable infra, automate toil,');
+        createLine('  and keep systems fast, observable, and secure.');
+      } else {
+        createLine(`<span class="err">cat:</span> ${escapeHtml(path||'file')} — No such file or directory`);
+      }
+      newPrompt();
+    }
+
+    // ===== general portfolio cmds =====
+    async function about(){
+      const lines = [
+        `<span class="accent">${PROFILE.name}</span> — ${PROFILE.role}`,
+        'I turn infrastructure into code, automate pipelines, and make releases reliable.',
+        'Focus: cloud-native tooling, observability, and developer experience.'
+      ];
+      for(const l of lines) createLine(l); newPrompt();
+    }
+
+    async function skills(){ createLine('Skills & tools:'); PROFILE.skills.forEach(s=> createLine('  - '+s)); newPrompt(); }
+
+    async function projects(){
+      createLine('Projects:');
+      PROFILE.projects.forEach((p,i)=>{
+        const idx = String(i+1).padStart(2,'0');
+        const tags = (p.stack||[]).map(t=>`<span class="chip">${t}</span>`).join(' ');
+        createLine(`${idx}. <a href="${p.url}" target="_blank" rel="noopener">${p.name}</a> — <span class="dim">${p.desc||''}</span> ${tags}`);
+      });
+      newPrompt();
+    }
+
+    async function contact(){
+      const c = PROFILE.contact;
+      createLine('Contact:');
+      if(c.email) createLine(`  ✉︎ <a href="mailto:${c.email}">${c.email}</a>`);
+      if(c.github) createLine(`  ⎇ <a href="${c.github}" target="_blank" rel="noopener">GitHub</a>`);
+      if(c.linkedin) createLine(`  in <a href="${c.linkedin}" target="_blank" rel="noopener">LinkedIn</a>`);
+      newPrompt();
+    }
+
+    function speedCmd(cmd){
+      const v = Number((cmd.split(/\s+/)[1]||'').trim());
+      if(Number.isFinite(v) && v>=0 && v<=30){ TYPE_SPEED = v; out('Typing speed set to '+v); }
+      else { createLine('speed: enter a value 0..30'); }
+      newPrompt();
+    }
+
+    function theme(cmd){
+      const arg = (cmd.split(/\s+/)[1]||'pro').toLowerCase();
+      const themes = {
+        pro:{ pane:'#0a0a0a', pane2:'#111', text:'#e8e8e8', dim:'#9a9a9a', prompt:'#34C759' },
+        classic:{ pane:'#0e1623', pane2:'#121b2b', text:'#d8e4f2', dim:'#9bb3ce', prompt:'#76ff7a' },
+        matrix:{ pane:'#000', pane2:'#000', text:'#d7ffd7', dim:'#7bdc87', prompt:'#00ff6a' },
+        amber:{ pane:'#0b0905', pane2:'#0e0c07', text:'#ffe6b3', dim:'#d4b87a', prompt:'#ffc061' }
+      };
+      const t = themes[arg] || themes.pro;
+      document.documentElement.style.setProperty('--pane', t.pane);
+      document.documentElement.style.setProperty('--pane-2', t.pane2);
+      document.documentElement.style.setProperty('--text', t.text);
+      document.documentElement.style.setProperty('--text-dim', t.dim);
+      document.documentElement.style.setProperty('--prompt', t.prompt);
+      out('Theme: '+arg);
+      newPrompt();
+    }
+
+    // ===== Neofetch — boot animation =====
+    async function neofetch(){
+    const art = [
+      '   ▄▄▄       ███▄    █  ▄▄▄       ██████   ██████ ',
+      '  ▒████▄     ██ ▀█   █ ▒████▄   ▒██    ▒ ▒██    ▒ ',
+      '  ▒██  ▀█▄  ▓██  ▀█ ██▒▒██  ▀█▄ ░ ▓██▄   ░ ▓██▄   ',
+      '  ░██▄▄▄▄██ ▓██▒  ▐▌██▒░██▄▄▄▄██  ▒   ██▒  ▒   ██▒',
+      '   ▓█   ▓██▒▒██░   ▓██░ ▓█   ▓██▒██████▒▒██████▒▒',
+      '   ▒▒   ▓▒█░░ ▒░   ▒ ▒  ▒▒   ▓▒█░ ▒▓▒ ▒ ░ ▒▓▒ ▒ ░',
+      '    ▒   ▒▒ ░░ ░░   ░ ▒░  ▒   ▒▒ ░ ░▒  ░ ░ ░▒  ░ ░',
+      '    ░   ▒      ░   ░ ░   ░   ▒  ░  ░  ░   ░  ░   ',
+      '        ░  ░         ░       ░  ░     ░       ░   ',
+      '                <span class="accent">ANASS</span>'
+    ];
+
+      const sys = [
+        `<span class="accent">${PROFILE.name}</span>  <span class="dim">(${PROFILE.role})</span>`,
+        `<span class="dim">OS</span>:   AnassOS 2.0 (pro)`,
+        `<span class="dim">Host</span>: Terminal`,
+        `<span class="dim">Uptime</span>: ${Math.max(0, new Date().getFullYear() - 2021)} yrs learning / building`,
+        `<span class="dim">Shell</span>: bash 5.2 (simulated)`,
+        `<span class="dim">Location</span>: ${PROFILE.location}`,
+        `<span class="dim">Packages</span>: ${120 + PROFILE.skills.length}`,
+        `<span class="dim">Skills</span>: ${PROFILE.skills.slice(0,6).join(', ')} …`
+      ];
+      const rows = Math.max(art.length, sys.length);
+      for(let i=0;i<rows;i++){
+        const left = art[i] || '';
+        const right = sys[i] || '';
+        const line = createLine('');
+        await typeHtml(line, left.padEnd(28,' ') + '   ' + right, 2);
+        await sleep(6);
+      }
+      createLine('');
+      createLine('Type <span class="accent">help</span> to list commands.');
+      newPrompt();
+    }
+
+    // ===== Built-in tests =====
+    async function selftest(){
+      createLine('Running self tests...');
+      let pass = 0, fail = 0;
+      const expect = (desc, cond)=>{ createLine(`${cond?'✅':'❌'} ${desc}`); cond?pass++:fail++; };
+
+      expect('newPrompt is defined', typeof newPrompt === 'function');
+
+      echoCmd('echo hola');
+      const echoFound = Array.from(term.querySelectorAll('.line')).slice(-10).some(n=> /^>\s*hola$/.test(n.textContent.trim()));
+      expect('echo prints text with >', echoFound);
+
+      help();
+      const helpShown = Array.from(term.querySelectorAll('.line')).slice(-20).some(n=> /Available commands:/.test(n.textContent));
+      expect('help displays commands', helpShown);
+
+      ls('ls');
+      const lsShown = Array.from(term.querySelectorAll('.line')).slice(-20).some(n=> /\/social/.test(n.textContent));
+      expect('ls lists endpoints', lsShown);
+
+      out('Test chevron');
+      const gtShown = Array.from(term.querySelectorAll('.line')).slice(-10).some(n=> /^>\s*Test chevron$/.test(n.textContent.trim()));
+      expect('green chevron prefix renders', gtShown);
+
+      createLine(`Selftest summary: ${pass} passed, ${fail} failed.`);
+      newPrompt();
+    }
+
+    // ===========================
+    // Boot
+    // ===========================
+    (async function boot(){
+      try{
+        const hello = createLine('<span class="dim">$</span> neofetch');
+        await sleep(200); await typeHtml(hello, '', 6);
+        await neofetch();
+      }catch(err){
+        createLine(`<span class="err">Boot error:</span> ${escapeHtml(String(err))}`);
+        newPrompt();
+      }
+    })();
+  </script>
+</body>
+</html>
