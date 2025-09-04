@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>macOS Monterey</title>
+    <title>Anass Operating System</title>
+    <link rel="icon" type="image/x-icon" href="assets/img/anass1.png">
  <style>
         * {
             margin: 0;
@@ -1277,7 +1278,163 @@
                 padding: 16px 0;
             }
         }
-    </style>
+.desktop-background::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(40% 60% at 20% 30%, rgba(0,122,255,.18), rgba(0,122,255,0) 60%),
+    radial-gradient(35% 55% at 80% 70%, rgba(175,82,222,.16), rgba(175,82,222,0) 60%),
+    radial-gradient(50% 70% at 60% 20%, rgba(52,199,89,.14), rgba(52,199,89,0) 60%);
+  filter: blur(40px) saturate(1.2);
+  animation: auroraFloat 22s ease-in-out infinite alternate;
+}
+@keyframes auroraFloat{
+  0%   { transform: translate3d(0,0,0) scale(1); opacity:.9; }
+  100% { transform: translate3d(-2%, -2%, 0) scale(1.03); opacity:1; }
+}
+
+.icon-image{
+  animation: softGlow 6.5s ease-in-out infinite;
+}
+@keyframes softGlow{
+  0%,100%{ box-shadow: 0 2px 8px rgba(0,0,0,.25), 0 0 0 rgba(255,255,255,0); }
+  50%    { box-shadow: 0 6px 18px rgba(0,0,0,.35), 0 0 14px rgba(255,255,255,.12); }
+}
+
+.dock-icon{ position:relative; }
+.dock-icon::after{
+  content:"";
+  position:absolute; inset:0; border-radius:inherit;
+  box-shadow: 0 0 0 0 rgba(255,255,255,.35);
+  opacity:0; pointer-events:none;
+}
+.dock-icon:hover::after{
+  opacity:1; animation:ripple .55s ease-out forwards;
+}
+@keyframes ripple{
+  0%{ box-shadow:0 0 0 0 rgba(255,255,255,.35); }
+  100%{ box-shadow:0 0 0 26px rgba(255,255,255,0); }
+}
+.dock-icon.active{
+  animation: dockPulse 4s ease-in-out infinite;
+}
+@keyframes dockPulse{
+  0%,100%{ filter: drop-shadow(0 0 0 rgba(0,122,255,0)) saturate(1); }
+  50%    { filter: drop-shadow(0 0 12px rgba(0,122,255,.35)) saturate(1.1); }
+}
+
+.control-center.active,
+.wifi-dropdown.active{
+  animation: panelIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes panelIn{
+  from{ transform: translateY(-8px) scale(.98); filter: blur(6px); opacity:0; }
+  to  { transform: translateY(0)    scale(1);   filter: blur(0);   opacity:1; }
+}
+
+.weather-temp{
+  background: linear-gradient(90deg, #fff, #d0b3ff, #7dd3fc, #fff);
+  background-size: 200% 100%;
+  -webkit-background-clip: text; background-clip:text;
+  color: transparent;
+  animation: tempShift 8s linear infinite;
+  font-weight: 300;
+}
+@keyframes tempShift{
+  to{ background-position: 200% 0; }
+}
+
+.project-card{ overflow:hidden; }
+.project-card::after{
+  content:"";
+  position:absolute;
+  top:-60%; left:-60%;
+  width:50%; height:220%;
+  transform: rotate(25deg);
+  background: linear-gradient( to right, rgba(255,255,255,0), rgba(255,255,255,.35), rgba(255,255,255,0) );
+  opacity:0; pointer-events:none;
+  transition: transform .9s ease, opacity .25s ease;
+}
+.project-card:hover::after{
+  opacity:1; transform: rotate(25deg) translateX(340%);
+}
+
+.menu-item:hover,
+.status-item:hover{
+  background: linear-gradient(180deg, rgba(0,0,0,.06), rgba(0,0,0,.04));
+  box-shadow: inset 0 1px rgba(255,255,255,.6);
+}
+
+.traffic-light{ position:relative; }
+.traffic-light::after{
+  content:"";
+  position:absolute; inset:-6px; border-radius:50%;
+  box-shadow: 0 0 0 0 rgba(0,0,0,.06);
+  opacity:0; transition: opacity .2s ease, box-shadow .2s ease;
+}
+.traffic-light:hover::after{
+  opacity:1; box-shadow: 0 0 0 6px rgba(0,0,0,.06);
+}
+
+.settings-content::-webkit-scrollbar,
+.window-content::-webkit-scrollbar{ width:10px; }
+.settings-content::-webkit-scrollbar-track,
+.window-content::-webkit-scrollbar-track{ background:rgba(0,0,0,.04); border-radius:8px; }
+.settings-content::-webkit-scrollbar-thumb,
+.window-content::-webkit-scrollbar-thumb{
+  background: linear-gradient(180deg, rgba(0,122,255,.65), rgba(88,86,214,.65));
+  border-radius:8px; border:2px solid rgba(255,255,255,.6);
+}
+
+::selection{ background: rgba(0,122,255,.25); }
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation: none !important; transition: none !important; }
+}
+
+
+.window-container.active{
+  animation: overlayFade .25s ease-out both;
+}
+@keyframes overlayFade{
+  from{ opacity:0 }
+  to  { opacity:1 }
+}
+
+#aboutWindow .window{ will-change: transform, opacity, filter; }
+#aboutWindow.active .window{
+  animation: slideInLeft .38s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes slideInLeft{
+  from{ transform: translate(-18px, 8px) scale(.98); filter: blur(6px); opacity:0; }
+  to  { transform: translate(0,0)    scale(1);   filter: blur(0);   opacity:1; }
+}
+
+#contactWindow .window{ will-change: transform, opacity, filter; }
+#contactWindow.active .window{
+  animation: slideInRight .38s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes slideInRight{
+  from{ transform: translate(18px, 8px) scale(.98); filter: blur(6px); opacity:0; }
+  to  { transform: translate(0,0)   scale(1);   filter: blur(0);   opacity:1; }
+}
+
+#projectsWindow .window{ will-change: transform, opacity, filter; transform-origin: 50% 10%; }
+#projectsWindow.active .window{
+  animation: popIn .42s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes popIn{
+  0%  { transform: translateY(14px) scale(.96); filter: blur(8px); opacity:0; }
+  60% { transform: translateY(0)    scale(1.018); filter: blur(0); opacity:1; }
+  100%{ transform: translateY(0)    scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation: none !important; transition: none !important; }
+}
+</style>
 </head>
 <body>
     <div class="desktop-background"></div>
@@ -2044,7 +2201,6 @@
            }
        }
 
-       // macOS-style notification
        function showNotification(message) {
            const notification = document.createElement('div');
            notification.style.cssText = `
