@@ -41,7 +41,59 @@
 
 
 
+        
+const targetText = "Anass Assim";
+const el = document.getElementById("decrypt");
+const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*"; 
 
+let frame = 0;
+let animation;
+let duration = 180; // total frames (~4.5s at 60fps)
+let revealFrames = []; // per-char reveal timing
+
+// assign each character a reveal frame
+function initQueue() {
+  revealFrames = [];
+  const step = duration / targetText.length;
+  for (let i = 0; i < targetText.length; i++) {
+    revealFrames.push(Math.floor(step * (i + 1))); 
+  }
+  frame = 0;
+}
+
+function animate() {
+  let output = "";
+
+  for (let i = 0; i < targetText.length; i++) {
+    if (frame >= revealFrames[i]) {
+      // letter revealed
+      output += targetText[i];
+    } else {
+      // gentle flicker (changes every ~6 frames)
+      if (frame % 6 === 0) {
+        output += chars[Math.floor(Math.random() * chars.length)];
+      } else {
+        output += el.textContent[i] || chars[Math.floor(Math.random() * chars.length)];
+      }
+    }
+  }
+
+  el.textContent = output;
+
+  if (frame < duration) {
+    frame++;
+    animation = requestAnimationFrame(animate);
+  }
+}
+
+// run on load
+function decryptEffect() {
+  initQueue();
+  cancelAnimationFrame(animation);
+  animate();
+}
+
+decryptEffect();
 
 
 
