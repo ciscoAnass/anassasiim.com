@@ -354,9 +354,15 @@
 
                 </div>
 
-                <button id="mobile-menu-button" class="md:hidden text-slate-700 hover:text-sky-600 transition-colors">
-                    <i class="fas fa-bars text-2xl"></i>
+                <button id="mobile-menu-button"
+                        type="button"
+                        class="md:hidden text-slate-700 hover:text-sky-600 transition-colors"
+                        aria-controls="mobile-menu"
+                        aria-expanded="false"
+                        aria-label="Open main menu">
+                <i class="fas fa-bars text-2xl" aria-hidden="true"></i>
                 </button>
+
             </div>
 
             <!-- Mobile Menu -->
