@@ -74,11 +74,15 @@
     </script>
 
     <style>
+        html, body {
+            max-width: 100vw;
+            overflow-x: hidden;
+        }
+
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #e0f2fe 100%);
         }
-
         /* Enhanced Navigation */
         .nav-link {
             position: relative;
@@ -356,7 +360,7 @@
 
                 <button id="mobile-menu-button"
                         type="button"
-                        class="md:hidden text-slate-700 hover:text-sky-600 transition-colors"
+                        class="md:hidden fixed top-4 right-4 p-2 rounded-lg border border-slate-200 bg-white/90 shadow-sm text-slate-700 hover:text-sky-600 hover:border-sky-300 transition-all z-[100]"
                         aria-controls="mobile-menu"
                         aria-expanded="false"
                         aria-label="Open main menu">
@@ -365,7 +369,7 @@
             </div>
 
             <!-- Mobile Menu -->
-            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 border-t border-slate-200">
+           <div id="mobile-menu" class="hidden mt-4 pb-4 border-t border-slate-200">
                 <div class="flex flex-col space-y-2 pt-4">
                     <a href="index.html#home" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Home</a>
                     <a href="index.html#skills" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Skills</a>
