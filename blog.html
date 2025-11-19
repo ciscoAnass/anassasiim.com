@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog – Anass Assim</title>
+    <link rel="icon" type="image/x-icon" href="assets/img/anass1.png">
+
+    <!-- Tailwind & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-out',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at top left, #e0f2fe 0%, #ffffff 45%, #f1f5f9 100%);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #0ea5e9, #3b82f6);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
+        }
+        .nav-link:hover::before {
+            width: 100%;
+        }
+        .nav-link:hover {
+            color: #0ea5e9;
+            transform: translateY(-2px);
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, #0ea5e9, #3b82f6, #8b5cf6);
+            z-index: 1000;
+            transition: width 0.1s ease;
+        }
+
+        .section-fade {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .section-fade.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .blog-hero-bg {
+            background: radial-gradient(circle at top left, rgba(56,189,248,0.18), transparent 55%),
+                        radial-gradient(circle at bottom right, rgba(129,140,248,0.20), transparent 55%);
+        }
+
+        .search-input {
+            transition: box-shadow 0.25s ease, transform 0.1s ease, border-color 0.25s ease;
+        }
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 12px 30px rgba(37,99,235,0.18);
+            border-color: rgba(37,99,235,0.7);
+            transform: translateY(-1px);
+        }
+
+        .category-pill {
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border-radius: 9999px;
+        }
+        .category-pill.active {
+            background: linear-gradient(90deg, #0ea5e9, #2563eb);
+            color: #ffffff;
+            box-shadow: 0 10px 25px rgba(37,99,235,0.4);
+            border-color: transparent;
+        }
+
+        .blog-card {
+            background: radial-gradient(circle at top left, rgba(56,189,248,0.10), transparent 55%),
+                        #ffffff;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+            transform-style: preserve-3d;
+        }
+        .blog-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(15,23,42,0.18);
+            border-color: rgba(59,130,246,0.45);
+        }
+
+        .magnetic {
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .badge-pill {
+            border-radius: 9999px;
+        }
+
+        .no-results {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 overflow-x-hidden">
+    <!-- Scroll Progress Indicator -->
+    <div class="scroll-indicator"></div>
+
+    <!-- Header -->
+    <header class="fixed top-0 w-full z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-white/20" id="navbar">
+        <nav class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <a href="index.html#home" class="text-2xl font-bold text-sky-600 hover:scale-105 transition-transform duration-300">
+                    Anass Assim
+                </a>
+                
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html#home" class="nav-link text-slate-700 font-medium">Home</a>
+                    <a href="index.html#skills" class="nav-link text-slate-700 font-medium">Skills</a>
+                    <a href="index.html#experience" class="nav-link text-slate-700 font-medium">Experience</a>
+                    <a href="index.html#projects" class="nav-link text-slate-700 font-medium">Projects</a>
+                    <a href="index.html#contact" class="nav-link text-slate-700 font-medium">Contact</a>
+                    <a href="blog.html" class="nav-link text-sky-600 font-semibold">Blog</a>
+                    <a href="AnassOs.html" class="nav-link text-slate-700 font-medium">AnassOS</a>
+                    <a href="Terminal.html" class="nav-link text-slate-700 font-medium">Terminal</a>
+                </div>
+
+                <button id="mobile-menu-button"
+                        type="button"
+                        class="md:hidden text-slate-700 hover:text-sky-600 transition-colors"
+                        aria-controls="mobile-menu"
+                        aria-expanded="false"
+                        aria-label="Open main menu">
+                    <i class="fas fa-bars text-2xl" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 border-t border-slate-200">
+                <div class="flex flex-col space-y-2 pt-4">
+                    <a href="index.html#home" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Home</a>
+                    <a href="index.html#skills" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Skills</a>
+                    <a href="index.html#experience" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Experience</a>
+                    <a href="index.html#projects" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Projects</a>
+                    <a href="index.html#contact" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Contact</a>
+                    <a href="AnassOs.html" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">AnassOS</a>
+                    <a href="Terminal.html" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Terminal</a>
+                    <a href="blog.html" class="text-sky-700 font-semibold py-2 px-4 rounded-lg bg-sky-50 transition-all">Blog</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main -->
+    <main class="pt-24 pb-16">
+        <!-- Minimal Hero -->
+        <section class="blog-hero-bg section-fade">
+            <div class="container mx-auto px-6">
+                <div class="max-w-3xl mx-auto text-center py-12 md:py-16">
+                    <p class="text-xs font-semibold tracking-[0.18em] uppercase text-sky-700 mb-2">
+                        Blog
+                    </p>
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">
+                        Technical articles on DevOps, systems and automation
+                    </h1>
+                    <p class="text-sm md:text-base text-slate-600 mb-8">
+                        Search and filter articles to explore how I build, automate and operate systems.
+                    </p>
+
+                    <!-- Search -->
+                    <div class="max-w-xl mx-auto mb-5">
+                        <div class="relative">
+                            <input
+                                id="blog-search"
+                                type="text"
+                                placeholder="Search by title, stack or keyword"
+                                class="search-input w-full pl-4 pr-4 py-3 rounded-2xl border border-slate-200 bg-white/90 text-sm text-slate-700 placeholder-slate-400"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Categories -->
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <button class="category-pill active px-3.5 py-1.5 text-[11px] border border-slate-200 bg-white text-slate-700" data-category="all">
+                            All topics
+                        </button>
+                        <button class="category-pill px-3.5 py-1.5 text-[11px] border border-slate-200 bg-white text-slate-700" data-category="devops">
+                            DevOps & Cloud
+                        </button>
+                        <button class="category-pill px-3.5 py-1.5 text-[11px] border border-slate-200 bg-white text-slate-700" data-category="sysadmin">
+                            System Administration
+                        </button>
+                        <button class="category-pill px-3.5 py-1.5 text-[11px] border border-slate-200 bg-white text-slate-700" data-category="security">
+                            Security
+                        </button>
+                        <button class="category-pill px-3.5 py-1.5 text-[11px] border border-slate-200 bg-white text-slate-700" data-category="automation">
+                            Automation & AI
+                        </button>
+                        <button class="category-pill px-3.5 py-1.5 text-[11px] border border-slate-200 bg-white text-slate-700" data-category="career">
+                            Career & Journey
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content layout -->
+        <section class="mt-4 section-fade">
+            <div class="container mx-auto px-6">
+                <div class="grid lg:grid-cols-[0.9fr,2fr] gap-8 lg:gap-12">
+                    <!-- Sidebar -->
+                    <aside class="space-y-6 lg:sticky lg:top-28 self-start">
+                        <div class="bg-white/90 border border-sky-100 rounded-2xl shadow-md p-5">
+                            <h3 class="text-xs font-semibold text-sky-700 uppercase tracking-wide mb-1">
+                                About this blog
+                            </h3>
+                            <p class="text-[13px] text-slate-600 mb-3">
+                                Short technical notes from real projects in DevOps, system administration and automation.
+                            </p>
+                            <ul class="text-[12px] text-slate-500 space-y-1">
+                                <li>• Focus on real configurations and problems.</li>
+                                <li>• Tools: Azure, Docker, Terraform, n8n, Python and more.</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-slate-900 text-slate-50 rounded-2xl shadow-md p-5 flex items-start gap-3">
+                            <img src="assets/img/anass1.png"
+                                 alt="Anass"
+                                 class="w-12 h-12 rounded-full object-cover border-2 border-sky-400">
+                            <div class="text-[12px] space-y-1">
+                                <p class="font-semibold text-sm">Written by Anass Assim</p>
+                                <p class="text-slate-300">
+                                    DevOps Junior and System Administrator based in Seville.
+                                </p>
+                                <div class="flex gap-3 mt-2 text-[11px]">
+                                    <a href="https://www.linkedin.com/in/anass-assim/" target="_blank" class="inline-flex items-center text-sky-300 hover:text-sky-200">
+                                        <i class="fab fa-linkedin mr-1"></i> LinkedIn
+                                    </a>
+                                    <a href="https://github.com/ciscoAnass" target="_blank" class="inline-flex items-center text-slate-300 hover:text-white">
+                                        <i class="fab fa-github mr-1"></i> GitHub
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <!-- Posts -->
+                    <section class="space-y-6">
+                        <div class="flex items-center justify-between text-[12px] text-slate-500 mb-1">
+                            <p><span id="post-count">6</span> posts</p>
+                        </div>
+
+                        <div id="blog-list" class="grid md:grid-cols-2 gap-6 xl:gap-7">
+                            <!-- Card 1 -->
+                            <article class="blog-card rounded-2xl border border-white/70 shadow-lg overflow-hidden blog-card-item"
+                                     data-category="devops,security"
+                                     data-title="How I Built RabbitChat A Privacy-First Chat App"
+                                     data-tags="fastapi,websockets,e2ee,security,python">
+                                <div class="relative h-40 overflow-hidden">
+                                    <img src="assets/img/rabbitchatblog.png"
+                                         alt="RabbitChat"
+                                         class="w-full h-full object-cover transform transition-transform duration-700 hover:scale-110">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/85 via-slate-900/15 to-transparent"></div>
+                                    <div class="absolute top-3 left-3 text-[11px] text-slate-100">
+                                        <span class="px-2.5 py-1 bg-slate-900/70 rounded-full border border-slate-700">Security</span>
+                                    </div>
+                                    <div class="absolute bottom-3 left-3 right-3 flex justify-between items-end text-[11px] text-slate-100">
+                                        <span>2025 • Security</span>
+                                        <span>~5 min read</span>
+                                    </div>
+                                </div>
+                                <div class="p-4 space-y-2">
+                                    <h2 class="text-sm font-semibold text-slate-900">
+                                        How I Built RabbitChat: A Privacy-First Chat App
+                                    </h2>
+                                    <p class="text-[12px] text-slate-600">
+                                        Ephemeral in-memory storage, WebSockets and end-to-end encryption in a minimal chat platform.
+                                    </p>
+                                    <div class="flex flex-wrap gap-1.5 text-[11px]">
+                                        <span class="px-2 py-0.5 bg-slate-900 text-slate-100 rounded-full">FastAPI</span>
+                                        <span class="px-2 py-0.5 bg-sky-100 text-sky-700 rounded-full">WebSockets</span>
+                                        <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full">Security</span>
+                                    </div>
+                                    <div class="flex justify-between items-center pt-1 text-[11px] text-slate-500">
+                                        <span>Architecture</span>
+                                        <a href="assets/blog/RabbitChat.html"
+                                           class="inline-flex items-center text-sky-600 hover:text-sky-700 font-semibold">
+                                            Read article <i class="fa-solid fa-arrow-right ml-1"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+
+                            <!-- Card 2 -->
+                            <article class="blog-card rounded-2xl border border-white/70 shadow-lg overflow-hidden blog-card-item"
+                                     data-category="devops,automation"
+                                     data-title="Turning Telegram Messages Into Smart Tickets With n8n"
+                                     data-tags="n8n,telegram,postgresql,automation,ai">
+                                <div class="relative h-40 overflow-hidden">
+                                    <img src="assets/img/n8n.png"
+                                         alt="n8n automation"
+                                         class="w-full h-full object-cover transform transition-transform duration-700 hover:scale-110">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/10 to-transparent"></div>
+                                    <div class="absolute top-3 left-3 text-[11px] text-slate-100">
+                                        <span class="px-2.5 py-1 bg-sky-500/90 rounded-full border border-sky-300">Automation</span>
+                                    </div>
+                                    <div class="absolute bottom-3 left-3 right-3 flex justify-between items-end text-[11px] text-slate-100">
+                                        <span>2025 • n8n</span>
+                                        <span>~5 min read</span>
+                                    </div>
+                                </div>
+                                <div class="p-4 space-y-2">
+                                    <h2 class="text-sm font-semibold text-slate-900">
+                                        Turning Telegram Messages into Smart Tickets with n8n
+                                    </h2>
+                                    <p class="text-[12px] text-slate-600">
+                                        How I wired Telegram to n8n and PostgreSQL with summaries and basic routing for support.
+                                    </p>
+                                    <div class="flex flex-wrap gap-1.5 text-[11px]">
+                                        <span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full">n8n</span>
+                                        <span class="px-2 py-0.5 bg-slate-100 text-slate-700 rounded-full">PostgreSQL</span>
+                                        <span class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full">AI</span>
+                                    </div>
+                                    <div class="flex justify-between items-center pt-1 text-[11px] text-slate-500">
+                                        <span>Workflows</span>
+                                        <a href="assets/blog/n8nticket.html"
+                                           class="inline-flex items-center text-sky-600 hover:text-sky-700 font-semibold">
+                                            Read article <i class="fa-solid fa-arrow-right ml-1"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+
+                            <!-- Card 3 -->
+                            <article class="blog-card rounded-2xl border border-white/70 shadow-lg overflow-hidden blog-card-item"
+                                    data-category="android,automation"
+                                    data-title="SMS2Tg – Forward Android SMS to Telegram"
+                                    data-tags="android,telegram,automation,kotlin">
+                                <div class="relative h-40 overflow-hidden">
+                                    <img src="assets/img/sms2tg.png"
+                                        alt="SMS2Tg App"
+                                        class="w-full h-full object-cover transform transition-transform duration-700 hover:scale-110">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/10 to-transparent"></div>
+                                    <div class="absolute top-3 left-3 text-[11px] text-slate-100">
+                                        <span class="px-2.5 py-1 bg-indigo-500/90 rounded-full border border-indigo-300">Android</span>
+                                    </div>
+                                    <div class="absolute bottom-3 left-3 right-3 flex justify-between items-end text-[11px] text-slate-100">
+                                        <span>2025 • Kotlin</span>
+                                        <span>~5 min read</span>
+                                    </div>
+                                </div>
+
+                                <div class="p-4 space-y-2">
+                                    <h2 class="text-sm font-semibold text-slate-900">
+                                        SMS2Tg – Forward Android SMS to Telegram
+                                    </h2>
+                                    <p class="text-[12px] text-slate-600">
+                                        A tiny Kotlin-powered Android app that forwards incoming SMS to a Telegram chat using a bot.
+                                    </p>
+
+                                    <div class="flex flex-wrap gap-1.5 text-[11px]">
+                                        <span class="px-2 py-0.5 bg-slate-900 text-slate-100 rounded-full">Kotlin</span>
+                                        <span class="px-2 py-0.5 bg-sky-100 text-sky-700 rounded-full">Android</span>
+                                        <span class="px-2 py-0.5 bg-rose-100 text-rose-700 rounded-full">Telegram</span>
+                                    </div>
+
+                                    <div class="flex justify-between items-center pt-1 text-[11px] text-slate-500">
+                                        <span>Automation</span>
+                                        <a href="/assets/blog/sms2Tg.html"
+                                        class="inline-flex items-center text-sky-600 hover:text-sky-700 font-semibold">
+                                            Read article <i class="fa-solid fa-arrow-right ml-1"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+
+
+                            <!-- Card 4 -->
+                             <article class="blog-card rounded-2xl border border-white/70 shadow-lg overflow-hidden blog-card-item"
+                                data-category="nfc,security"
+                                data-title="pynfc – NFC Toolkit for Labs & Learning"
+                                data-tags="nfc,flask,pyscard,security">
+                            <div class="relative h-40 overflow-hidden">
+                                <img src="assets/img/pynfc.png"
+                                    alt="pynfc NFC Toolkit"
+                                    class="w-full h-full object-cover transform transition-transform duration-700 hover:scale-110">
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/10 to-transparent"></div>
+                                <div class="absolute top-3 left-3 text-[11px] text-slate-100">
+                                    <span class="px-2.5 py-1 bg-indigo-500/90 rounded-full border border-indigo-300">Security</span>
+                                </div>
+                                <div class="absolute bottom-3 left-3 right-3 flex justify-between items-end text-[11px] text-slate-100">
+                                    <span>2025 • Python</span>
+                                    <span>~5 min read</span>
+                                </div>
+                            </div>
+
+                            <div class="p-4 space-y-2">
+                                <h2 class="text-sm font-semibold text-slate-900">
+                                    pynfc – A Hands-On NFC Toolkit with Flask & PySCard
+                                </h2>
+                                <p class="text-[12px] text-slate-600">
+                                    A lightweight NFC lab toolkit using Flask, PySCard and ACR122U to read, dump and write MIFARE Classic tags.
+                                </p>
+
+                                <div class="flex flex-wrap gap-1.5 text-[11px]">
+                                    <span class="px-2 py-0.5 bg-slate-900 text-slate-100 rounded-full">Python</span>
+                                    <span class="px-2 py-0.5 bg-sky-100 text-sky-700 rounded-full">Flask</span>
+                                    <span class="px-2 py-0.5 bg-rose-100 text-rose-700 rounded-full">NFC</span>
+                                </div>
+
+                                <div class="flex justify-between items-center pt-1 text-[11px] text-slate-500">
+                                    <span>Security Lab</span>
+                                    <a href="assets/blog/pynfc.html"
+                                    class="inline-flex items-center text-sky-600 hover:text-sky-700 font-semibold">
+                                        Read article <i class="fa-solid fa-arrow-right ml-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+
+                            <!-- Card 5 -->
+                        <article class="blog-card rounded-2xl border border-white/70 shadow-lg overflow-hidden blog-card-item"
+                                data-category="ai,privacy,flask"
+                                data-title="Flooky-AI – Privacy-Focused Claude Assistant"
+                                data-tags="ai,flask,claude,privacy">
+                            <div class="relative h-40 overflow-hidden">
+                                <img src="assets/img/Project-Flooky.png"
+                                    alt="Flooky AI Assistant"
+                                    class="w-full h-full object-cover transform transition-transform duration-700 hover:scale-110">
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/10 to-transparent"></div>
+
+                                <div class="absolute top-3 left-3 text-[11px] text-slate-100">
+                                    <span class="px-2.5 py-1 bg-purple-500/90 rounded-full border border-purple-300">
+                                        AI Assistant
+                                    </span>
+                                </div>
+
+                                <div class="absolute bottom-3 left-3 right-3 flex justify-between items-end text-[11px] text-slate-100">
+                                    <span>2025 • Flask</span>
+                                    <span>~5 min read</span>
+                                </div>
+                            </div>
+
+                            <div class="p-4 space-y-2">
+                                <h2 class="text-sm font-semibold text-slate-900">
+                                    Flooky-AI – A Privacy-Focused AI Assistant with Modular Brains
+                                </h2>
+
+                                <p class="text-[12px] text-slate-600">
+                                    A Claude-powered assistant with modular processors for bills, contracts, finance, videos and HR — built for privacy and self-hosting.
+                                </p>
+
+                                <div class="flex flex-wrap gap-1.5 text-[11px]">
+                                    <span class="px-2 py-0.5 bg-slate-900 text-slate-100 rounded-full">Python</span>
+                                    <span class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full">Claude</span>
+                                    <span class="px-2 py-0.5 bg-sky-100 text-sky-700 rounded-full">Flask</span>
+                                </div>
+
+                                <div class="flex justify-between items-center pt-1 text-[11px] text-slate-500">
+                                    <span>Privacy-Friendly AI</span>
+                                    <a href="assets/blog/flookyai.html"
+                                    class="inline-flex items-center text-sky-600 hover:text-sky-700 font-semibold">
+                                        Read article <i class="fa-solid fa-arrow-right ml-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+
+                            <!-- Card 6 -->
+                        <article class="blog-card rounded-2xl border border-white/70 shadow-lg overflow-hidden blog-card-item"
+                                data-category="ai,automation"
+                                data-title="n8nai – Telegram AI Bots with n8n & HTTPS"
+                                data-tags="n8n,Docker,Ngrok,Groq,Gemini,Telegram Bot">
+                            <div class="relative h-40 overflow-hidden">
+                                <img src="assets/img/n8naiblog.png"
+                                    alt="n8nai"
+                                    class="w-full h-full object-cover transform transition-transform duration-700 hover:scale-110">
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/10 to-transparent"></div>
+                                <div class="absolute top-3 left-3 text-[11px] text-slate-100">
+                                    <span class="px-2.5 py-1 bg-indigo-500/90 rounded-full border border-indigo-300">ChatOps</span>
+                                </div>
+                                <div class="absolute bottom-3 left-3 right-3 flex justify-between items-end text-[11px] text-slate-100">
+                                    <span>2025 • Automation</span>
+                                    <span>~5 min read</span>
+                                </div>
+                            </div>
+                            <div class="p-4 space-y-2">
+                                <h2 class="text-sm font-semibold text-slate-900">
+                                    n8nai – Telegram AI Bots with n8n & HTTPS
+                                </h2>
+                                <p class="text-[12px] text-slate-600">
+                                    A self-contained n8n environment running multiple Telegram AI bots over HTTPS using Docker and ngrok.
+                                </p>
+                                <div class="flex flex-wrap gap-1.5 text-[11px]">
+                                    <span class="px-2 py-0.5 bg-slate-900 text-slate-100 rounded-full">n8n</span>
+                                    <span class="px-2 py-0.5 bg-sky-100 text-sky-700 rounded-full">Docker</span>
+                                    <span class="px-2 py-0.5 bg-rose-100 text-rose-700 rounded-full">Ngrok</span>
+                                    <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full">Telegram Bot</span>
+                                </div>
+                                <div class="flex justify-between items-center pt-1 text-[11px] text-slate-500">
+                                    <span>ChatOps</span>
+                                    <a href="src/blog/n8nai.html"
+                                    class="inline-flex items-center text-sky-600 hover:text-sky-700 font-semibold">
+                                        Read article <i class="fa-solid fa-arrow-right ml-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+
+
+                        <!-- No results message -->
+                        <div id="no-results" class="no-results mt-10 text-center text-sm text-slate-500">
+                            <p class="mb-1">No posts match your search or filters.</p>
+                            <p>Try a more general keyword.</p>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-12 bg-slate-900 text-white mt-12">
+        <div class="container mx-auto px-6">
+            <div class="text-center">
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold mb-4">Anass Assim</h3>
+                    <p class="text-slate-400 max-w-md mx-auto">
+                        DevOps Junior & System Administrator passionate about creating efficient, scalable solutions.
+                    </p>
+                </div>
+
+                <div class="flex justify-center space-x-6 mb-8">
+                    <a href="https://www.linkedin.com/in/anass-assim/" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="https://github.com/ciscoAnass" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://x.com/ciscoAnass" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fa-brands fa-x-twitter"></i>
+                    </a>
+                    <a href="mailto:anass.assim.2010@gmail.com" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fas fa-envelope"></i>
+                    </a>    
+                </div>
+
+                <div class="border-t border-slate-800 pt-8">
+                    <p class="text-slate-400 text-sm">
+                        &copy; <span id="currentYear">2025</span> Anass Assim. All rights reserved.
+                    </p>
+                    <p class="text-slate-500 text-xs mt-2">
+                        Built with passion using modern web technologies
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JS -->
+    <script>
+        // Scroll progress
+        const scrollIndicator = document.querySelector('.scroll-indicator');
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const progress = (scrollTop / scrollHeight) * 100;
+            scrollIndicator.style.width = progress + '%';
+        });
+
+        // Header shadow
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 40) {
+                navbar.classList.add('shadow-lg', 'bg-white/90');
+            } else {
+                navbar.classList.remove('shadow-lg', 'bg-white/90');
+            }
+        });
+
+        // Mobile menu
+        const mobileBtn = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileBtn.addEventListener('click', () => {
+            const hidden = mobileMenu.classList.contains('hidden');
+            mobileMenu.classList.toggle('hidden');
+            mobileBtn.setAttribute('aria-expanded', String(hidden));
+        });
+
+        // Section fade-in
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            },
+            { threshold: 0.15 }
+        );
+        document.querySelectorAll('.section-fade').forEach(sec => observer.observe(sec));
+
+        // Category filter + search
+        const categoryPills = document.querySelectorAll('.category-pill');
+        const blogCards = document.querySelectorAll('.blog-card-item');
+        const searchInput = document.getElementById('blog-search');
+        const noResults = document.getElementById('no-results');
+        const postCountEl = document.getElementById('post-count');
+
+        function applyFilters() {
+            const activePill = document.querySelector('.category-pill.active');
+            const selectedCategory = activePill ? activePill.dataset.category : 'all';
+            const term = (searchInput.value || '').toLowerCase();
+
+            let visibleCount = 0;
+
+            blogCards.forEach(card => {
+                const cats = (card.dataset.category || '').split(',').map(c => c.trim());
+                const title = (card.dataset.title || '').toLowerCase();
+                const tags = (card.dataset.tags || '').toLowerCase();
+
+                const categoryMatch = selectedCategory === 'all' || cats.includes(selectedCategory);
+                const searchMatch = !term || title.includes(term) || tags.includes(term);
+
+                if (categoryMatch && searchMatch) {
+                    card.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            postCountEl.textContent = visibleCount;
+            noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+
+        categoryPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                categoryPills.forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                applyFilters();
+            });
+        });
+
+        searchInput.addEventListener('input', () => {
+            applyFilters();
+        });
+
+        // Magnetic hover for social icons
+        document.querySelectorAll('.magnetic').forEach(el => {
+            el.addEventListener('mousemove', (e) => {
+                const rect = el.getBoundingClientRect();
+                const x = (e.clientX - rect.left - rect.width / 2) / 20;
+                const y = (e.clientY - rect.top - rect.height / 2) / 20;
+                el.style.transform = `translate(${x}px, ${y}px) scale(1.1)`;
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = 'translate(0, 0) scale(1)';
+            });
+        });
+
+        // Dynamic year
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Initial filter
+        applyFilters();
+    </script>
+</body>
+</html>

@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMS2Tg – Forward Android SMS to Telegram with a Lightweight Kotlin App – Anass Assim</title>
+    <link rel="icon" type="image/x-icon" href="/assets/img/anass1.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-out',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'scale-in': 'scaleIn 0.5s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        scaleIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' }
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at top left, #e0f2fe, #ffffff 55%);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #0ea5e9, #3b82f6);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::before {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            color: #0ea5e9;
+            transform: translateY(-2px);
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, #0ea5e9, #3b82f6, #8b5cf6);
+            z-index: 1000;
+            transition: width 0.1s ease;
+        }
+
+        .article-container {
+            max-width: 960px;
+        }
+
+        .article-body p {
+            margin-bottom: 1rem;
+        }
+
+        .article-body h2 {
+            margin-top: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .article-body h3 {
+            margin-top: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .article-body code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.85em;
+            background: rgba(15,23,42,0.06);
+            padding: 0.15rem 0.35rem;
+            border-radius: 9999px;
+        }
+
+        pre.code-block {
+            background: #020617;
+            color: #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.25rem 1rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            border: 1px solid rgba(148,163,184,0.3);
+        }
+
+        pre.code-block code {
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .toc-link {
+            font-size: 0.85rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0;
+        }
+
+        .toc-link.active {
+            color: #0ea5e9;
+            font-weight: 600;
+        }
+
+        .badge-pill {
+            border-radius: 9999px;
+        }
+
+        .article-hero {
+            background: radial-gradient(circle at top left, rgba(56,189,248,0.15), transparent 55%),
+                        radial-gradient(circle at bottom right, rgba(129,140,248,0.18), transparent 55%);
+        }
+
+        .magnetic {
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ---------- OPTIONAL IMAGE BLOCK ---------- */
+        .article-image-wrapper {
+            margin: 1.75rem 0;
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid rgba(148,163,184,0.5);
+            background:
+                radial-gradient(circle at top left, rgba(56,189,248,0.10), transparent 60%),
+                #0f172a;
+        }
+
+        .article-image-wrapper img {
+            display: block;
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        .article-image-caption {
+            font-size: 0.78rem;
+            line-height: 1.4;
+            padding: 0.65rem 0.9rem;
+            background: rgba(15,23,42,0.94);
+            color: #e5e7eb;
+            border-top: 1px solid rgba(148,163,184,0.5);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .article-image-caption span {
+            opacity: 0.85;
+        }
+
+        .article-image-caption small {
+            font-size: 0.7rem;
+            color: #9ca3af;
+            white-space: nowrap;
+        }
+
+        /* ---------- MUSIC PLAYER (SIDEBAR) ---------- */
+        .reading-music-card {
+            background:
+                radial-gradient(circle at top left, rgba(56,189,248,0.18), transparent 55%),
+                #020617;
+            border-radius: 0.9rem;
+            border: 1px solid rgba(148,163,184,0.5);
+            box-shadow: 0 16px 35px rgba(15,23,42,0.7);
+        }
+
+        .player-progress-track {
+            position: relative;
+            height: 5px;
+            border-radius: 9999px;
+            background: rgba(148,163,184,0.35);
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .player-progress-fill {
+            position: absolute;
+            inset: 0;
+            width: 0%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #0ea5e9, #3b82f6, #8b5cf6);
+        }
+
+        .player-btn {
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+
+        .player-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(15,23,42,0.65);
+        }
+
+        .player-btn:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 overflow-x-hidden">
+    <div class="scroll-indicator"></div>
+    <header class="fixed top-0 w-full z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-white/20" id="navbar">
+        <nav class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/index.html#home" class="text-2xl font-bold text-sky-600 hover:scale-105 transition-transform duration-300">
+                    Anass Assim
+                </a>
+                
+                <div class="hidden md:flex space-x-8">
+                    <a href="/index.html" class="nav-link text-slate-700 font-medium">Home</a>
+                    <a href="/index.html#skills" class="nav-link text-slate-700 font-medium">Skills</a>
+                    <a href="/index.html#experience" class="nav-link text-slate-700 font-medium">Experience</a>
+                    <a href="/index.html#projects" class="nav-link text-slate-700 font-medium">Projects</a>
+                    <a href="/index.html#contact" class="nav-link text-slate-700 font-medium">Contact</a>
+                    <a href="/blog.html" class="nav-link text-sky-600 font-semibold">Blog</a>
+                    <a href="/AnassOs.html" class="nav-link text-slate-700 font-medium">AnassOS</a>
+                    <a href="/Terminal.html" class="nav-link text-slate-700 font-medium">Terminal</a>
+                </div>
+
+                <button id="mobile-menu-button"
+                        type="button"
+                        class="md:hidden text-slate-700 hover:text-sky-600 transition-colors"
+                        aria-controls="mobile-menu"
+                        aria-expanded="false"
+                        aria-label="Open main menu">
+                    <i class="fas fa-bars text-2xl" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 border-t border-slate-200">
+                <div class="flex flex-col space-y-2 pt-4">
+                    <a href="../index.html#home" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Home</a>
+                    <a href="../index.html#skills" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Skills</a>
+                    <a href="../index.html#experience" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Experience</a>
+                    <a href="../index.html#projects" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Projects</a>
+                    <a href="../index.html#contact" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Contact</a>
+                    <a href="../AnassOs.html" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">AnassOS</a>
+                    <a href="../Terminal.html" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Terminal</a>
+                    <a href="../blog.html" class="text-sky-700 font-semibold py-2 px-4 rounded-lg bg-sky-50 transition-all">Blog</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="pt-24 pb-16">
+    <!-- Hero / Meta -->
+    <section class="article-hero border-b border-slate-200">
+        <div class="max-w-6xl mx-auto px-6 py-10">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-6 text-xs text-slate-500">
+                <div class="flex items-center gap-3">
+                    <a href="/blog.html" class="inline-flex items-center text-slate-500 hover:text-sky-600">
+                        <i class="fa-solid fa-arrow-left mr-2 text-xs"></i> Back to all posts
+                    </a>
+                    <span class="hidden sm:inline-block w-px h-4 bg-slate-300"></span>
+                    <span class="inline-flex items-center gap-1">
+                        <i class="fa-regular fa-calendar"></i>
+                        <span id="post-date">2025-11-19</span>
+                    </span>
+                    <span class="inline-flex items-center gap-1">
+                        <i class="fa-regular fa-clock"></i>
+                        <span id="read-time">~10 min read</span>
+                    </span>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 bg-sky-100 text-sky-700 text-[11px] font-semibold badge-pill">
+                        <i class="fa-solid fa-tag mr-1"></i> Android
+                    </span>
+                    <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-[11px] font-semibold badge-pill">
+                        <i class="fa-solid fa-paper-plane mr-1"></i> Telegram
+                    </span>
+                    <span class="px-3 py-1 bg-slate-900 text-slate-100 text-[11px] font-semibold badge-pill">
+                        <i class="fa-solid fa-user-gear mr-1"></i> Anass Assim
+                    </span>
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-[1.6fr,1fr] gap-10 items-start">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4 leading-tight">
+                        SMS2Tg – Forward Android SMS to Telegram with a Lightweight Kotlin App
+                    </h1>
+                    <p class="text-slate-600 text-sm md:text-base max-w-2xl">
+                        In this post I document <strong>SMS2Tg</strong>: a small Android app written in Kotlin that
+                        automatically forwards incoming SMS messages to a Telegram chat using a bot. It’s ideal for
+                        remote monitoring, one-phone setups, and turning old phones into always-on SMS gateways.
+                    </p>
+                </div>
+
+                <!-- Meta JSON card -->
+                <div class="relative rounded-2xl overflow-hidden border border-white shadow-xl bg-slate-900 text-slate-100">
+                    <div class="px-4 py-2 flex items-center justify-between border-b border-slate-800">
+                        <div class="flex items-center space-x-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                        </div>
+                        <span class="text-[11px] text-slate-300">post_meta.json</span>
+                        <i class="fa-solid fa-code text-[11px] text-slate-400"></i>
+                    </div>
+                    <div class="p-4 font-mono text-[11px] leading-relaxed">
+<pre class="whitespace-pre-wrap"><code>{
+  "title": "SMS2Tg – Forward Android SMS to Telegram",
+  "status": "published",
+  "topics": ["android", "automation", "telegram"],
+  "stack": ["Kotlin", "Android", "Telegram Bot API", "Coroutines"],
+  "repo": "github.com/ciscoAnass/sms2Tg",
+  "location": "Seville, Spain"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Article content + TOC + MUSIC PLAYER -->
+    <section class="mt-8">
+        <div class="max-w-6xl mx-auto px-6 flex flex-col lg:flex-row gap-10">
+
+            <!-- Main article -->
+            <article class="article-container mx-auto lg:mx-0 lg:flex-1">
+                <div class="article-body text-sm md:text-[15px] text-slate-700 leading-relaxed" id="article-content">
+
+                    <!-- 1 -->
+                    <h2 id="intro" class="text-xl font-semibold text-slate-900">
+                        1. Why SMS2Tg – Turning a Phone into a Tiny Gateway
+                    </h2>
+                    <p>
+                        SMS is still everywhere: banks, VPNs, monitoring systems, old IoT gear, random services that
+                        never heard of webhooks. But reading all those messages from one single device is painful,
+                        especially if that device lives at home plugged into a charger.
+                    </p>
+                    <p>
+                        I wanted something that:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li>Runs on <strong>a cheap Android phone</strong> that can stay at home.</li>
+                        <li><strong>Forwards every SMS</strong> to a Telegram chat I actually watch.</li>
+                        <li>Uses a <strong>real Telegram bot</strong> instead of weird bridges.</li>
+                        <li>Is written in <strong>modern Kotlin</strong> with proper permission handling and coroutines. :contentReference[oaicite:1]{index=1}</li>
+                    </ul>
+                    <p class="mt-3">
+                        <strong>SMS2Tg</strong> is that app: a tiny, focused forwarder that listens for incoming SMS via
+                        a <code>BroadcastReceiver</code> and pushes them to Telegram over HTTPS using your bot token and
+                        chat ID. No extra backend; the Android device <em>is</em> the backend. :contentReference[oaicite:2]{index=2}
+                    </p>
+
+                    <!-- 2 -->
+                    <h2 id="background" class="mt-8 text-xl font-semibold text-slate-900">
+                        2. Architecture, Features & Project Structure
+                    </h2>
+                    <p>
+                        The project is intentionally small and Android-native: everything lives inside one app module
+                        written in Kotlin, based on modern Android APIs. :contentReference[oaicite:3]{index=3}
+                    </p>
+
+                    <h3 class="mt-4 text-base font-semibold text-slate-900">
+                        2.1 High-Level Flow
+                    </h3>
+                    <p>
+                        The end-to-end flow is:
+                    </p>
+                    <ol class="list-decimal pl-6 space-y-1">
+                        <li>An SMS arrives on the device.</li>
+                        <li>Android fires a broadcast with <code>Telephony.Sms.Intents.SMS_RECEIVED_ACTION</code>.</li>
+                        <li><code>SmsReceiver.kt</code> receives it, extracts sender + body, and formats a message.</li>
+                        <li><code>TelegramForwarder.kt</code> sends an HTTPS request to the Telegram Bot API. :contentReference[oaicite:4]{index=4}</li>
+                        <li>You see the SMS instantly in your Telegram chat.</li>
+                    </ol>
+
+                    <p class="mt-3">
+                        Nothing is stored long-term; the app just reads, forwards and logs what happened.
+                    </p>
+
+                    <h3 class="mt-6 text-base font-semibold text-slate-900">
+                        2.2 Core Features
+                    </h3>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li><strong>Automatic SMS forwarding</strong> – no manual forwarding or copy-paste. :contentReference[oaicite:5]{index=5}</li>
+                        <li><strong>Telegram integration</strong> – messages land in a bot chat you control.</li>
+                        <li><strong>Modern permission handling</strong> – uses <code>ActivityResultContracts</code> to ask for SMS permissions at runtime. :contentReference[oaicite:6]{index=6}</li>
+                        <li><strong>Coroutines for networking</strong> – HTTP calls run on <code>Dispatchers.IO</code> so the main thread stays responsive. :contentReference[oaicite:7]{index=7}</li>
+                        <li><strong>goAsync()</strong> in the receiver to keep work running safely even as the broadcast finishes. :contentReference[oaicite:8]{index=8}</li>
+                        <li><strong>Lightweight & efficient</strong> – no heavy services constantly running; only reacts on SMS broadcasts. :contentReference[oaicite:9]{index=9}</li>
+                    </ul>
+
+                    <p class="mt-3">
+                        The repo itself looks like a standard Gradle Android project:
+                    </p>
+
+<pre class="code-block mt-4"><code>sms2Tg/
+├─ app/
+│  ├─ src/main/java/.../MainActivity.kt
+│  ├─ src/main/java/.../SmsReceiver.kt
+│  ├─ src/main/java/.../TelegramForwarder.kt
+│  ├─ src/main/res/layout/activity_main.xml
+│  └─ src/main/AndroidManifest.xml
+├─ build.gradle.kts
+├─ settings.gradle.kts
+├─ gradle.properties
+├─ README.md
+└─ LICENSE</code></pre>
+
+                    <!-- Article image -->
+                    <div class="article-image-wrapper">
+                        <img src="/assets/img/sms2tg.png"
+                             alt="sms2Tg architecture – Android phone forwarding SMS to Telegram bot">
+                        <div class="article-image-caption">
+                            <span>Conceptual view – the Android phone is the gateway: SIM → SMS2Tg → Telegram Bot → your chat.</span>
+                        </div>
+                    </div>
+
+                    <!-- 3 -->
+                    <h2 id="implementation" class="mt-8 text-xl font-semibold text-slate-900">
+                        3. Implementation – From Clone to First Forwarded SMS
+                    </h2>
+                    <p>
+                        SMS2Tg is meant to be easy to build from source in Android Studio and run on any device with
+                        API 23+ and Internet connectivity. :contentReference[oaicite:10]{index=10}
+                    </p>
+
+                    <h3 class="mt-4 text-base font-semibold text-slate-900">
+                        3.1 Prerequisites
+                    </h3>
+                    <p>
+                        Before you start, you need: :contentReference[oaicite:11]{index=11}
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li>An Android device on <strong>API 23+</strong> (Android 6 or newer).</li>
+                        <li>A Telegram account.</li>
+                        <li>A Telegram <strong>bot token</strong> from <code>@BotFather</code>.</li>
+                        <li>Your personal <strong>chat ID</strong> (using <code>getUpdates</code> or a helper bot). :contentReference[oaicite:12]{index=12}</li>
+                        <li>Android Studio installed.</li>
+                    </ul>
+
+                    <h3 class="mt-6 text-base font-semibold text-slate-900">
+                        3.2 Clone & Open in Android Studio
+                    </h3>
+                    <p>
+                        Standard workflow:
+                    </p>
+
+<pre class="code-block mt-3"><code>git clone https://github.com/ciscoAnass/sms2Tg.git
+cd sms2Tg</code></pre>
+
+                    <p class="mt-3">
+                        Then open the folder in <strong>Android Studio</strong>. Gradle will sync and pull dependencies:
+                    </p>
+
+<pre class="code-block mt-3"><code>dependencies {
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.activity:activity-ktx:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+}</code></pre>
+
+                    <p class="mt-3">
+                        These give you Material UI components, modern activity helpers, and Kotlin coroutines for
+                        non-blocking network calls. :contentReference[oaicite:13]{index=13}
+                    </p>
+
+                    <h3 class="mt-6 text-base font-semibold text-slate-900">
+                        3.3 Configure Your Bot Token & Chat ID
+                    </h3>
+                    <p>
+                        In <code>SmsReceiver.kt</code>, there’s a small companion object that you customize with your
+                        own bot token and chat ID: :contentReference[oaicite:14]{index=14}
+                    </p>
+
+<pre class="code-block mt-3"><code>companion object {
+    const val BOT_TOKEN = "YOUR_BOT_TOKEN_HERE"
+    const val CHAT_ID = "YOUR_CHAT_ID_HERE"
+}</code></pre>
+
+                    <p class="mt-3">
+                        For a quick personal setup, hard-coding these values is fine. If you want to make SMS2Tg more
+                        “productized”, you can later move them into a settings screen or encrypted local storage.
+                    </p>
+
+                    <h3 class="mt-6 text-base font-semibold text-slate-900">
+                        3.4 Permissions & Manifest
+                    </h3>
+                    <p>
+                        The app needs three core permissions: :contentReference[oaicite:15]{index=15}
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li><code>INTERNET</code> – to call the Telegram Bot API.</li>
+                        <li><code>RECEIVE_SMS</code> – to receive incoming SMS broadcasts.</li>
+                        <li><code>READ_SMS</code> – to read the message content. :contentReference[oaicite:16]{index=16}</li>
+                    </ul>
+
+                    <p class="mt-3">
+                        They live in <code>AndroidManifest.xml</code>, and at runtime <code>MainActivity</code> uses
+                        <code>ActivityResultContracts.RequestMultiplePermissions</code> to request them in a modern,
+                        user-friendly way. :contentReference[oaicite:17]{index=17}
+                    </p>
+
+                    <h3 class="mt-6 text-base font-semibold text-slate-900">
+                        3.5 Listening & Forwarding – Under the Hood
+                    </h3>
+                    <p>
+                        The real magic is in <code>SmsReceiver.kt</code> and <code>TelegramForwarder.kt</code>: :contentReference[oaicite:18]{index=18}
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li><strong>SmsReceiver.kt</strong>
+                            <ul class="list-disc pl-6 space-y-1 mt-1">
+                                <li>Registered in the manifest for <code>SMS_RECEIVED</code> broadcasts.</li>
+                                <li>Extracts sender number and SMS body from the intent.</li>
+                                <li>Calls <code>goAsync()</code> to safely do async work after <code>onReceive</code>.</li>
+                                <li>Hands the formatted message to <code>TelegramForwarder</code>.</li>
+                            </ul>
+                        </li>
+                        <li><strong>TelegramForwarder.kt</strong>
+                            <ul class="list-disc pl-6 space-y-1 mt-1">
+                                <li>Builds the Telegram <code>sendMessage</code> URL with bot token + chat ID.</li>
+                                <li>URL-encodes content so special characters survive HTTP. :contentReference[oaicite:19]{index=19}</li>
+                                <li>Uses a coroutine on <code>Dispatchers.IO</code> to make the network request.</li>
+                                <li>Catches exceptions to avoid crashes when the network is flaky.</li>
+                            </ul>
+                        </li>
+                        <li><strong>MainActivity.kt</strong>
+                            <ul class="list-disc pl-6 space-y-1 mt-1">
+                                <li>Shows a simple status about permissions.</li>
+                                <li>Triggers permission requests when needed.</li>
+                                <li>Acts as a small “control panel” for the app. :contentReference[oaicite:20]{index=20}</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <p class="mt-3">
+                        Once all that is in place, you just build & run the app on your device, grant permissions,
+                        send a test SMS to the SIM, and watch it appear in Telegram.
+                    </p>
+
+                    <!-- 4 -->
+                    <h2 id="lessons" class="mt-8 text-xl font-semibold text-slate-900">
+                        4. Design Choices & Lessons Learned
+                    </h2>
+                    <p>
+                        Even a “simple” SMS forwarder forces a few design decisions, especially around permissions,
+                        reliability and privacy.
+                    </p>
+
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li><strong>Keep everything on-device.</strong> There is no extra server; the phone does
+                            everything. That’s simpler to operate and better for privacy.
+                        </li>
+                        <li><strong>Use modern permission APIs.</strong> Relying on
+                            <code>ActivityResultContracts</code> means the flow survives rotations and future Android
+                            changes better than older patterns.
+                        </li>
+                        <li><strong>Asynchronous by default.</strong> Network calls never block the main thread and are
+                            wrapped in try/catch, so a temporary network issue doesn’t kill the app.
+                        </li>
+                        <li><strong>Crash-safe BroadcastReceiver.</strong> Using <code>goAsync()</code> plus coroutines
+                            is safer than doing all work directly in <code>onReceive</code>.
+                        </li>
+                        <li><strong>Minimal storage footprint.</strong> No local DB, no complex caching; messages are
+                            forwarded and then only live in your Telegram history.
+                        </li>
+                    </ul>
+
+                    <p class="mt-3">
+                        From a DevOps/SRE mindset, it also opens a fun path: you can turn an old Android phone into a
+                        tiny gateway that “bridges” legacy SMS-based alerts into your modern chat workflows.
+                    </p>
+
+                    <!-- 5 -->
+                    <h2 id="next" class="mt-8 text-xl font-semibold text-slate-900">
+                        5. Next Steps – Ideas to Evolve SMS2Tg
+                    </h2>
+                    <p>
+                        SMS2Tg deliberately stays small, but there are obvious directions to extend it in future
+                        versions:
+                    </p>
+
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li><strong>In-app configuration:</strong> UI to edit bot token, chat ID, and filters instead of
+                            editing <code>SmsReceiver.kt</code>.
+                        </li>
+                        <li><strong>Filtering rules:</strong> forward only from certain senders, or tag messages with
+                            emojis based on patterns (bank, VPN, monitoring, etc.).
+                        </li>
+                        <li><strong>Multi-destination support:</strong> choose between one-on-one chat, group, or
+                            channels dynamically.
+                        </li>
+                        <li><strong>Delivery status & retries:</strong> store a tiny queue of messages that failed to
+                            send and retry later if the network was down.
+                        </li>
+                        <li><strong>Simple analytics:</strong> count messages per sender and expose a tiny dashboard for
+                            nerdy stats.
+                        </li>
+                    </ul>
+
+                    <p class="mt-3">
+                        For now, it does one job well: take every SMS that lands on a device and push it into a place
+                        where you actually see it – your Telegram.
+                    </p>
+
+                    <div class="mt-8 p-4 rounded-2xl border border-sky-100 bg-sky-50/60 text-sm text-slate-700">
+                        <p class="font-semibold text-slate-900 mb-1">
+                            💬 Want to extend SMS2Tg?
+                        </p>
+                        <p>
+                            Reach out on LinkedIn or by email if you want to add filters, dashboards, or hook SMS2Tg
+                            into a bigger monitoring setup. I’m always happy to talk about Android, Telegram bots and
+                            automation.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Bottom meta -->
+                <div class="mt-10 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-slate-900 text-slate-100 badge-pill">
+                            <i class="fa-solid fa-hashtag mr-1"></i> sms2tg
+                        </span>
+                        <span class="px-3 py-1 bg-sky-100 text-sky-700 badge-pill">
+                            android
+                        </span>
+                        <span class="px-3 py-1 bg-emerald-100 text-emerald-700 badge-pill">
+                            telegram
+                        </span>
+                        <span class="px-3 py-1 bg-indigo-100 text-indigo-700 badge-pill">
+                            automation
+                        </span>
+                        <span class="px-3 py-1 bg-amber-100 text-amber-700 badge-pill">
+                            monitoring
+                        </span>
+                    </div>
+                    <button id="copy-link-btn"
+                            class="inline-flex items-center px-3 py-2 border border-slate-200 rounded-xl text-[11px] hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-link mr-2 text-slate-500"></i>
+                        Copy article link
+                    </button>
+                </div>
+            </article>
+
+            <!-- Sidebar: Music player + Guide map + Author -->
+            <aside class="lg:w-72 lg:flex-shrink-0">
+                <div class="sticky top-28 space-y-6">
+
+                    <!-- MUSIC PLAYER (SIDEBAR) -->
+                    <div class="reading-music-card p-4 text-slate-50">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center shadow-inner">
+                                    <i class="fa-solid fa-music text-sky-400 text-sm"></i>
+                                </div>
+                                <div class="space-y-0.5">
+                                    <p class="text-[10px] uppercase tracking-[0.18em] text-slate-400">
+                                        Reading soundtrack
+                                    </p>
+                                    <p class="text-xs font-semibold text-slate-50">
+                                        On-Call Alerts – Chill Mix
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between mb-2">
+                            <button id="play-pause-btn"
+                                    class="player-btn w-9 h-9 rounded-full bg-sky-500 hover:bg-sky-400 flex items-center justify-center border border-sky-300 shadow">
+                                <i id="play-pause-icon" class="fa-solid fa-play text-[11px] text-slate-950 ml-0.5"></i>
+                            </button>
+                            <div class="flex items-center gap-2 text-[10px] text-slate-300">
+                                <span id="player-current-time">0:00</span>
+                                <span class="text-slate-600">/</span>
+                                <span id="player-duration">0:00</span>
+                            </div>
+                        </div>
+
+                        <div class="player-progress-track rounded-full overflow-hidden" id="player-progress-track">
+                            <div class="player-progress-fill" id="player-progress"></div>
+                        </div>
+
+                        <p class="mt-2 text-[10px] text-slate-400">
+                            Optional: press play for a calm background mix while you wire your SMS gateway.
+                        </p>
+
+                        <audio id="reading-audio" src="/assets/mp3/reading.mp3" preload="metadata"></audio>
+                    </div>
+
+                    <div class="bg-white/95 border border-slate-200 rounded-2xl shadow-md p-5">
+                        <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-[0.18em] mb-3 flex items-center gap-2">
+                            <span class="inline-flex w-6 h-6 rounded-full bg-sky-100 text-sky-600 items-center justify-center text-xs">
+                                <i class="fa-solid fa-sitemap"></i>
+                            </span>
+                            SMS2Tg Guide Map
+                        </h3>
+
+                        <nav class="space-y-1.5 text-[13px] md:text-sm">
+                            <!-- 1 -->
+                            <a href="#intro"
+                               class="toc-link flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition">
+                                <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+                                <div class="flex flex-col leading-tight">
+                                    <span class="font-semibold">1. Why SMS2Tg?</span>
+                                    <span class="text-[11px] text-slate-500">Phone as an SMS gateway</span>
+                                </div>
+                            </a>
+
+                            <!-- 2 -->
+                            <a href="#background"
+                               class="toc-link flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                <div class="flex flex-col leading-tight">
+                                    <span class="font-semibold">2. Architecture & Features</span>
+                                    <span class="text-[11px] text-slate-500">Kotlin, receiver, Telegram</span>
+                                </div>
+                            </a>
+
+                            <!-- 3 -->
+                            <a href="#implementation"
+                               class="toc-link flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition">
+                                <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+                                <div class="flex flex-col leading-tight">
+                                    <span class="font-semibold">3. Implementation</span>
+                                    <span class="text-[11px] text-slate-500">Clone → config → first SMS</span>
+                                </div>
+                            </a>
+
+                            <!-- 4 -->
+                            <a href="#lessons"
+                               class="toc-link flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                                <div class="flex flex-col leading-tight">
+                                    <span class="font-semibold">4. Design lessons</span>
+                                    <span class="text-[11px] text-slate-500">Permissions, reliability</span>
+                                </div>
+                            </a>
+
+                            <!-- 5 -->
+                            <a href="#next"
+                               class="toc-link flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition">
+                                <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                                <div class="flex flex-col leading-tight">
+                                    <span class="font-semibold">5. Roadmap</span>
+                                    <span class="text-[11px] text-slate-500">Filters, retries, analytics</span>
+                                </div>
+                            </a>
+                        </nav>
+                    </div>
+
+                    <!-- Author card -->
+                    <div class="bg-slate-900 text-slate-50 rounded-2xl p-4 flex items-center gap-3 shadow-md">
+                        <img src="/assets/img/anass4.png"
+                             alt="Anass"
+                             class="w-12 h-12 rounded-full border-2 border-sky-400 object-cover">
+                        <div class="text-xs">
+                            <p class="font-semibold">Written by Anass Assim</p>
+                            <p class="text-slate-300">
+                                DevOps Junior &amp; SysAdmin based in Seville.  
+                                Likes turning old devices into useful gateways and automation tools.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </section>
+</main>
+
+    <!-- Footer -->
+    <footer class="py-12 bg-slate-900 text-white mt-10">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center">
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold mb-4">Anass Assim</h3>
+                    <p class="text-slate-400 max-w-md mx-auto">
+                        DevOps Junior & System Administrator passionate about creating efficient, scalable solutions.
+                    </p>
+                </div>
+
+                <div class="flex justify-center space-x-6 mb-8">
+                    <a href="https://www.linkedin.com/in/anass-assim/" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="https://github.com/ciscoAnass" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://x.com/ciscoAnass" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fa-brands fa-x-twitter"></i>
+                    </a>
+                    <a href="mailto:anass.assim.2010@gmail.com" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fas fa-envelope"></i>
+                    </a>    
+                </div>
+
+                <div class="border-t border-slate-800 pt-8">
+                    <p class="text-slate-400 text-sm">
+                        &copy; <span id="currentYear">2025</span> Anass Assim. All rights reserved.
+                    </p>
+                    <p class="text-slate-500 text-xs mt-2">
+                        Built with passion using modern web technologies
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Inline JS -->
+    <script>
+        // Scroll indicator
+        const scrollBar = document.querySelector('.scroll-indicator');
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const progress = (scrollTop / scrollHeight) * 100;
+            scrollBar.style.width = progress + '%';
+        });
+
+        // Header shadow
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 40) {
+                navbar.classList.add('shadow-lg', 'bg-white/90');
+            } else {
+                navbar.classList.remove('shadow-lg', 'bg-white/90');
+            }
+        });
+
+        // Mobile menu
+        const mobileBtn = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileBtn.addEventListener('click', () => {
+            const hidden = mobileMenu.classList.contains('hidden');
+            mobileMenu.classList.toggle('hidden');
+            mobileBtn.setAttribute('aria-expanded', String(hidden));
+        });
+
+        // Dynamic year
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Copy link
+        const copyBtn = document.getElementById('copy-link-btn');
+        copyBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(window.location.href);
+                copyBtn.innerHTML = '<i class="fa-solid fa-check mr-2 text-emerald-500"></i> Link copied!';
+                setTimeout(() => {
+                    copyBtn.innerHTML = '<i class="fa-solid fa-link mr-2 text-slate-500"></i>Copy article link';
+                }, 2000);
+            } catch (e) {
+                console.error(e);
+            }
+        });
+
+        // TOC active highlighting
+        const tocLinks = document.querySelectorAll('.toc-link');
+        const headings = [...document.querySelectorAll('#article-content h2, #article-content h3')];
+
+        const tocObserver = new IntersectionObserver(
+            (entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        tocLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+                        });
+                    }
+                });
+            },
+            { rootMargin: "0px 0px -60% 0px", threshold: 0.1 }
+        );
+
+        headings.forEach(h => tocObserver.observe(h));
+
+        // Magnetic effect
+        document.querySelectorAll('.magnetic').forEach(el => {
+            el.addEventListener('mousemove', (e) => {
+                const rect = el.getBoundingClientRect();
+                const x = (e.clientX - rect.left - rect.width / 2) / 20;
+                const y = (e.clientY - rect.top - rect.height / 2) / 20;
+                el.style.transform = `translate(${x}px, ${y}px) scale(1.1)`;
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = 'translate(0, 0) scale(1)';
+            });
+        });
+
+        // Simple reading-time estimate based on content length
+        (function computeReadTime() {
+            const text = document.getElementById('article-content').innerText || '';
+            const words = text.trim().split(/\s+/).length;
+            const minutes = Math.max(1, Math.round(words / 200)); // ~200 wpm
+            document.getElementById('read-time').textContent = `~${minutes} min read`;
+        })();
+
+        // MUSIC PLAYER LOGIC
+        const audio = document.getElementById('reading-audio');
+        const playBtn = document.getElementById('play-pause-btn');
+        const playIcon = document.getElementById('play-pause-icon');
+        const progressTrack = document.getElementById('player-progress-track');
+        const progressFill = document.getElementById('player-progress');
+        const currentTimeEl = document.getElementById('player-current-time');
+        const durationEl = document.getElementById('player-duration');
+
+        function formatTime(sec) {
+            if (isNaN(sec) || sec === Infinity) return "0:00";
+            const minutes = Math.floor(sec / 60);
+            const seconds = Math.floor(sec % 60);
+            return minutes + ":" + String(seconds).padStart(2, '0');
+        }
+
+        if (audio) {
+            audio.addEventListener('loadedmetadata', () => {
+                durationEl.textContent = formatTime(audio.duration);
+            });
+
+            audio.addEventListener('timeupdate', () => {
+                currentTimeEl.textContent = formatTime(audio.currentTime);
+                if (audio.duration) {
+                    const percent = (audio.currentTime / audio.duration) * 100;
+                    progressFill.style.width = percent + '%';
+                }
+            });
+
+            audio.addEventListener('ended', () => {
+                playIcon.classList.remove('fa-pause');
+                playIcon.classList.add('fa-play');
+            });
+
+            playBtn.addEventListener('click', () => {
+                if (audio.paused) {
+                    audio.play().catch(err => console.error(err));
+                    playIcon.classList.remove('fa-play');
+                    playIcon.classList.add('fa-pause');
+                } else {
+                    audio.pause();
+                    playIcon.classList.remove('fa-pause');
+                    playIcon.classList.add('fa-play');
+                }
+            });
+
+            progressTrack.addEventListener('click', (e) => {
+                const rect = progressTrack.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const ratio = clickX / rect.width;
+                if (audio.duration) {
+                    audio.currentTime = Math.min(Math.max(ratio * audio.duration, 0), audio.duration);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
