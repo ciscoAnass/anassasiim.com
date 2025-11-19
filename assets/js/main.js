@@ -71,48 +71,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const decryptEl = document.getElementById("decrypt");
   if (decryptEl) decryptEffect(decryptEl);
 
-  // --- Mobile menu toggle
-  const mobileMenuButton = document.getElementById('mobile-menu-button');
-  const mobileMenu = document.getElementById('mobile-menu');
-
-  if (mobileMenuButton && mobileMenu) {
-    mobileMenuButton.addEventListener('click', () => {
-      const isHidden = mobileMenu.classList.toggle('hidden');
-      const icon = mobileMenuButton.querySelector('i');
-      if (icon) {
-        icon.classList.toggle('fa-bars', isHidden);
-        icon.classList.toggle('fa-xmark', !isHidden); // FA v6
-      }
-      mobileMenuButton.setAttribute('aria-expanded', String(!isHidden));
-    });
-
-    // Close on link click
-    document.querySelectorAll('#mobile-menu a').forEach(link => {
-      link.addEventListener('click', () => {
-        mobileMenu.classList.add('hidden');
-        const icon = mobileMenuButton.querySelector('i');
-        if (icon) {
-          icon.classList.add('fa-bars');
-          icon.classList.remove('fa-xmark');
-        }
-        mobileMenuButton.setAttribute('aria-expanded', 'false');
-      });
-    });
-
-    // Close with ESC
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') {
-        mobileMenu.classList.add('hidden');
-        const icon = mobileMenuButton.querySelector('i');
-        if (icon) {
-          icon.classList.add('fa-bars');
-          icon.classList.remove('fa-xmark');
-        }
-        mobileMenuButton.setAttribute('aria-expanded', 'false');
-      }
-    });
-  }
-
   // --- Scroll progress indicator
   function updateScrollProgress() {
     const scrollTop = window.pageYOffset;
@@ -316,3 +274,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
   console.log('🚀 Portfolio loaded with fixed mobile menu + animations');
 });
+        // Header shadow
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 40) {
+                navbar.classList.add('shadow-lg', 'bg-white/90');
+            } else {
+                navbar.classList.remove('shadow-lg', 'bg-white/90');
+            }
+        });
+
+        // Mobile menu
+        const mobileBtn = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileBtn.addEventListener('click', () => {
+            const hidden = mobileMenu.classList.contains('hidden');
+            mobileMenu.classList.toggle('hidden');
+            mobileBtn.setAttribute('aria-expanded', String(hidden));
+        });
