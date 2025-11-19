@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[Blog Title] – Anass Assim</title>
+    <link rel="icon" type="image/x-icon" href="/assets/img/anass1.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-out',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'scale-in': 'scaleIn 0.5s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        scaleIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' }
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at top left, #e0f2fe, #ffffff 55%);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #0ea5e9, #3b82f6);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::before {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            color: #0ea5e9;
+            transform: translateY(-2px);
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, #0ea5e9, #3b82f6, #8b5cf6);
+            z-index: 1000;
+            transition: width 0.1s ease;
+        }
+
+        .article-container {
+            max-width: 960px;
+        }
+
+        .article-body p {
+            margin-bottom: 1rem;
+        }
+
+        .article-body h2 {
+            margin-top: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .article-body h3 {
+            margin-top: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .article-body code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.85em;
+            background: rgba(15,23,42,0.06);
+            padding: 0.15rem 0.35rem;
+            border-radius: 9999px;
+        }
+
+        pre.code-block {
+            background: #020617;
+            color: #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.25rem 1rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            border: 1px solid rgba(148,163,184,0.3);
+        }
+
+        pre.code-block code {
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .toc-link {
+            font-size: 0.85rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0;
+        }
+
+        .toc-link.active {
+            color: #0ea5e9;
+            font-weight: 600;
+        }
+
+        .badge-pill {
+            border-radius: 9999px;
+        }
+
+        .article-hero {
+            background: radial-gradient(circle at top left, rgba(56,189,248,0.15), transparent 55%),
+                        radial-gradient(circle at bottom right, rgba(129,140,248,0.18), transparent 55%);
+        }
+
+        .magnetic {
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ---------- OPTIONAL IMAGE BLOCK ---------- */
+        .article-image-wrapper {
+            margin: 1.75rem 0;
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid rgba(148,163,184,0.5);
+            background:
+                radial-gradient(circle at top left, rgba(56,189,248,0.10), transparent 60%),
+                #0f172a;
+        }
+
+        .article-image-wrapper img {
+            display: block;
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        .article-image-caption {
+            font-size: 0.78rem;
+            line-height: 1.4;
+            padding: 0.65rem 0.9rem;
+            background: rgba(15,23,42,0.94);
+            color: #e5e7eb;
+            border-top: 1px solid rgba(148,163,184,0.5);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .article-image-caption span {
+            opacity: 0.85;
+        }
+
+        .article-image-caption small {
+            font-size: 0.7rem;
+            color: #9ca3af;
+            white-space: nowrap;
+        }
+
+        /* ---------- MUSIC PLAYER (SIDEBAR) ---------- */
+        .reading-music-card {
+            background:
+                radial-gradient(circle at top left, rgba(56,189,248,0.18), transparent 55%),
+                #020617;
+            border-radius: 0.9rem;
+            border: 1px solid rgba(148,163,184,0.5);
+            box-shadow: 0 16px 35px rgba(15,23,42,0.7);
+        }
+
+        .player-progress-track {
+            position: relative;
+            height: 5px;
+            border-radius: 9999px;
+            background: rgba(148,163,184,0.35);
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .player-progress-fill {
+            position: absolute;
+            inset: 0;
+            width: 0%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #0ea5e9, #3b82f6, #8b5cf6);
+        }
+
+        .player-btn {
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+
+        .player-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(15,23,42,0.65);
+        }
+
+        .player-btn:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 overflow-x-hidden">
+    <div class="scroll-indicator"></div>
+    <header class="fixed top-0 w-full z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-white/20" id="navbar">
+        <nav class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/index.html#home" class="text-2xl font-bold text-sky-600 hover:scale-105 transition-transform duration-300">
+                    Anass Assim
+                </a>
+                
+                <div class="hidden md:flex space-x-8">
+                    <a href="/index.html" class="nav-link text-slate-700 font-medium">Home</a>
+                    <a href="/index.html#skills" class="nav-link text-slate-700 font-medium">Skills</a>
+                    <a href="/index.html#experience" class="nav-link text-slate-700 font-medium">Experience</a>
+                    <a href="/index.html#projects" class="nav-link text-slate-700 font-medium">Projects</a>
+                    <a href="/index.html#contact" class="nav-link text-slate-700 font-medium">Contact</a>
+                    <a href="/blog.html" class="nav-link text-sky-600 font-semibold">Blog</a>
+                    <a href="/AnassOs.html" class="nav-link text-slate-700 font-medium">AnassOS</a>
+                    <a href="/Terminal.html" class="nav-link text-slate-700 font-medium">Terminal</a>
+                </div>
+
+                <button id="mobile-menu-button"
+                        type="button"
+                        class="md:hidden text-slate-700 hover:text-sky-600 transition-colors"
+                        aria-controls="mobile-menu"
+                        aria-expanded="false"
+                        aria-label="Open main menu">
+                    <i class="fas fa-bars text-2xl" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 border-t border-slate-200">
+                <div class="flex flex-col space-y-2 pt-4">
+                    <a href="../index.html#home" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Home</a>
+                    <a href="../index.html#skills" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Skills</a>
+                    <a href="../index.html#experience" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Experience</a>
+                    <a href="../index.html#projects" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Projects</a>
+                    <a href="../index.html#contact" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Contact</a>
+                    <a href="../AnassOs.html" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">AnassOS</a>
+                    <a href="../Terminal.html" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Terminal</a>
+                    <a href="../blog.html" class="text-sky-700 font-semibold py-2 px-4 rounded-lg bg-sky-50 transition-all">Blog</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="pt-24 pb-16">
+        <!-- Hero / Meta -->
+        <section class="article-hero border-b border-slate-200">
+            <div class="max-w-6xl mx-auto px-6 py-10">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6 text-xs text-slate-500">
+                    <div class="flex items-center gap-3">
+                        <a href="/blog.html" class="inline-flex items-center text-slate-500 hover:text-sky-600">
+                            <i class="fa-solid fa-arrow-left mr-2 text-xs"></i> Back to all posts
+                        </a>
+                        <span class="hidden sm:inline-block w-px h-4 bg-slate-300"></span>
+                        <span class="inline-flex items-center gap-1">
+                            <i class="fa-regular fa-calendar"></i>
+                            <span id="post-date">2025-01-01</span>
+                        </span>
+                        <span class="inline-flex items-center gap-1">
+                            <i class="fa-regular fa-clock"></i>
+                            <span id="read-time">~7 min read</span>
+                        </span>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-sky-100 text-sky-700 text-[11px] font-semibold badge-pill">
+                            <i class="fa-solid fa-tag mr-1"></i> DevOps
+                        </span>
+                        <span class="px-3 py-1 bg-slate-900 text-slate-100 text-[11px] font-semibold badge-pill">
+                            <i class="fa-solid fa-user-gear mr-1"></i> Anass Assim
+                        </span>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-[1.6fr,1fr] gap-10 items-start">
+                    <div>
+                        <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4 leading-tight">
+                            [ Blog Title – catchy text]
+                        </h1>
+                        <p class="text-slate-600 text-sm md:text-base max-w-2xl">
+                            subtitle to quickly explain what the reader will get: a story, a tutorial, or a deep-dive into one of your projects.
+                        </p>
+                    </div>
+
+                    <div class="relative rounded-2xl overflow-hidden border border-white shadow-xl bg-slate-900 text-slate-100">
+                        <div class="px-4 py-2 flex items-center justify-between border-b border-slate-800">
+                            <div class="flex items-center space-x-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                            </div>
+                            <span class="text-[11px] text-slate-300">post_meta.json</span>
+                            <i class="fa-solid fa-code text-[11px] text-slate-400"></i>
+                        </div>
+                        <div class="p-4 font-mono text-[11px] leading-relaxed">
+<pre class="whitespace-pre-wrap"><code>{
+  "title": "Your Post Title",
+  "status": "draft",
+  "topics": ["devops", "sysadmin"],
+  "stack": ["Azure", "Docker", "Ansible"],
+  "location": "Seville, Spain"
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Article content + TOC + MUSIC PLAYER -->
+        <section class="mt-8">
+            <div class="max-w-6xl mx-auto px-6 flex flex-col lg:flex-row gap-10">
+                <!-- Main article -->
+                <article class="article-container mx-auto lg:mx-0 lg:flex-1">
+                    <div class="article-body text-sm md:text-[15px] text-slate-700 leading-relaxed" id="article-content">
+                        <h2 id="intro" class="text-xl font-semibold text-slate-900">1. Introduction</h2>
+                        <p>
+                            Start with a short story or a problem you were facing. Set the context: what were you trying to achieve,
+                            what was broken, or what were you curious about?
+                        </p>
+                        <p>
+                            Make it personal and specific. Mention real tools (like <code>Docker</code>, <code>Azure</code>,
+                            <code>Grafana</code>, <code>n8n</code>, etc.) and the environment (side projects, work, labs…).
+                        </p>
+
+                        <h2 id="background" class="text-xl font-semibold text-slate-900">2. Background & Stack</h2>
+                        <p>
+                            Here you can describe the stack you used for this post:
+                            for example <code>FastAPI</code>, <code>PostgreSQL</code>, <code>Azure DevOps</code>,
+                            <code>Terraform</code>, or <code>Docker Compose</code>.
+                        </p>
+                        <p>
+                            Explain why you chose these tools and what trade-offs you accepted.
+                        </p>
+
+                        <pre class="code-block mt-4"><code># Example: simple Docker Compose file for a small service
+version: "3.9"
+
+services:
+  api:
+    image: my-api:latest
+    ports:
+      - "8000:8000"
+    environment:
+      ENVIRONMENT: "production"
+      LOG_LEVEL: "info"</code></pre>
+
+                        <h2 id="implementation" class="text-xl font-semibold text-slate-900">3. Implementation / Walkthrough</h2>
+                        <p>
+                            Break down the main steps. Use sub-headings when needed and show
+                            small, focused code snippets instead of huge dumps.
+                        </p>
+
+                        <!-- OPTIONAL IMAGE BLOCK INSIDE ARTICLE -->
+                        <div class="article-image-wrapper">
+                            <img src="/assets/img/sample-blog-image.png"
+                                 alt="Example screenshot – replace with your own settings or diagram">
+                            <div class="article-image-caption">
+                                <span>Example screenshot – e.g. tool settings, dashboard or architecture diagram.</span>
+                                <small>Replace or remove if not needed.</small>
+                            </div>
+                        </div>
+
+                        <h3 id="step-1" class="text-base font-semibold text-slate-900">3.1 Step 1 – Define the problem clearly</h3>
+                        <p>
+                            Describe the problem with enough detail that someone else could recognize it in their own work.
+                        </p>
+
+                        <h3 id="step-2" class="text-base font-semibold text-slate-900">3.2 Step 2 – Design the solution</h3>
+                        <p>
+                            Diagrams, bullet-points and trade-offs fit nicely here. Talk about latency, reliability,
+                            security, simplicity… whatever matters for this story.
+                        </p>
+
+                        <h2 id="lessons" class="text-xl font-semibold text-slate-900">4. Lessons Learned</h2>
+                        <ul class="list-disc pl-6 space-y-1">
+                            <li>What surprised you?</li>
+                            <li>What went wrong and how you fixed it.</li>
+                            <li>What you would do differently next time.</li>
+                        </ul>
+
+                        <h2 id="next" class="text-xl font-semibold text-slate-900">5. What’s Next?</h2>
+                        <p>
+                            End with clear next steps: ideas you want to try, improvements you haven’t implemented yet,
+                            or questions you’re still exploring.
+                        </p>
+
+                        <div class="mt-8 p-4 rounded-2xl border border-sky-100 bg-sky-50/60 text-sm text-slate-700">
+                            <p class="font-semibold text-slate-900 mb-1">
+                                💬 Want to discuss this?
+                            </p>
+                            <p>
+                                Reach out on LinkedIn or send me an email. I’m always happy to talk about DevOps, sysadmin, automation and side projects.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Bottom meta -->
+                    <div class="mt-10 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-slate-900 text-slate-100 badge-pill">
+                                <i class="fa-solid fa-hashtag mr-1"></i> devops
+                            </span>
+                            <span class="px-3 py-1 bg-sky-100 text-sky-700 badge-pill">
+                                sysadmin
+                            </span>
+                            <span class="px-3 py-1 bg-emerald-100 text-emerald-700 badge-pill">
+                                automation
+                            </span>
+                        </div>
+                        <button id="copy-link-btn"
+                                class="inline-flex items-center px-3 py-2 border border-slate-200 rounded-xl text-[11px] hover:bg-slate-100 transition">
+                            <i class="fa-solid fa-link mr-2 text-slate-500"></i>
+                            Copy article link
+                        </button>
+                    </div>
+                </article>
+
+                <!-- TOC / Side info + MUSIC PLAYER -->
+                <aside class="lg:w-64 lg:flex-shrink-0">
+                    <div class="sticky top-28 space-y-6">
+
+                        <!-- MUSIC PLAYER (SIDEBAR) -->
+                        <div class="reading-music-card p-4 text-slate-50">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center">
+                                        <i class="fa-solid fa-music text-sky-400 text-sm"></i>
+                                    </div>
+                                    <div class="space-y-0.5">
+                                        <p class="text-[10px] uppercase tracking-[0.18em] text-slate-400">
+                                            Reading music
+                                        </p>
+                                        <p class="text-xs font-semibold text-slate-50">
+                                            Calm Jazz – Instrumental
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between mb-2">
+                                <button id="play-pause-btn"
+                                        class="player-btn w-8 h-8 rounded-full bg-sky-500 hover:bg-sky-400 flex items-center justify-center border border-sky-300">
+                                    <i id="play-pause-icon" class="fa-solid fa-play text-[11px] text-slate-950 ml-0.5"></i>
+                                </button>
+                                <div class="flex items-center gap-2 text-[10px] text-slate-300">
+                                    <span id="player-current-time">0:00</span>
+                                    <span class="text-slate-600">/</span>
+                                    <span id="player-duration">0:00</span>
+                                </div>
+                            </div>
+
+                            <div class="player-progress-track" id="player-progress-track">
+                                <div class="player-progress-fill" id="player-progress"></div>
+                            </div>
+
+                            <p class="mt-2 text-[10px] text-slate-400">
+                                Optional. Press play if you like low-volume jazz while reading.
+                            </p>
+
+                            <audio id="reading-audio" src="/assets/mp3/reading.mp3" preload="metadata"></audio>
+                        </div>
+
+                        <div class="bg-white/90 border border-slate-200 rounded-2xl shadow-sm p-4">
+                            <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+                                On this page
+                            </h3>
+                            <nav class="space-y-1 text-xs">
+                                <a href="#intro" class="toc-link">
+                                    <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                                    <span>1. Introduction</span>
+                                </a>
+                                <a href="#background" class="toc-link">
+                                    <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                                    <span>2. Background & Stack</span>
+                                </a>
+                                <a href="#implementation" class="toc-link">
+                                    <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                                    <span>3. Implementation</span>
+                                </a>
+                                <a href="#lessons" class="toc-link">
+                                    <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                                    <span>4. Lessons Learned</span>
+                                </a>
+                                <a href="#next" class="toc-link">
+                                    <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                                    <span>5. What’s Next?</span>
+                                </a>
+                            </nav>
+                        </div>
+
+                        <div class="bg-slate-900 text-slate-50 rounded-2xl p-4 flex items-center gap-3 shadow-md">
+                            <img src="/assets/img/anass4.png"
+                                 alt="Anass"
+                                 class="w-12 h-12 rounded-full border-2 border-sky-400 object-cover">
+                            <div class="text-xs">
+                                <p class="font-semibold">Written by Anass Assim</p>
+                                <p class="text-slate-300">
+                                    DevOps Junior & SysAdmin based in Seville.  
+                                    Loves automation, secure systems and small useful tools.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-12 bg-slate-900 text-white mt-10">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center">
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold mb-4">Anass Assim</h3>
+                    <p class="text-slate-400 max-w-md mx-auto">
+                        DevOps Junior & System Administrator passionate about creating efficient, scalable solutions.
+                    </p>
+                </div>
+
+                <div class="flex justify-center space-x-6 mb-8">
+                    <a href="https://www.linkedin.com/in/anass-assim/" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="https://github.com/ciscoAnass" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://x.com/ciscoAnass" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fa-brands fa-x-twitter"></i>
+                    </a>
+                    <a href="mailto:anass.assim.2010@gmail.com" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fas fa-envelope"></i>
+                    </a>    
+                </div>
+
+                <div class="border-t border-slate-800 pt-8">
+                    <p class="text-slate-400 text-sm">
+                        &copy; <span id="currentYear">2025</span> Anass Assim. All rights reserved.
+                    </p>
+                    <p class="text-slate-500 text-xs mt-2">
+                        Built with passion using modern web technologies
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Inline JS -->
+    <script>
+        // Scroll indicator
+        const scrollBar = document.querySelector('.scroll-indicator');
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const progress = (scrollTop / scrollHeight) * 100;
+            scrollBar.style.width = progress + '%';
+        });
+
+        // Header shadow
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 40) {
+                navbar.classList.add('shadow-lg', 'bg-white/90');
+            } else {
+                navbar.classList.remove('shadow-lg', 'bg-white/90');
+            }
+        });
+
+        // Mobile menu
+        const mobileBtn = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileBtn.addEventListener('click', () => {
+            const hidden = mobileMenu.classList.contains('hidden');
+            mobileMenu.classList.toggle('hidden');
+            mobileBtn.setAttribute('aria-expanded', String(hidden));
+        });
+
+        // Dynamic year
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Copy link
+        const copyBtn = document.getElementById('copy-link-btn');
+        copyBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(window.location.href);
+                copyBtn.innerHTML = '<i class="fa-solid fa-check mr-2 text-emerald-500"></i> Link copied!';
+                setTimeout(() => {
+                    copyBtn.innerHTML = '<i class="fa-solid fa-link mr-2 text-slate-500"></i>Copy article link';
+                }, 2000);
+            } catch (e) {
+                console.error(e);
+            }
+        });
+
+        // TOC active highlighting
+        const tocLinks = document.querySelectorAll('.toc-link');
+        const headings = [...document.querySelectorAll('#article-content h2, #article-content h3')];
+
+        const tocObserver = new IntersectionObserver(
+            (entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        tocLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+                        });
+                    }
+                });
+            },
+            { rootMargin: "0px 0px -60% 0px", threshold: 0.1 }
+        );
+
+        headings.forEach(h => tocObserver.observe(h));
+
+        // Magnetic effect
+        document.querySelectorAll('.magnetic').forEach(el => {
+            el.addEventListener('mousemove', (e) => {
+                const rect = el.getBoundingClientRect();
+                const x = (e.clientX - rect.left - rect.width / 2) / 20;
+                const y = (e.clientY - rect.top - rect.height / 2) / 20;
+                el.style.transform = `translate(${x}px, ${y}px) scale(1.1)`;
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = 'translate(0, 0) scale(1)';
+            });
+        });
+
+        // Simple reading-time estimate based on content length
+        (function computeReadTime() {
+            const text = document.getElementById('article-content').innerText || '';
+            const words = text.trim().split(/\s+/).length;
+            const minutes = Math.max(1, Math.round(words / 200)); // ~200 wpm
+            document.getElementById('read-time').textContent = `~${minutes} min read`;
+        })();
+
+        // MUSIC PLAYER LOGIC
+        const audio = document.getElementById('reading-audio');
+        const playBtn = document.getElementById('play-pause-btn');
+        const playIcon = document.getElementById('play-pause-icon');
+        const progressTrack = document.getElementById('player-progress-track');
+        const progressFill = document.getElementById('player-progress');
+        const currentTimeEl = document.getElementById('player-current-time');
+        const durationEl = document.getElementById('player-duration');
+
+        function formatTime(sec) {
+            if (isNaN(sec) || sec === Infinity) return "0:00";
+            const minutes = Math.floor(sec / 60);
+            const seconds = Math.floor(sec % 60);
+            return minutes + ":" + String(seconds).padStart(2, '0');
+        }
+
+        if (audio) {
+            audio.addEventListener('loadedmetadata', () => {
+                durationEl.textContent = formatTime(audio.duration);
+            });
+
+            audio.addEventListener('timeupdate', () => {
+                currentTimeEl.textContent = formatTime(audio.currentTime);
+                if (audio.duration) {
+                    const percent = (audio.currentTime / audio.duration) * 100;
+                    progressFill.style.width = percent + '%';
+                }
+            });
+
+            audio.addEventListener('ended', () => {
+                playIcon.classList.remove('fa-pause');
+                playIcon.classList.add('fa-play');
+            });
+
+            playBtn.addEventListener('click', () => {
+                if (audio.paused) {
+                    audio.play().catch(err => console.error(err));
+                    playIcon.classList.remove('fa-play');
+                    playIcon.classList.add('fa-pause');
+                } else {
+                    audio.pause();
+                    playIcon.classList.remove('fa-pause');
+                    playIcon.classList.add('fa-play');
+                }
+            });
+
+            progressTrack.addEventListener('click', (e) => {
+                const rect = progressTrack.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const ratio = clickX / rect.width;
+                if (audio.duration) {
+                    audio.currentTime = Math.min(Math.max(ratio * audio.duration, 0), audio.duration);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

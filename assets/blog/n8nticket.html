@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>n8nticket – Secure Telegram → Ticket Automation with n8n, Postgres & Caddy – Anass Assim</title>
+    <link rel="icon" type="image/x-icon" href="/assets/img/anass1.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-out',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'scale-in': 'scaleIn 0.5s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        scaleIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' }
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at top left, #e0f2fe, #ffffff 55%);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #0ea5e9, #3b82f6);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::before {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            color: #0ea5e9;
+            transform: translateY(-2px);
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, #0ea5e9, #3b82f6, #8b5cf6);
+            z-index: 1000;
+            transition: width 0.1s ease;
+        }
+
+        .article-container {
+            max-width: 960px;
+        }
+
+        .article-body p {
+            margin-bottom: 1rem;
+        }
+
+        .article-body h2 {
+            margin-top: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .article-body h3 {
+            margin-top: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .article-body code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.85em;
+            background: rgba(15,23,42,0.06);
+            padding: 0.15rem 0.35rem;
+            border-radius: 9999px;
+        }
+
+        pre.code-block {
+            background: #020617;
+            color: #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.25rem 1rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            border: 1px solid rgba(148,163,184,0.3);
+        }
+
+        pre.code-block code {
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .toc-link {
+            font-size: 0.85rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0;
+        }
+
+        .toc-link.active {
+            color: #0ea5e9;
+            font-weight: 600;
+        }
+
+        .badge-pill {
+            border-radius: 9999px;
+        }
+
+        .article-hero {
+            background: radial-gradient(circle at top left, rgba(56,189,248,0.15), transparent 55%),
+                        radial-gradient(circle at bottom right, rgba(129,140,248,0.18), transparent 55%);
+        }
+
+        .magnetic {
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ---------- OPTIONAL IMAGE BLOCK ---------- */
+        .article-image-wrapper {
+            margin: 1.75rem 0;
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid rgba(148,163,184,0.5);
+            background:
+                radial-gradient(circle at top left, rgba(56,189,248,0.10), transparent 60%),
+                #0f172a;
+        }
+
+        .article-image-wrapper img {
+            display: block;
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        .article-image-caption {
+            font-size: 0.78rem;
+            line-height: 1.4;
+            padding: 0.65rem 0.9rem;
+            background: rgba(15,23,42,0.94);
+            color: #e5e7eb;
+            border-top: 1px solid rgba(148,163,184,0.5);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .article-image-caption span {
+            opacity: 0.85;
+        }
+
+        .article-image-caption small {
+            font-size: 0.7rem;
+            color: #9ca3af;
+            white-space: nowrap;
+        }
+
+        /* ---------- MUSIC PLAYER (SIDEBAR) ---------- */
+        .reading-music-card {
+            background:
+                radial-gradient(circle at top left, rgba(56,189,248,0.18), transparent 55%),
+                #020617;
+            border-radius: 0.9rem;
+            border: 1px solid rgba(148,163,184,0.5);
+            box-shadow: 0 16px 35px rgba(15,23,42,0.7);
+        }
+
+        .player-progress-track {
+            position: relative;
+            height: 5px;
+            border-radius: 9999px;
+            background: rgba(148,163,184,0.35);
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .player-progress-fill {
+            position: absolute;
+            inset: 0;
+            width: 0%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #0ea5e9, #3b82f6, #8b5cf6);
+        }
+
+        .player-btn {
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+
+        .player-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(15,23,42,0.65);
+        }
+
+        .player-btn:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 overflow-x-hidden">
+    <div class="scroll-indicator"></div>
+    <header class="fixed top-0 w-full z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-white/20" id="navbar">
+        <nav class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/index.html#home" class="text-2xl font-bold text-sky-600 hover:scale-105 transition-transform duration-300">
+                    Anass Assim
+                </a>
+                
+                <div class="hidden md:flex space-x-8">
+                    <a href="/index.html" class="nav-link text-slate-700 font-medium">Home</a>
+                    <a href="/index.html#skills" class="nav-link text-slate-700 font-medium">Skills</a>
+                    <a href="/index.html#experience" class="nav-link text-slate-700 font-medium">Experience</a>
+                    <a href="/index.html#projects" class="nav-link text-slate-700 font-medium">Projects</a>
+                    <a href="/index.html#contact" class="nav-link text-slate-700 font-medium">Contact</a>
+                    <a href="/blog.html" class="nav-link text-sky-600 font-semibold">Blog</a>
+                    <a href="/AnassOs.html" class="nav-link text-slate-700 font-medium">AnassOS</a>
+                    <a href="/Terminal.html" class="nav-link text-slate-700 font-medium">Terminal</a>
+                </div>
+
+                <button id="mobile-menu-button"
+                        type="button"
+                        class="md:hidden text-slate-700 hover:text-sky-600 transition-colors"
+                        aria-controls="mobile-menu"
+                        aria-expanded="false"
+                        aria-label="Open main menu">
+                    <i class="fas fa-bars text-2xl" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 border-t border-slate-200">
+                <div class="flex flex-col space-y-2 pt-4">
+                    <a href="../index.html#home" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Home</a>
+                    <a href="../index.html#skills" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Skills</a>
+                    <a href="../index.html#experience" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Experience</a>
+                    <a href="../index.html#projects" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Projects</a>
+                    <a href="../index.html#contact" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Contact</a>
+                    <a href="../AnassOs.html" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">AnassOS</a>
+                    <a href="../Terminal.html" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Terminal</a>
+                    <a href="../blog.html" class="text-sky-700 font-semibold py-2 px-4 rounded-lg bg-sky-50 transition-all">Blog</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="pt-24 pb-16">
+ 
+
+    <!-- Hero / Meta -->
+    <section class="article-hero border-b border-slate-200">
+        <div class="max-w-6xl mx-auto px-6 py-10">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-6 text-xs text-slate-500">
+                <div class="flex items-center gap-3">
+                    <a href="/blog.html" class="inline-flex items-center text-slate-500 hover:text-sky-600">
+                        <i class="fa-solid fa-arrow-left mr-2 text-xs"></i> Back to all posts
+                    </a>
+                    <span class="hidden sm:inline-block w-px h-4 bg-slate-300"></span>
+                    <span class="inline-flex items-center gap-1">
+                        <i class="fa-regular fa-calendar"></i>
+                        <span id="post-date">2025-11-19</span>
+                    </span>
+                    <span class="inline-flex items-center gap-1">
+                        <i class="fa-regular fa-clock"></i>
+                        <span id="read-time">~10 min read</span>
+                    </span>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 bg-sky-100 text-sky-700 text-[11px] font-semibold badge-pill">
+                        <i class="fa-solid fa-tag mr-1"></i> DevOps
+                    </span>
+                    <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-[11px] font-semibold badge-pill">
+                        <i class="fa-solid fa-robot mr-1"></i> ChatOps
+                    </span>
+                    <span class="px-3 py-1 bg-slate-900 text-slate-100 text-[11px] font-semibold badge-pill">
+                        <i class="fa-solid fa-user-gear mr-1"></i> Anass Assim
+                    </span>
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-[1.6fr,1fr] gap-10 items-start">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4 leading-tight">
+                        n8nticket – Secure Telegram → Ticket Automation with n8n, Postgres &amp; Caddy
+                    </h1>
+                    <p class="text-slate-600 text-sm md:text-base max-w-2xl">
+                        This article documents how I built <strong>n8nticket</strong>: a small but opinionated
+                        stack that turns Telegram messages into real tickets in PostgreSQL using
+                        <code>n8n</code>, <code>Caddy</code>, and internal TLS. It’s designed as a
+                        starter you can clone, tweak, and put in front of your own on-call team.
+                    </p>
+                </div>
+
+                <!-- Meta JSON card -->
+                <div class="relative rounded-2xl overflow-hidden border border-white shadow-xl bg-slate-900 text-slate-100">
+                    <div class="px-4 py-2 flex items-center justify-between border-b border-slate-800">
+                        <div class="flex items-center space-x-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                        </div>
+                        <span class="text-[11px] text-slate-300">post_meta.json</span>
+                        <i class="fa-solid fa-code text-[11px] text-slate-400"></i>
+                    </div>
+                    <div class="p-4 font-mono text-[11px] leading-relaxed">
+<pre class="whitespace-pre-wrap"><code>{
+  "title": "n8nticket – Secure Telegram → Ticket Automation",
+  "status": "published",
+  "topics": ["devops", "chatops", "automation"],
+  "stack": ["Docker", "n8n", "PostgreSQL", "Caddy", "Telegram Bot"],
+  "repo": "github.com/ciscoAnass/n8nticket",
+  "location": "Seville, Spain"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Article content + TOC + MUSIC PLAYER -->
+    <section class="mt-8">
+        <div class="max-w-6xl mx-auto px-6 flex flex-col lg:flex-row gap-10">
+
+            <!-- Main article -->
+            <article class="article-container mx-auto lg:mx-0 lg:flex-1">
+                <div class="article-body text-sm md:text-[15px] text-slate-700 leading-relaxed" id="article-content">
+
+                    <!-- 1 -->
+                    <h2 id="intro" class="text-xl font-semibold text-slate-900">
+                        1. From Noisy Telegram Chats to Real Tickets
+                    </h2>
+                    <p>
+                        If you’ve ever handled support or internal IT through a <strong>Telegram group</strong>,
+                        you know the pattern: someone drops a problem, a short discussion happens, and then
+                        the message gets buried under GIFs and “thanks 🙏”.
+                    </p>
+                    <p>
+                        It works for a while, but as soon as you want to answer questions like
+                        <em>“how many tickets did we close this week?”</em> or
+                        <em>“what issues hit the VPN most often?”</em>, you’re stuck scrolling.
+                    </p>
+                    <p>
+                        <strong>n8nticket</strong> is my attempt to keep the convenience of chat
+                        while adding just enough structure:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li>Users talk to a Telegram bot instead of flooding a group.</li>
+                        <li>The bot collects a few fields (name, ID, title, description, priority).</li>
+                        <li>n8n validates and enriches the data.</li>
+                        <li>A ticket is written into <code>PostgreSQL</code> with a real
+                            <code>ticket_id</code>, timestamps, and status.
+                        </li>
+                    </ul>
+                    <p class="mt-3">
+                        The result: your workflow still feels like ChatOps, but you can now build
+                        dashboards, reports, and automations on top of a clean database.
+                    </p>
+
+                    <!-- 2 -->
+                    <h2 id="background" class="mt-8 text-xl font-semibold text-slate-900">
+                        2. Architecture &amp; Stack Overview
+                    </h2>
+                    <p>
+                        The repository lives at
+                        <a href="https://github.com/ciscoAnass/n8nticket"
+                           class="text-sky-600 hover:text-sky-500 font-medium"
+                           target="_blank" rel="noopener">
+                            github.com/ciscoAnass/n8nticket
+                        </a>, and it’s intentionally small: one <code>docker-compose.yml</code>,
+                        a <code>Caddyfile</code>, an <code>init.sql</code> for the database,
+                        a shell script to set the Telegram webhook, and an n8n workflow to import.
+                    </p>
+
+                    <p class="mt-3">
+                        At a high level:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li><strong>Telegram Bot</strong> – the user talks to this instead of a noisy group.</li>
+                        <li><strong>Caddy</strong> – public HTTPS reverse proxy, takes traffic on <code>:443</code>.</li>
+                        <li><strong>n8n</strong> – automation engine with a Telegram Trigger + Postgres nodes.</li>
+                        <li><strong>PostgreSQL</strong> – stores a <code>tickets</code> table with constraints and a trigger.</li>
+                    </ul>
+
+                    <p class="mt-3">
+                        Here’s the repo tree you get after cloning:
+                    </p>
+
+<pre class="code-block mt-4"><code>.
+├── Caddyfile
+├── docker-compose.yml
+├── n8n/
+│   └── workflows/
+│       └── telegram_inbound.json
+├── scripts/
+│   └── set_webhook.sh
+├── sql/
+│   └── init.sql
+└── ssl/
+    ├── ca.crt
+    ├── ca.key
+    ├── ca.srl
+    ├── n8n.crt
+    ├── n8n.csr
+    └── n8n.key</code></pre>
+
+                    <!-- Article image -->
+                    <div class="article-image-wrapper">
+                        <img src="/assets/img/n8nticketblog.png"
+                             alt="Diagram of n8nticket – Telegram → Caddy → n8n → Postgres pipeline">
+                        <div class="article-image-caption">
+                            <span>High-level view: Telegram bot &rarr; Caddy (HTTPS) &rarr; n8n workflow &rarr; Postgres tickets.</span>
+                        </div>
+                    </div>
+
+                    <!-- 3 -->
+                    <h2 id="implementation" class="mt-8 text-xl font-semibold text-slate-900">
+                        3. Implementation – From Clone to First Ticket
+                    </h2>
+                    <p>
+                        Let’s go step by step: clone the repo, configure the stack, and send the first test ticket.
+                    </p>
+
+                    <h3 id="step-1" class="mt-4 text-base font-semibold text-slate-900">
+                        3.1 Clone, configure <code>.env</code> and bring up the stack
+                    </h3>
+                    <p>
+                        First, clone the repository and copy the example environment file:
+                    </p>
+
+<pre class="code-block mt-3"><code>git clone https://github.com/ciscoAnass/n8nticket.git
+cd n8nticket
+
+cp .env.example .env
+# Edit .env with your values</code></pre>
+
+                    <p class="mt-3">
+                        Key things to check inside <code>.env</code>:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li>Postgres settings: user, password, database name.</li>
+                        <li><code>N8N_HOST</code> and <code>N8N_WEBHOOK_URL</code>: the public hostname
+                            that Caddy will serve (can be an ngrok URL while testing).
+                        </li>
+                        <li><code>N8N_ENCRYPTION_KEY</code>: a secret for n8n (32 chars).</li>
+                        <li>Telegram details: <code>TELEGRAM_BOT_TOKEN</code> and <code>ADMIN_CHAT_ID</code>.</li>
+                        <li><code>CADDY_EMAIL</code> for automatic TLS certificates.</li>
+                    </ul>
+
+                    <p class="mt-3">
+                        Then generate the internal TLS material for the hop between Caddy and n8n:
+                    </p>
+
+<pre class="code-block mt-3"><code>mkdir -p ssl
+
+# 1) Internal CA
+openssl genrsa -out ssl/ca.key 4096
+openssl req -x509 -new -key ssl/ca.key -days 3650 -sha256 \
+  -subj "/CN=n8n-internal-ca" -out ssl/ca.crt
+
+# 2) n8n server cert (CN=n8n)
+openssl genrsa -out ssl/n8n.key 2048
+openssl req -new -key ssl/n8n.key -subj "/CN=n8n" -out ssl/n8n.csr
+openssl x509 -req -in ssl/n8n.csr -CA ssl/ca.crt -CAkey ssl/ca.key -CAcreateserial \
+  -days 825 -sha256 -extfile &lt;(printf "subjectAltName=DNS:n8n") -out ssl/n8n.crt</code></pre>
+
+                    <p class="mt-3">
+                        Now start everything with Docker:
+                    </p>
+
+<pre class="code-block mt-3"><code>docker compose up -d
+docker compose ps</code></pre>
+
+                    <p class="mt-3">
+                        At this point:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li>Postgres is initialized with a <code>tickets</code> table and a trigger
+                            that maintains <code>resolving_date</code> based on <code>status</code>.
+                        </li>
+                        <li>n8n is running behind Caddy on HTTPS.</li>
+                        <li>The n8n UI should be reachable at <code>https://$N8N_HOST</code>.</li>
+                    </ul>
+
+                    <h3 id="step-2" class="mt-6 text-base font-semibold text-slate-900">
+                        3.2 Telegram bot, webhook and n8n workflow
+                    </h3>
+                    <p>
+                        The second piece is connecting Telegram and n8n so chat messages can
+                        trigger the ticket workflow.
+                    </p>
+                    <ol class="list-decimal pl-6 space-y-1">
+                        <li>Create a bot with <strong>@BotFather</strong> and copy the bot token
+                            into <code>TELEGRAM_BOT_TOKEN</code> in <code>.env</code>.
+                        </li>
+                        <li>Get your admin chat ID by sending <code>/start</code> to the bot and
+                            calling Telegram’s <code>getUpdates</code> API.
+                        </li>
+                        <li>Run the provided script (or call the API yourself) to set the bot’s webhook
+                            to your public <code>N8N_WEBHOOK_URL</code>.
+                        </li>
+                    </ol>
+
+                    <p class="mt-3">
+                        Inside the n8n UI:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li>Import <code>n8n/workflows/telegram_inbound.json</code>.</li>
+                        <li>Configure the Telegram and Postgres credentials using the same values from <code>.env</code>.</li>
+                        <li>Activate the workflow.</li>
+                    </ul>
+
+                    <p class="mt-3">
+                        From the user’s perspective, the flow is simple:
+                    </p>
+                    <ol class="list-decimal pl-6 space-y-1">
+                        <li>They send a message to the Telegram bot.</li>
+                        <li>The bot walks them through a few questions (who you are, what’s broken, priority).</li>
+                        <li>Optionally, a language model suggests a quick fix or context.</li>
+                        <li>n8n writes a new row into the <code>tickets</code> table and sends a summary back.</li>
+                    </ol>
+
+                    <!-- 4 -->
+                    <h2 id="lessons" class="mt-8 text-xl font-semibold text-slate-900">
+                        4. Design Choices &amp; Lessons Learned
+                    </h2>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li><strong>Keep it self-hosted.</strong> Running n8n and Postgres yourself means
+                            your ticket data never leaves your infra.
+                        </li>
+                        <li><strong>Make AI optional.</strong> The automation works even if you drop the LLM
+                            node; the “proposed fix” is a nice-to-have, not a hard dependency.
+                        </li>
+                        <li><strong>Secure by default.</strong> Caddy terminates public TLS, but there’s a
+                            second TLS hop to n8n inside the Docker network with its own internal CA.
+                        </li>
+                        <li><strong>Use the database as the source of truth.</strong> The schema, constraints,
+                            and trigger logic make sure tickets stay consistent even if the workflow changes.
+                        </li>
+                        <li><strong>Scripts beat long docs.</strong> A small <code>set_webhook.sh</code> script
+                            is easier to reuse than copying curl commands every time.
+                        </li>
+                    </ul>
+
+                    <!-- 5 -->
+                    <h2 id="next" class="mt-8 text-xl font-semibold text-slate-900">
+                        5. Next Steps &amp; Ideas to Extend
+                    </h2>
+                    <p>
+                        n8nticket is meant as a starting point. Here are a few directions I’m
+                        considering (and that you might want to explore too):
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li><strong>Small web dashboard</strong> to browse, filter and update tickets
+                            (e.g. with a minimal FastAPI + HTMX UI).
+                        </li>
+                        <li><strong>Metrics and observability:</strong> export counts and timings to Prometheus
+                            and build a Grafana dashboard for ticket SLAs.
+                        </li>
+                        <li><strong>Multi-channel intake:</strong> add email, web forms, or Slack as extra
+                            entry points that all end in the same <code>tickets</code> table.
+                        </li>
+                        <li><strong>Asset/context enrichment:</strong> enrich tickets with device, VPN gateway,
+                            office site or user group based on IDs.
+                        </li>
+                        <li><strong>Multiple environments:</strong> dev / staging / prod stacks for n8n with
+                            different bots and databases but identical workflows.
+                        </li>
+                    </ul>
+                    <p class="mt-3">
+                        The core pattern stays the same: <strong>reverse proxy → n8n → Postgres</strong>.
+                        You can swap the “ticket” concept for almost anything that starts in chat.
+                    </p>
+
+                    <div class="mt-8 p-4 rounded-2xl border border-sky-100 bg-sky-50/60 text-sm text-slate-700">
+                        <p class="font-semibold text-slate-900 mb-1">
+                            💬 Want to discuss this?
+                        </p>
+                        <p>
+                            Reach out on LinkedIn or send me an email. I’m always happy to talk
+                            about DevOps, ChatOps, automation and small tools that make on-call life nicer.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Bottom meta -->
+                <div class="mt-10 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-slate-900 text-slate-100 badge-pill">
+                            <i class="fa-solid fa-hashtag mr-1"></i> devops
+                        </span>
+                        <span class="px-3 py-1 bg-sky-100 text-sky-700 badge-pill">
+                            chatops
+                        </span>
+                        <span class="px-3 py-1 bg-emerald-100 text-emerald-700 badge-pill">
+                            automation
+                        </span>
+                        <span class="px-3 py-1 bg-indigo-100 text-indigo-700 badge-pill">
+                            n8n
+                        </span>
+                        <span class="px-3 py-1 bg-rose-100 text-rose-700 badge-pill">
+                            telegram
+                        </span>
+                    </div>
+                    <button id="copy-link-btn"
+                            class="inline-flex items-center px-3 py-2 border border-slate-200 rounded-xl text-[11px] hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-link mr-2 text-slate-500"></i>
+                        Copy article link
+                    </button>
+                </div>
+            </article>
+
+            <!-- Sidebar: Music player + Guide map + Author -->
+            <aside class="lg:w-72 lg:flex-shrink-0">
+                <div class="sticky top-28 space-y-6">
+
+                    <!-- MUSIC PLAYER (SIDEBAR) -->
+                    <div class="reading-music-card p-4 text-slate-50">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center shadow-inner">
+                                    <i class="fa-solid fa-music text-sky-400 text-sm"></i>
+                                </div>
+                                <div class="space-y-0.5">
+                                    <p class="text-[10px] uppercase tracking-[0.18em] text-slate-400">
+                                        Reading soundtrack
+                                    </p>
+                                    <p class="text-xs font-semibold text-slate-50">
+                                        Lo-Fi DevOps – Instrumental
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between mb-2">
+                            <button id="play-pause-btn"
+                                    class="player-btn w-9 h-9 rounded-full bg-sky-500 hover:bg-sky-400 flex items-center justify-center border border-sky-300 shadow">
+                                <i id="play-pause-icon" class="fa-solid fa-play text-[11px] text-slate-950 ml-0.5"></i>
+                            </button>
+                            <div class="flex items-center gap-2 text-[10px] text-slate-300">
+                                <span id="player-current-time">0:00</span>
+                                <span class="text-slate-600">/</span>
+                                <span id="player-duration">0:00</span>
+                            </div>
+                        </div>
+
+                        <div class="player-progress-track rounded-full overflow-hidden" id="player-progress-track">
+                            <div class="player-progress-fill" id="player-progress"></div>
+                        </div>
+
+                        <p class="mt-2 text-[10px] text-slate-400">
+                            Optional: press play for a quiet background mix while you read this walkthrough.
+                        </p>
+
+                        <audio id="reading-audio" src="/assets/mp3/reading.mp3" preload="metadata"></audio>
+                    </div>
+
+                    <div class="bg-white/95 border border-slate-200 rounded-2xl shadow-md p-5">
+                        <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-[0.18em] mb-3 flex items-center gap-2">
+                            <span class="inline-flex w-6 h-6 rounded-full bg-sky-100 text-sky-600 items-center justify-center text-xs">
+                                <i class="fa-solid fa-diagram-project"></i>
+                            </span>
+                            n8nticket Guide Map
+                        </h3>
+
+                        <nav class="space-y-1.5 text-[13px] md:text-sm">
+                            <!-- 1 -->
+                            <a href="#intro"
+                               class="toc-link flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition">
+                                <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+                                <div class="flex flex-col leading-tight">
+                                    <span class="font-semibold">1. Problem &amp; Motivation</span>
+                                    <span class="text-[11px] text-slate-500">Why chat alone isn’t enough</span>
+                                </div>
+                            </a>
+
+                            <!-- 2 -->
+                            <a href="#background"
+                               class="toc-link flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                <div class="flex flex-col leading-tight">
+                                    <span class="font-semibold">2. Architecture &amp; Stack</span>
+                                    <span class="text-[11px] text-slate-500">Docker, n8n, Postgres, Caddy</span>
+                                </div>
+                            </a>
+
+                            <!-- 3 -->
+                            <a href="#implementation"
+                               class="toc-link flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition">
+                                <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+                                <div class="flex flex-col leading-tight">
+                                    <span class="font-semibold">3. Implementation</span>
+                                    <span class="text-[11px] text-slate-500">Clone → env → TLS → workflow</span>
+                                </div>
+                            </a>
+
+                            <!-- 4 -->
+                            <a href="#lessons"
+                               class="toc-link flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                                <div class="flex flex-col leading-tight">
+                                    <span class="font-semibold">4. Design Decisions</span>
+                                    <span class="text-[11px] text-slate-500">Security, AI, ownership</span>
+                                </div>
+                            </a>
+
+                            <!-- 5 -->
+                            <a href="#next"
+                               class="toc-link flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition">
+                                <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                                <div class="flex flex-col leading-tight">
+                                    <span class="font-semibold">5. Next Steps</span>
+                                    <span class="text-[11px] text-slate-500">Dashboards, metrics, new channels</span>
+                                </div>
+                            </a>
+                        </nav>
+                    </div>
+
+                    <!-- Author card -->
+                    <div class="bg-slate-900 text-slate-50 rounded-2xl p-4 flex items-center gap-3 shadow-md">
+                        <img src="/assets/img/anass4.png"
+                             alt="Anass"
+                             class="w-12 h-12 rounded-full border-2 border-sky-400 object-cover">
+                        <div class="text-xs">
+                            <p class="font-semibold">Written by Anass Assim</p>
+                            <p class="text-slate-300">
+                                DevOps Junior &amp; SysAdmin based in Seville.  
+                                Likes automation, secure systems and tiny tools that reduce on-call pain.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </section>
+</main>
+
+    <!-- Footer -->
+    <footer class="py-12 bg-slate-900 text-white mt-10">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center">
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold mb-4">Anass Assim</h3>
+                    <p class="text-slate-400 max-w-md mx-auto">
+                        DevOps Junior & System Administrator passionate about creating efficient, scalable solutions.
+                    </p>
+                </div>
+
+                <div class="flex justify-center space-x-6 mb-8">
+                    <a href="https://www.linkedin.com/in/anass-assim/" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="https://github.com/ciscoAnass" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://x.com/ciscoAnass" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fa-brands fa-x-twitter"></i>
+                    </a>
+                    <a href="mailto:anass.assim.2010@gmail.com" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fas fa-envelope"></i>
+                    </a>    
+                </div>
+
+                <div class="border-t border-slate-800 pt-8">
+                    <p class="text-slate-400 text-sm">
+                        &copy; <span id="currentYear">2025</span> Anass Assim. All rights reserved.
+                    </p>
+                    <p class="text-slate-500 text-xs mt-2">
+                        Built with passion using modern web technologies
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Inline JS -->
+    <script>
+        // Scroll indicator
+        const scrollBar = document.querySelector('.scroll-indicator');
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const progress = (scrollTop / scrollHeight) * 100;
+            scrollBar.style.width = progress + '%';
+        });
+
+        // Header shadow
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 40) {
+                navbar.classList.add('shadow-lg', 'bg-white/90');
+            } else {
+                navbar.classList.remove('shadow-lg', 'bg-white/90');
+            }
+        });
+
+        // Mobile menu
+        const mobileBtn = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileBtn.addEventListener('click', () => {
+            const hidden = mobileMenu.classList.contains('hidden');
+            mobileMenu.classList.toggle('hidden');
+            mobileBtn.setAttribute('aria-expanded', String(hidden));
+        });
+
+        // Dynamic year
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Copy link
+        const copyBtn = document.getElementById('copy-link-btn');
+        copyBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(window.location.href);
+                copyBtn.innerHTML = '<i class="fa-solid fa-check mr-2 text-emerald-500"></i> Link copied!';
+                setTimeout(() => {
+                    copyBtn.innerHTML = '<i class="fa-solid fa-link mr-2 text-slate-500"></i>Copy article link';
+                }, 2000);
+            } catch (e) {
+                console.error(e);
+            }
+        });
+
+        // TOC active highlighting
+        const tocLinks = document.querySelectorAll('.toc-link');
+        const headings = [...document.querySelectorAll('#article-content h2, #article-content h3')];
+
+        const tocObserver = new IntersectionObserver(
+            (entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        tocLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+                        });
+                    }
+                });
+            },
+            { rootMargin: "0px 0px -60% 0px", threshold: 0.1 }
+        );
+
+        headings.forEach(h => tocObserver.observe(h));
+
+        // Magnetic effect
+        document.querySelectorAll('.magnetic').forEach(el => {
+            el.addEventListener('mousemove', (e) => {
+                const rect = el.getBoundingClientRect();
+                const x = (e.clientX - rect.left - rect.width / 2) / 20;
+                const y = (e.clientY - rect.top - rect.height / 2) / 20;
+                el.style.transform = `translate(${x}px, ${y}px) scale(1.1)`;
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = 'translate(0, 0) scale(1)';
+            });
+        });
+
+        // Simple reading-time estimate based on content length
+        (function computeReadTime() {
+            const text = document.getElementById('article-content').innerText || '';
+            const words = text.trim().split(/\s+/).length;
+            const minutes = Math.max(1, Math.round(words / 200)); // ~200 wpm
+            document.getElementById('read-time').textContent = `~${minutes} min read`;
+        })();
+
+        // MUSIC PLAYER LOGIC
+        const audio = document.getElementById('reading-audio');
+        const playBtn = document.getElementById('play-pause-btn');
+        const playIcon = document.getElementById('play-pause-icon');
+        const progressTrack = document.getElementById('player-progress-track');
+        const progressFill = document.getElementById('player-progress');
+        const currentTimeEl = document.getElementById('player-current-time');
+        const durationEl = document.getElementById('player-duration');
+
+        function formatTime(sec) {
+            if (isNaN(sec) || sec === Infinity) return "0:00";
+            const minutes = Math.floor(sec / 60);
+            const seconds = Math.floor(sec % 60);
+            return minutes + ":" + String(seconds).padStart(2, '0');
+        }
+
+        if (audio) {
+            audio.addEventListener('loadedmetadata', () => {
+                durationEl.textContent = formatTime(audio.duration);
+            });
+
+            audio.addEventListener('timeupdate', () => {
+                currentTimeEl.textContent = formatTime(audio.currentTime);
+                if (audio.duration) {
+                    const percent = (audio.currentTime / audio.duration) * 100;
+                    progressFill.style.width = percent + '%';
+                }
+            });
+
+            audio.addEventListener('ended', () => {
+                playIcon.classList.remove('fa-pause');
+                playIcon.classList.add('fa-play');
+            });
+
+            playBtn.addEventListener('click', () => {
+                if (audio.paused) {
+                    audio.play().catch(err => console.error(err));
+                    playIcon.classList.remove('fa-play');
+                    playIcon.classList.add('fa-pause');
+                } else {
+                    audio.pause();
+                    playIcon.classList.remove('fa-pause');
+                    playIcon.classList.add('fa-play');
+                }
+            });
+
+            progressTrack.addEventListener('click', (e) => {
+                const rect = progressTrack.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const ratio = clickX / rect.width;
+                if (audio.duration) {
+                    audio.currentTime = Math.min(Math.max(ratio * audio.duration, 0), audio.duration);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
