@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TorCap – A Self-Hosted Tor Screen Logger for Your Own Machines – Anass Assim</title>
+    <link rel="icon" type="image/x-icon" href="/assets/img/anass1.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-out',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'scale-in': 'scaleIn 0.5s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        scaleIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' }
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at top left, #e0f2fe, #ffffff 55%);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #0ea5e9, #3b82f6);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::before {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            color: #0ea5e9;
+            transform: translateY(-2px);
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, #0ea5e9, #3b82f6, #8b5cf6);
+            z-index: 1000;
+            transition: width 0.1s ease;
+        }
+
+        .article-container {
+            max-width: 960px;
+        }
+
+        .article-body p {
+            margin-bottom: 1rem;
+        }
+
+        .article-body h2 {
+            margin-top: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .article-body h3 {
+            margin-top: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .article-body code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.85em;
+            background: rgba(15,23,42,0.06);
+            padding: 0.15rem 0.35rem;
+            border-radius: 9999px;
+        }
+
+        pre.code-block {
+            background: #020617;
+            color: #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.25rem 1rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            border: 1px solid rgba(148,163,184,0.3);
+        }
+
+        pre.code-block code {
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .toc-link {
+            font-size: 0.85rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0;
+        }
+
+        .toc-link.active {
+            color: #0ea5e9;
+            font-weight: 600;
+        }
+
+        .badge-pill {
+            border-radius: 9999px;
+        }
+
+        .article-hero {
+            background: radial-gradient(circle at top left, rgba(56,189,248,0.15), transparent 55%),
+                        radial-gradient(circle at bottom right, rgba(129,140,248,0.18), transparent 55%);
+        }
+
+        .magnetic {
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ---------- OPTIONAL IMAGE BLOCK ---------- */
+        .article-image-wrapper {
+            margin: 1.75rem 0;
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid rgba(148,163,184,0.5);
+            background:
+                radial-gradient(circle at top left, rgba(56,189,248,0.10), transparent 60%),
+                #0f172a;
+        }
+
+        .article-image-wrapper img {
+            display: block;
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        .article-image-caption {
+            font-size: 0.78rem;
+            line-height: 1.4;
+            padding: 0.65rem 0.9rem;
+            background: rgba(15,23,42,0.94);
+            color: #e5e7eb;
+            border-top: 1px solid rgba(148,163,184,0.5);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .article-image-caption span {
+            opacity: 0.85;
+        }
+
+        .article-image-caption small {
+            font-size: 0.7rem;
+            color: #9ca3af;
+            white-space: nowrap;
+        }
+
+        /* ---------- MUSIC PLAYER (SIDEBAR) ---------- */
+        .reading-music-card {
+            background:
+                radial-gradient(circle at top left, rgba(56,189,248,0.18), transparent 55%),
+                #020617;
+            border-radius: 0.9rem;
+            border: 1px solid rgba(148,163,184,0.5);
+            box-shadow: 0 16px 35px rgba(15,23,42,0.7);
+        }
+
+        .player-progress-track {
+            position: relative;
+            height: 5px;
+            border-radius: 9999px;
+            background: rgba(148,163,184,0.35);
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .player-progress-fill {
+            position: absolute;
+            inset: 0;
+            width: 0%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #0ea5e9, #3b82f6, #8b5cf6);
+        }
+
+        .player-btn {
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+
+        .player-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(15,23,42,0.65);
+        }
+
+        .player-btn:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 overflow-x-hidden">
+    <div class="scroll-indicator"></div>
+    <header class="fixed top-0 w-full z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-white/20" id="navbar">
+        <nav class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/index.html#home" class="text-2xl font-bold text-sky-600 hover:scale-105 transition-transform duration-300">
+                    Anass Assim
+                </a>
+                
+                <div class="hidden md:flex space-x-8">
+                    <a href="/index.html" class="nav-link text-slate-700 font-medium">Home</a>
+                    <a href="/index.html#skills" class="nav-link text-slate-700 font-medium">Skills</a>
+                    <a href="/index.html#experience" class="nav-link text-slate-700 font-medium">Experience</a>
+                    <a href="/index.html#projects" class="nav-link text-slate-700 font-medium">Projects</a>
+                    <a href="/index.html#contact" class="nav-link text-slate-700 font-medium">Contact</a>
+                    <a href="/blog.html" class="nav-link text-sky-600 font-semibold">Blog</a>
+                    <a href="/AnassOs.html" class="nav-link text-slate-700 font-medium">AnassOS</a>
+                    <a href="/Terminal.html" class="nav-link text-slate-700 font-medium">Terminal</a>
+                </div>
+
+                <button id="mobile-menu-button"
+                        type="button"
+                        class="md:hidden text-slate-700 hover:text-sky-600 transition-colors"
+                        aria-controls="mobile-menu"
+                        aria-expanded="false"
+                        aria-label="Open main menu">
+                    <i class="fas fa-bars text-2xl" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 border-t border-slate-200">
+                <div class="flex flex-col space-y-2 pt-4">
+                    <a href="../index.html#home" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Home</a>
+                    <a href="../index.html#skills" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Skills</a>
+                    <a href="../index.html#experience" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Experience</a>
+                    <a href="../index.html#projects" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Projects</a>
+                    <a href="../index.html#contact" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Contact</a>
+                    <a href="../AnassOs.html" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">AnassOS</a>
+                    <a href="../Terminal.html" class="text-slate-700 hover:text-sky-600 py-2 px-4 rounded-lg hover:bg-sky-50 transition-all">Terminal</a>
+                    <a href="../blog.html" class="text-sky-700 font-semibold py-2 px-4 rounded-lg bg-sky-50 transition-all">Blog</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="pt-24 pb-16">
+    <!-- Hero / Meta -->
+    <section class="article-hero border-b border-slate-200">
+        <div class="max-w-6xl mx-auto px-6 py-10">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-6 text-xs text-slate-500">
+                <div class="flex items-center gap-3">
+                    <a href="../blog.html" class="inline-flex items-center text-slate-500 hover:text-sky-600">
+                        <i class="fa-solid fa-arrow-left mr-2 text-xs"></i> Back to all posts
+                    </a>
+                    <span class="hidden sm:inline-block w-px h-4 bg-slate-300"></span>
+                    <span class="inline-flex items-center gap-1">
+                        <i class="fa-regular fa-calendar"></i>
+                        <span id="post-date">2025-11-21</span>
+                    </span>
+                    <span class="inline-flex items-center gap-1">
+                        <i class="fa-regular fa-clock"></i>
+                        <span id="read-time">~17 min read</span>
+                    </span>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 bg-sky-100 text-sky-700 text-[11px] font-semibold badge-pill">
+                        <i class="fa-solid fa-tag mr-1"></i> Self-Hosted
+                    </span>
+                    <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-[11px] font-semibold badge-pill">
+                        <i class="fa-solid fa-user-shield mr-1"></i> Personal Audit
+                    </span>
+                    <span class="px-3 py-1 bg-slate-900 text-slate-100 text-[11px] font-semibold badge-pill">
+                        <i class="fa-solid fa-user-gear mr-1"></i> Anass Assim
+                    </span>
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-[1.6fr,1fr] gap-10 items-start">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4 leading-tight">
+                        TorCap – A Self-Hosted Tor Screen Logger for Your Own Machines
+                    </h1>
+                    <p class="text-slate-600 text-sm md:text-base max-w-2xl">
+                        In this post I walk through <strong>TorCap</strong>: a personal Windows screen logger that
+                        periodically captures screenshots on your own accounts and uploads them over Tor to a private
+                        Debian server. There, a small Flask web UI lets you browse screenshots per user and per day
+                        through a hidden <code>.onion</code> service in Tor Browser.
+                    </p>
+                    <p class="mt-2 text-[12px] text-amber-700 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2 inline-flex items-start gap-2">
+                        <i class="fa-solid fa-triangle-exclamation mt-0.5"></i>
+                        <span>
+                            TorCap is for <strong>your own machines and accounts only</strong>.  
+                            Don’t use it to spy on other people’s devices. That’s unethical and usually illegal.
+                        </span>
+                    </p>
+                </div>
+
+                <!-- Meta JSON card -->
+                <div class="relative rounded-2xl overflow-hidden border border-white shadow-xl bg-slate-900 text-slate-100">
+                    <div class="px-4 py-2 flex items-center justify-between border-b border-slate-800">
+                        <div class="flex items-center space-x-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                        </div>
+                        <span class="text-[11px] text-slate-300">post_meta.json</span>
+                        <i class="fa-solid fa-code text-[11px] text-slate-400"></i>
+                    </div>
+                    <div class="p-4 font-mono text-[11px] leading-relaxed">
+<pre class="whitespace-pre-wrap"><code>{
+  "title": "TorCap – Self-Hosted Tor Screen Logger",
+  "status": "published",
+  "topics": ["self-hosted", "monitoring", "tor"],
+  "stack": ["Python", "Flask", "Tor", "Debian", "Windows"],
+  "repo": "github.com/ciscoAnass/torcap",
+  "location": "Seville, Spain"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Article content + TOC + MUSIC PLAYER -->
+    <section class="mt-8">
+        <div class="max-w-6xl mx-auto px-6 flex flex-col lg:flex-row gap-10">
+
+            <!-- Main article -->
+            <article class="article-container mx-auto lg:mx-0 lg:flex-1">
+                <div class="article-body text-sm md:text-[15px] text-slate-700 leading-relaxed" id="article-content">
+
+                    <!-- 1 -->
+                    <h2 id="intro" class="text-xl font-semibold text-slate-900">
+                        1. Why TorCap? Transparent Logging for Your Own Devices
+                    </h2>
+                    <p>
+                        I’ve always liked the idea of having an <strong>“activity black box”</strong> for my own
+                        machines – something I can check when I break my workflow, mis-click a window, or want to
+                        reconstruct what I was doing at 01:00 last night on my Windows box.
+                    </p>
+                    <p>
+                        Most tools that do screen logging either fall into two extremes:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li>Security / remote support products aimed at enterprises, with closed code and heavy agents.</li>
+                        <li>Sketchy “spyware” tools that are opaque, stealthy and clearly not built with ethics in mind.</li>
+                    </ul>
+                    <p class="mt-3">
+                        <strong>TorCap</strong> is a middle path:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li><strong>Open and auditable:</strong> small Python codebase, clear config, no magic.</li>
+                        <li><strong>Self-hosted:</strong> screenshots live on your own Debian server, not a cloud SaaS.</li>
+                        <li><strong>Tor-only access:</strong> web UI is served as a private <code>.onion</code> site.</li>
+                        <li><strong>Non-stealthy by design:</strong> you configure it for your accounts, with clear paths and logs.</li>
+                    </ul>
+                    <p class="mt-3">
+                        The goal isn’t to spy on others, but to give <strong>yourself</strong> a forensic timeline of
+                        what happened on your Windows session, stored safely on a machine you control.
+                    </p>
+
+                    <!-- 2 -->
+                    <h2 id="architecture" class="mt-8 text-xl font-semibold text-slate-900">
+                        2. Architecture – Server, Client and Tor in the Middle
+                    </h2>
+                    <p>
+                        TorCap consists of two main components: a Debian server with a Flask app, and a Windows client
+                        that captures screenshots and ships them over Tor.
+                    </p>
+
+                    <h3 class="mt-4 text-base font-semibold text-slate-900">
+                        2.1 Server (Debian) – Tor Hidden Service + Flask UI
+                    </h3>
+                    <p>
+                        The server side lives typically on a Debian 13 VPS or a home server:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li><strong>Flask app (<code>tor_server.py</code>)</strong> listening on <code>127.0.0.1:5000</code>.</li>
+                        <li><strong>Tor</strong> configured to expose that app as a hidden service (e.g. <code>abc123.onion</code>).</li>
+                        <li><strong>Screenshot storage</strong> under a root folder like:
+                            <pre class="code-block mt-2"><code>/home/youruser/TorCap_data/
+├─ CiscoAnass/
+│  ├─ 21-11-2025/
+│  │  ├─ screenshot_20251121_000918.png
+│  │  └─ ...
+└─ nesrino186/
+   └─ 22-11-2025/</code></pre>
+                        </li>
+                        <li>Web UI to:
+                            <ul class="list-disc pl-6 mt-1 space-y-1">
+                                <li>Log in with admin credentials.</li>
+                                <li>Browse by user → day → thumbnail grid.</li>
+                                <li>Click a thumbnail to open a full-size preview modal.</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <p class="mt-3">
+                        All server settings live in <code>server_config.json</code> (more on that later), not in random
+                        environment variables.
+                    </p>
+
+                    <h3 class="mt-6 text-base font-semibold text-slate-900">
+                        2.2 Client (Windows) – TorCap.exe Screen Logger
+                    </h3>
+                    <p>
+                        The Windows side is built from <code>app.py</code> into a single <code>TorCap.exe</code> using
+                        PyInstaller. It:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li>Starts when <strong>you</strong> log into your account (via Task Scheduler).</li>
+                        <li>Takes screenshots every <code>interval_seconds</code> (default 10s).</li>
+                        <li>Saves them under a daily folder: <code>C:\Users\You\Pictures\Security\DD-MM-YYYY\</code>.</li>
+                        <li>Collects screenshots into batches and uploads them to the server via Tor (SOCKS proxy).</li>
+                        <li>Respects a <strong>max folder size</strong> and rotates old files to avoid filling the disk.</li>
+                    </ul>
+
+                    <p class="mt-3">
+                        Configuration lives in a local <code>config.json</code> placed next to the EXE: capture interval,
+                        screenshot folder, Tor SOCKS proxy, server <code>.onion</code> URL, shared upload password, etc.
+                    </p>
+
+                    <!-- Article image -->
+                    <div class="article-image-wrapper">
+                        <img src="/assets/img/torcap.png"
+                             alt="Diagram of TorCap architecture: Windows clients → Tor → Debian server → Tor Browser UI">
+                        <div class="article-image-caption">
+                            <span>High-level view – Windows clients capture screenshots and send them over Tor to a private Flask UI on Debian.</span>
+                        </div>
+                    </div>
+
+                    <h3 class="mt-6 text-base font-semibold text-slate-900">
+                        2.3 Why Tor and Not Plain HTTPS?
+                    </h3>
+                    <p>
+                        Using Tor for this kind of logging has some nice properties:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li><strong>No public IP exposure:</strong> the Debian server doesn’t need a public port; Tor handles routing.</li>
+                        <li><strong>End-to-end encryption:</strong> Tor hidden services are encrypted by design.</li>
+                        <li><strong>Clear separation:</strong> you always access the UI explicitly via Tor Browser; there’s a mental barrier between “normal web” and “screenshot vault”.</li>
+                    </ul>
+
+                    <!-- 3 -->
+                    <h2 id="implementation" class="mt-8 text-xl font-semibold text-slate-900">
+                        3. Implementation – From Debian Setup to Windows Scheduled Task
+                    </h2>
+                    <p>
+                        Let’s walk through the main steps to get TorCap running on <strong>your own</strong> devices:
+                        server, Tor hidden service, Windows config and EXE build.
+                    </p>
+
+                    <h3 class="mt-4 text-base font-semibold text-slate-900">
+                        3.1 Server Setup on Debian
+                    </h3>
+                    <p>
+                        Basics on Debian 13:
+                    </p>
+
+<pre class="code-block mt-3"><code>sudo apt update
+sudo apt install python3 python3-venv python3-pip tor
+
+mkdir -p ~/TorCap
+cd ~/TorCap
+
+python3 -m venv venv
+source venv/bin/activate
+pip install flask</code></pre>
+
+                    <p class="mt-3">
+                        Copy the server files into <code>~/TorCap</code>:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li><code>tor_server.py</code> – the Flask app.</li>
+                        <li><code>server_config.json</code> – your server config (create it next).</li>
+                    </ul>
+
+                    <h4 class="mt-4 text-[15px] font-semibold text-slate-900">
+                        3.1.1 <code>server_config.json</code>
+                    </h4>
+                    <p>
+                        Example:
+                    </p>
+
+<pre class="code-block mt-3"><code>{
+  "root_folder": "/home/youruser/TorCap_data",
+  "web_username": "anass",
+  "web_password": "CHANGE_THIS_WEB_PASSWORD",
+  "upload_password": "CHANGE_THIS_UPLOAD_PASSWORD",
+  "site_name": "TorCap",
+  "session_secret": "CHANGE_THIS_SESSION_SECRET"
+}</code></pre>
+
+                    <p class="mt-3">
+                        Key values:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li><code>root_folder</code> – where screenshots live on the server (per user/day).</li>
+                        <li><code>web_username</code> / <code>web_password</code> – login for the Tor web UI.</li>
+                        <li><code>upload_password</code> – shared secret; must match each Windows client.</li>
+                        <li><code>session_secret</code> – random string for Flask sessions.</li>
+                    </ul>
+
+                    <h4 class="mt-4 text-[15px] font-semibold text-slate-900">
+                        3.1.2 Tor Hidden Service
+                    </h4>
+                    <p>
+                        Edit <code>/etc/tor/torrc</code>:
+                    </p>
+
+<pre class="code-block mt-3"><code>sudo nano /etc/tor/torrc</code></pre>
+
+                    <p>Add at the bottom:</p>
+
+<pre class="code-block mt-3"><code>HiddenServiceDir /var/lib/tor/TorCap_service/
+HiddenServicePort 80 127.0.0.1:5000</code></pre>
+
+                    <p class="mt-3">
+                        Restart Tor and grab the hidden service hostname:
+                    </p>
+
+<pre class="code-block mt-3"><code>sudo systemctl restart tor
+sudo cat /var/lib/tor/TorCap_service/hostname</code></pre>
+
+                    <p class="mt-3">
+                        You’ll get something like:
+                        <code>nlbsg4kl2itgwcu5g6ysikwmx77lavxb5kh2c36mg7wlmazn2332hhid.onion</code>.
+                        That’s your private URL for:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li>Tor Browser (web UI).</li>
+                        <li>Windows <code>config.json</code> as <code>server_url</code>.</li>
+                    </ul>
+
+                    <h4 class="mt-4 text-[15px] font-semibold text-slate-900">
+                        3.1.3 Running the Flask Server
+                    </h4>
+
+<pre class="code-block mt-3"><code>cd ~/TorCap
+source venv/bin/activate
+python tor_server.py</code></pre>
+
+                    <p class="mt-3">
+                        Now open Tor Browser and browse to:
+                        <code>http://YOUR_ONION_HOSTNAME.onion/</code>, then log in with your web credentials.
+                    </p>
+
+                    <h3 class="mt-6 text-base font-semibold text-slate-900">
+                        3.2 Windows Client – Builder Machine
+                    </h3>
+                    <p>
+                        On the machine where you build <code>TorCap.exe</code>:
+                    </p>
+
+<pre class="code-block mt-3"><code>cd C:\Users\YourUser\Desktop
+mkdir TorCap
+cd .\TorCap
+
+python -m venv venv
+.\venv\Scripts\activate
+
+pip install mss requests pysocks pyinstaller</code></pre>
+
+                    <p class="mt-3">
+                        Copy in:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li><code>app.py</code> – the Windows client code.</li>
+                        <li><code>config.json</code> – client configuration template.</li>
+                    </ul>
+
+                    <h4 class="mt-4 text-[15px] font-semibold text-slate-900">
+                        3.2.1 <code>config.json</code> on Windows
+                    </h4>
+
+<pre class="code-block mt-3"><code>{
+  "interval_seconds": 10,
+  "screenshot_folder": "C:/Users/YourUser/Pictures/Security",
+  "server_url": "http://YOUR_ONION_HOSTNAME.onion",
+  "upload_password": "CHANGE_THIS_UPLOAD_PASSWORD",
+  "upload_batch_size": 10,
+  "max_folder_size_mb": 500,
+  "tor_socks_proxy": "socks5h://127.0.0.1:9050",
+  "log_file": "screen_guard.log"
+}</code></pre>
+
+                    <p class="mt-3">
+                        Notes:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li><code>server_url</code> uses <strong>http://</strong> (Tor handles encryption).</li>
+                        <li><code>upload_password</code> must match the server’s.</li>
+                        <li><code>tor_socks_proxy</code> points to your local Tor instance (service or Tor Browser).</li>
+                        <li><code>max_folder_size_mb</code> prevents your disk from filling up.</li>
+                    </ul>
+
+                    <h4 class="mt-4 text-[15px] font-semibold text-slate-900">
+                        3.2.2 Build TorCap.exe
+                    </h4>
+
+<pre class="code-block mt-3"><code>.\venv\Scripts\activate
+
+pyinstaller --onefile --noconsole ^
+  --name="TorCap" ^
+  app.py</code></pre>
+
+                    <p class="mt-3">
+                        After the build, your EXE will be at:
+                        <code>C:\Users\YourUser\Desktop\TorCap\dist\TorCap.exe</code>.
+                    </p>
+
+                    <h3 class="mt-6 text-base font-semibold text-slate-900">
+                        3.3 Deploying to Your Own Windows PCs
+                    </h3>
+                    <p>
+                        On each Windows machine you want to log (again: <strong>your own accounts</strong>):
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li>Create a folder, e.g. <code>C:\Program Files\TorCap\</code>.</li>
+                        <li>Copy <code>TorCap.exe</code> and a tailored <code>config.json</code> into it.</li>
+                    </ul>
+
+                    <h4 class="mt-4 text-[15px] font-semibold text-slate-900">
+                        3.3.1 Task Scheduler – Run at Login
+                    </h4>
+                    <p>
+                        Configure a task that starts TorCap when <strong>you</strong> log in:
+                    </p>
+                    <ol class="list-decimal pl-6 space-y-1">
+                        <li>Open Task Scheduler.</li>
+                        <li>Create Task → Name: <code>TorCap</code>.</li>
+                        <li><strong>General</strong> tab:
+                            <ul class="list-disc pl-6 mt-1">
+                                <li>“Run only when user is logged on” (transparent behaviour).</li>
+                            </ul>
+                        </li>
+                        <li><strong>Triggers</strong> → New → “At log on” → select your user.</li>
+                        <li><strong>Actions</strong> → New → “Start a program”:
+                            <ul class="list-disc pl-6 mt-1">
+                                <li>Program: <code>C:\Program Files\TorCap\TorCap.exe</code></li>
+                                <li>Start in: <code>C:\Program Files\TorCap\</code></li>
+                            </ul>
+                        </li>
+                        <li>Save the task.</li>
+                    </ol>
+
+                    <p class="mt-3">
+                        Next time you log in, TorCap will start, follow the config, and begin sending screenshots to
+                        your Tor server, respecting the batch size and rotation rules.
+                    </p>
+
+                    <!-- 4 -->
+                    <h2 id="safety" class="mt-8 text-xl font-semibold text-slate-900">
+                        4. Behaviour, Safety and Ethical Boundaries
+                    </h2>
+                    <p>
+                        TorCap is intentionally opinionated about how it behaves and how it should be used.
+                    </p>
+
+                    <h3 class="mt-4 text-base font-semibold text-slate-900">
+                        4.1 How the Client Behaves
+                    </h3>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li><strong>On startup:</strong>
+                            <ul class="list-disc pl-6 mt-1 space-y-1">
+                                <li>Loads <code>config.json</code> from the EXE directory.</li>
+                                <li>Ensures the base screenshot folder exists.</li>
+                                <li>Scans for existing <code>.png</code> files and treats them as pending uploads.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Every <code>interval_seconds</code>:</strong>
+                            <ul class="list-disc pl-6 mt-1 space-y-1">
+                                <li>Creates a folder <code>DD-MM-YYYY</code> for the current day.</li>
+                                <li>Captures a screenshot named <code>screenshot_YYYYMMDD_HHMMSS.png</code>.</li>
+                                <li>Adds it to the pending upload queue.</li>
+                                <li>Runs rotation to keep total size under <code>max_folder_size_mb</code>.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Upload logic:</strong>
+                            <ul class="list-disc pl-6 mt-1 space-y-1">
+                                <li>When pending files ≥ <code>upload_batch_size</code>, tries to POST them to
+                                    <code>/api/upload</code> on the Tor server via the SOCKS proxy.</li>
+                                <li>Sends username, day and file, with <code>X-Upload-Password</code> header.</li>
+                                <li>On HTTP 200: deletes the local file; on error: keeps it for retry.</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h3 class="mt-6 text-base font-semibold text-slate-900">
+                        4.2 How the Server Behaves
+                    </h3>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li>Reads <code>server_config.json</code> on startup.</li>
+                        <li>Stores files under <code>root_folder / &lt;username&gt; / &lt;day&gt; / filename.png</code>.</li>
+                        <li>Validates the upload password on each request.</li>
+                        <li>Provides an authenticated web UI for browsing screenshots via Tor Browser only.</li>
+                    </ul>
+
+                    <h3 class="mt-6 text-base font-semibold text-slate-900">
+                        4.3 Ethics, Law and Responsible Use
+                    </h3>
+                    <p>
+                        This part is important:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li>TorCap is intended for <strong>self-monitoring and personal audit</strong> on machines you own.</li>
+                        <li>Using similar tooling to secretly record someone else’s screen without consent can be
+                            <strong>illegal</strong> and is definitely unethical.</li>
+                        <li>If multiple people use a machine, make sure everyone understands that TorCap is running.</li>
+                        <li>If you’re in a company context, follow local laws and internal policies – don’t roll your
+                            own monitoring without proper approval.</li>
+                    </ul>
+
+                    <p class="mt-3">
+                        The repo even calls out that the code tries to avoid stealthy or malware-style tricks. The idea
+                        is transparency, not “hiding in the shadows”.
+                    </p>
+
+                    <!-- 5 -->
+                    <h2 id="next" class="mt-8 text-xl font-semibold text-slate-900">
+                        5. What’s Next for TorCap?
+                    </h2>
+                    <p>
+                        TorCap already does what I wanted: a reproducible, self-hosted screen logger for my own devices.
+                        But there’s a clear roadmap for improvements:
+                    </p>
+
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li><strong>Better UI:</strong> filters, keyboard navigation, and a timeline view that lets you
+                            scrub through screenshots like a video.
+                        </li>
+                        <li><strong>Multi-factor access:</strong> adding TOTP or hardware key support for the Tor web UI.</li>
+                        <li><strong>Advanced retention settings:</strong> per-user retention periods and automatic
+                            clean-up jobs on the server.
+                        </li>
+                        <li><strong>Integration with logs:</strong> link screenshots to system logs or activity logs for
+                            deeper debugging of “what happened at that time”.
+                        </li>
+                        <li><strong>Optional encryption at rest:</strong> encrypt screenshots on disk with a separate
+                            key, to add another layer on top of Tor’s transport encryption.
+                        </li>
+                    </ul>
+
+                    <p class="mt-3">
+                        For now, TorCap is a nice example of combining Python, Flask, Tor and Windows scripting into a
+                        very focused tool that respects the boundary between <strong>personal observability</strong> and
+                        surveillance.
+                    </p>
+
+                    <div class="mt-8 p-4 rounded-2xl border border-sky-100 bg-sky-50/60 text-sm text-slate-700">
+                        <p class="font-semibold text-slate-900 mb-1">
+                            💬 Want to discuss TorCap, Tor or self-hosted logging?
+                        </p>
+                        <p>
+                            Reach out on LinkedIn or send me an email. I’m happy to talk about Tor hidden services,
+                            Python tooling, and how to keep this kind of monitoring ethical and under your control.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Bottom meta -->
+                <div class="mt-10 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-slate-900 text-slate-100 badge-pill">
+                            <i class="fa-solid fa-hashtag mr-1"></i> torcap
+                        </span>
+                        <span class="px-3 py-1 bg-sky-100 text-sky-700 badge-pill">
+                            tor
+                        </span>
+                        <span class="px-3 py-1 bg-emerald-100 text-emerald-700 badge-pill">
+                            self-hosted
+                        </span>
+                        <span class="px-3 py-1 bg-indigo-100 text-indigo-700 badge-pill">
+                            flask
+                        </span>
+                        <span class="px-3 py-1 bg-amber-100 text-amber-700 badge-pill">
+                            windows
+                        </span>
+                    </div>
+                    <button id="copy-link-btn"
+                            class="inline-flex items-center px-3 py-2 border border-slate-200 rounded-xl text-[11px] hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-link mr-2 text-slate-500"></i>
+                        Copy article link
+                    </button>
+                </div>
+            </article>
+
+            <!-- Sidebar: Music player + Guide map + Author -->
+            <aside class="lg:w-72 lg:flex-shrink-0">
+                <div class="sticky top-28 space-y-6">
+
+                    <!-- MUSIC PLAYER (SIDEBAR) -->
+                    <div class="reading-music-card p-4 text-slate-50">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center shadow-inner">
+                                    <i class="fa-solid fa-music text-sky-400 text-sm"></i>
+                                </div>
+                                <div class="space-y-0.5">
+                                    <p class="text-[10px] uppercase tracking-[0.18em] text-slate-400">
+                                        Reading soundtrack
+                                    </p>
+                                    <p class="text-xs font-semibold text-slate-50">
+                                        Midnight Ops – Deep Focus
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between mb-2">
+                            <button id="play-pause-btn"
+                                    class="player-btn w-9 h-9 rounded-full bg-sky-500 hover:bg-sky-400 flex items-center justify-center border border-sky-300 shadow">
+                                <i id="play-pause-icon" class="fa-solid fa-play text-[11px] text-slate-950 ml-0.5"></i>
+                            </button>
+                            <div class="flex items-center gap-2 text-[10px] text-slate-300">
+                                <span id="player-current-time">0:00</span>
+                                <span class="text-slate-600">/</span>
+                                <span id="player-duration">0:00</span>
+                            </div>
+                        </div>
+
+                        <div class="player-progress-track rounded-full overflow-hidden" id="player-progress-track">
+                            <div class="player-progress-fill" id="player-progress"></div>
+                        </div>
+
+                        <p class="mt-2 text-[10px] text-slate-400">
+                            Optional: hit play for a quiet background mix while you wire Tor, Flask and Windows together.
+                        </p>
+
+                        <audio id="reading-audio" src="/assets/mp3/reading.mp3" preload="metadata"></audio>
+                    </div>
+
+                    <!-- Guide Map -->
+                    <div class="bg-white/95 border border-slate-200 rounded-2xl shadow-md p-5">
+                        <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-[0.18em] mb-3 flex items-center gap-2">
+                            <span class="inline-flex w-6 h-6 rounded-full bg-sky-100 text-sky-600 items-center justify-center text-xs">
+                                <i class="fa-solid fa-route"></i>
+                            </span>
+                            TorCap Guide Map
+                        </h3>
+
+                        <nav class="space-y-1.5 text-[13px] md:text-sm">
+                            <!-- 1 -->
+                            <a href="#intro"
+                               class="toc-link flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition">
+                                <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+                                <div class="flex flex-col leading-tight">
+                                    <span class="font-semibold">1. Why TorCap?</span>
+                                    <span class="text-[11px] text-slate-500">Personal screen logging</span>
+                                </div>
+                            </a>
+
+                            <!-- 2 -->
+                            <a href="#architecture"
+                               class="toc-link flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                <div class="flex flex-col leading-tight">
+                                    <span class="font-semibold">2. Architecture</span>
+                                    <span class="text-[11px] text-slate-500">Server, client & Tor</span>
+                                </div>
+                            </a>
+
+                            <!-- 3 -->
+                            <a href="#implementation"
+                               class="toc-link flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition">
+                                <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+                                <div class="flex flex-col leading-tight">
+                                    <span class="font-semibold">3. Implementation</span>
+                                    <span class="text-[11px] text-slate-500">Debian, Tor, Windows</span>
+                                </div>
+                            </a>
+
+                            <!-- 4 -->
+                            <a href="#safety"
+                               class="toc-link flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                                <div class="flex flex-col leading-tight">
+                                    <span class="font-semibold">4. Safety & ethics</span>
+                                    <span class="text-[11px] text-slate-500">Behaviour & boundaries</span>
+                                </div>
+                            </a>
+
+                            <!-- 5 -->
+                            <a href="#next"
+                               class="toc-link flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition">
+                                <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                                <div class="flex flex-col leading-tight">
+                                    <span class="font-semibold">5. Roadmap</span>
+                                    <span class="text-[11px] text-slate-500">UI, retention, encryption</span>
+                                </div>
+                            </a>
+                        </nav>
+                    </div>
+
+                    <!-- Author card -->
+                    <div class="bg-slate-900 text-slate-50 rounded-2xl p-4 flex items-center gap-3 shadow-md">
+                        <img src="/assets/img/anass4.png"
+                             alt="Anass"
+                             class="w-12 h-12 rounded-full border-2 border-sky-400 object-cover">
+                        <div class="text-xs">
+                            <p class="font-semibold">Written by Anass Assim</p>
+                            <p class="text-slate-300">
+                                DevOps Junior &amp; SysAdmin based in Seville.  
+                                Enjoys building small self-hosted tools that stay under your control.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </section>
+</main>
+
+    <!-- Footer -->
+    <footer class="py-12 bg-slate-900 text-white mt-10">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center">
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold mb-4">Anass Assim</h3>
+                    <p class="text-slate-400 max-w-md mx-auto">
+                        DevOps Junior & System Administrator passionate about creating efficient, scalable solutions.
+                    </p>
+                </div>
+
+                <div class="flex justify-center space-x-6 mb-8">
+                    <a href="https://www.linkedin.com/in/anass-assim/" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="https://github.com/ciscoAnass" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://x.com/ciscoAnass" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fa-brands fa-x-twitter"></i>
+                    </a>
+                    <a href="mailto:anass.assim.2010@gmail.com" class="magnetic text-slate-400 hover:text-white text-2xl transition-all duration-300 transform hover:scale-125" target="_blank">
+                        <i class="fas fa-envelope"></i>
+                    </a>    
+                </div>
+
+                <div class="border-t border-slate-800 pt-8">
+                    <p class="text-slate-400 text-sm">
+                        &copy; <span id="currentYear">2025</span> Anass Assim. All rights reserved.
+                    </p>
+                    <p class="text-slate-500 text-xs mt-2">
+                        Built with passion using modern web technologies
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Inline JS -->
+    <script>
+        // Scroll indicator
+        const scrollBar = document.querySelector('.scroll-indicator');
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const progress = (scrollTop / scrollHeight) * 100;
+            scrollBar.style.width = progress + '%';
+        });
+
+        // Header shadow
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 40) {
+                navbar.classList.add('shadow-lg', 'bg-white/90');
+            } else {
+                navbar.classList.remove('shadow-lg', 'bg-white/90');
+            }
+        });
+
+        // Mobile menu
+        const mobileBtn = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileBtn.addEventListener('click', () => {
+            const hidden = mobileMenu.classList.contains('hidden');
+            mobileMenu.classList.toggle('hidden');
+            mobileBtn.setAttribute('aria-expanded', String(hidden));
+        });
+
+        // Dynamic year
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Copy link
+        const copyBtn = document.getElementById('copy-link-btn');
+        copyBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(window.location.href);
+                copyBtn.innerHTML = '<i class="fa-solid fa-check mr-2 text-emerald-500"></i> Link copied!';
+                setTimeout(() => {
+                    copyBtn.innerHTML = '<i class="fa-solid fa-link mr-2 text-slate-500"></i>Copy article link';
+                }, 2000);
+            } catch (e) {
+                console.error(e);
+            }
+        });
+
+        // TOC active highlighting
+        const tocLinks = document.querySelectorAll('.toc-link');
+        const headings = [...document.querySelectorAll('#article-content h2, #article-content h3')];
+
+        const tocObserver = new IntersectionObserver(
+            (entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        tocLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+                        });
+                    }
+                });
+            },
+            { rootMargin: "0px 0px -60% 0px", threshold: 0.1 }
+        );
+
+        headings.forEach(h => tocObserver.observe(h));
+
+        // Magnetic effect
+        document.querySelectorAll('.magnetic').forEach(el => {
+            el.addEventListener('mousemove', (e) => {
+                const rect = el.getBoundingClientRect();
+                const x = (e.clientX - rect.left - rect.width / 2) / 20;
+                const y = (e.clientY - rect.top - rect.height / 2) / 20;
+                el.style.transform = `translate(${x}px, ${y}px) scale(1.1)`;
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = 'translate(0, 0) scale(1)';
+            });
+        });
+
+        // Simple reading-time estimate based on content length
+        (function computeReadTime() {
+            const text = document.getElementById('article-content').innerText || '';
+            const words = text.trim().split(/\s+/).length;
+            const minutes = Math.max(1, Math.round(words / 200)); // ~200 wpm
+            document.getElementById('read-time').textContent = `~${minutes} min read`;
+        })();
+
+        // MUSIC PLAYER LOGIC
+        const audio = document.getElementById('reading-audio');
+        const playBtn = document.getElementById('play-pause-btn');
+        const playIcon = document.getElementById('play-pause-icon');
+        const progressTrack = document.getElementById('player-progress-track');
+        const progressFill = document.getElementById('player-progress');
+        const currentTimeEl = document.getElementById('player-current-time');
+        const durationEl = document.getElementById('player-duration');
+
+        function formatTime(sec) {
+            if (isNaN(sec) || sec === Infinity) return "0:00";
+            const minutes = Math.floor(sec / 60);
+            const seconds = Math.floor(sec % 60);
+            return minutes + ":" + String(seconds).padStart(2, '0');
+        }
+
+        if (audio) {
+            audio.addEventListener('loadedmetadata', () => {
+                durationEl.textContent = formatTime(audio.duration);
+            });
+
+            audio.addEventListener('timeupdate', () => {
+                currentTimeEl.textContent = formatTime(audio.currentTime);
+                if (audio.duration) {
+                    const percent = (audio.currentTime / audio.duration) * 100;
+                    progressFill.style.width = percent + '%';
+                }
+            });
+
+            audio.addEventListener('ended', () => {
+                playIcon.classList.remove('fa-pause');
+                playIcon.classList.add('fa-play');
+            });
+
+            playBtn.addEventListener('click', () => {
+                if (audio.paused) {
+                    audio.play().catch(err => console.error(err));
+                    playIcon.classList.remove('fa-play');
+                    playIcon.classList.add('fa-pause');
+                } else {
+                    audio.pause();
+                    playIcon.classList.remove('fa-pause');
+                    playIcon.classList.add('fa-play');
+                }
+            });
+
+            progressTrack.addEventListener('click', (e) => {
+                const rect = progressTrack.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const ratio = clickX / rect.width;
+                if (audio.duration) {
+                    audio.currentTime = Math.min(Math.max(ratio * audio.duration, 0), audio.duration);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
