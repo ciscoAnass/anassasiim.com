@@ -332,6 +332,199 @@
     opacity: 1;
     transform: scale(1.05) rotate(-2deg);
 }
+
+
+/* =============================
+   Tabbed Skills Section – 2025++ style
+   ============================= */
+.skill-tabs {
+    padding: 0.25rem;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.03);
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    box-shadow: 0 14px 40px rgba(15, 23, 42, 0.12);
+    backdrop-filter: blur(12px);
+}
+
+.skill-tab {
+    position: relative;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.5rem 1.4rem;
+    background: transparent;
+    color: #64748b;
+    transition:
+        color 0.25s ease,
+        background 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.25s ease;
+    white-space: nowrap;
+}
+
+.skill-tab:hover:not(.active) {
+    background: rgba(226, 232, 240, 0.9);
+    color: #0ea5e9;
+    transform: translateY(-1px);
+}
+
+.skill-tab.active {
+    background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+    color: #ffffff;
+    box-shadow: 0 14px 40px rgba(37, 99, 235, 0.6);
+    transform: translateY(-1px) scale(1.02);
+}
+
+/* Panels – animated entry */
+.skill-panel {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.skill-panel.skill-panel-active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Skill cards – more depth, more breathing room */
+.skill-item-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    height: 100%;
+    border-radius: 1.6rem;
+    background:
+        radial-gradient(circle at top, rgba(148, 163, 184, 0.12), transparent 60%),
+        #ffffff;
+    border: 1px solid rgba(226, 232, 240, 0.98);
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.14);
+    padding: 1.3rem 1.2rem 1.5rem;
+    overflow: hidden;
+    transition:
+        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.skill-item-card::before {
+    content: '';
+    position: absolute;
+    inset: -40%;
+    background: radial-gradient(circle at top, rgba(56, 189, 248, 0.22), transparent 65%);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+}
+
+.skill-item-card:hover {
+    transform: translateY(-10px) rotateX(2deg) rotateY(-2deg);
+    box-shadow: 0 30px 80px rgba(15, 23, 42, 0.24);
+    border-color: rgba(56, 189, 248, 0.55);
+    background:
+        radial-gradient(circle at top, rgba(56, 189, 248, 0.18), transparent 65%),
+        #ffffff;
+}
+
+.skill-item-card:hover::before {
+    opacity: 1;
+}
+
+/* Image area – much taller for logos */
+.skill-item-image {
+    width: 100%;
+    padding: 1.2rem 1rem;
+    border-radius: 1.25rem;
+    background:
+        radial-gradient(circle at top, rgba(248, 250, 252, 0.9), transparent 65%),
+        #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 170px;         /* <<< taller container */
+}
+
+/* Bigger logos (height) */
+.skill-item-logo {
+    height: 96px;              /* <<< more “length” */
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+    filter:
+        drop-shadow(0 4px 10px rgba(15, 23, 42, 0.45))
+        saturate(1.08);
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.skill-item-card:hover .skill-item-logo {
+    transform: translateY(-4px) scale(1.06);
+    filter:
+        drop-shadow(0 7px 16px rgba(15, 23, 42, 0.55))
+        saturate(1.15);
+}
+
+/* Text area */
+.skill-item-body {
+    text-align: center;
+    padding-inline: 0.3rem;
+}
+
+.skill-item-title {
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 0.3rem;
+}
+
+.skill-item-desc {
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: #64748b;
+}
+
+/* Responsive tweaks */
+@media (max-width: 1024px) {
+    .skill-item-image {
+        min-height: 150px;
+        padding: 1.1rem 0.9rem;
+    }
+
+    .skill-item-logo {
+        height: 86px;
+    }
+}
+
+@media (max-width: 768px) {
+    .skill-tab {
+        font-size: 0.8rem;
+        padding-inline: 1rem;
+    }
+
+    .skill-item-card {
+        padding: 1.15rem;
+        border-radius: 1.4rem;
+    }
+
+    .skill-item-image {
+        min-height: 135px;
+        padding: 1rem 0.8rem;
+    }
+
+    .skill-item-logo {
+        height: 78px;
+    }
+
+    .skill-item-desc {
+        font-size: 0.78rem;
+    }
+}
     </style>
 </head>
 
@@ -470,265 +663,465 @@
         </div>
     </section>
 
-    <!-- Enhanced Skills Section -->
-    <section id="skills" class="py-20 bg-gradient-to-br from-slate-50 to-sky-50 section-fade">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-slate-800 mb-4">My Expertise</h2>
-                <div class="w-24 h-1 bg-gradient-to-r from-sky-500 to-blue-500 mx-auto rounded-full"></div>
-                <p class="text-slate-600 mt-4 max-w-2xl mx-auto">Specialized in modern DevOps practices, cloud infrastructure, and system administration</p>
-            </div>
-
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- DevOps Skills -->
-  <!-- DevOps Skills -->
-<div class="hover-card bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-white/50 shadow-xl stagger-item">
-    <div class="flex items-center mb-6">
-        <div class="w-12 h-12 bg-gradient-to-br from-sky-500 to-blue-600 rounded-xl flex items-center justify-center mr-4">
-            <i class="fas fa-cloud text-white text-xl"></i>
-        </div>
-        <div>
-            <span class="text-sm uppercase tracking-wider text-slate-500 font-semibold">Platform</span>
-            <h3 class="text-2xl font-bold text-slate-800">DevOps</h3>
-        </div>
+<!-- Skills Section (Tabbed, Animated, Big Logos) -->
+<section id="skills" class="relative py-20 bg-gradient-to-br from-slate-50 via-white to-sky-50 section-fade visible">
+    <!-- Soft background blobs -->
+    <div class="pointer-events-none absolute inset-0 overflow-hidden">
+        <div class="absolute -top-32 -right-24 w-80 h-80 bg-sky-200/40 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-40 -left-24 w-96 h-96 bg-blue-200/35 rounded-full blur-3xl"></div>
     </div>
 
-    <div class="space-y-4">
-        <div class="skill-item">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-slate-700 font-medium">Azure</span>
-                <span class="text-slate-800 font-semibold">80%</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
-                <div class="loading-bar bg-gradient-to-r from-sky-500 to-blue-600 h-3 rounded-full" style="--progress: 80%;"></div>
+    <div class="container mx-auto px-6 relative z-10">
+        <!-- Section header -->
+        <div class="text-center mb-10 max-w-3xl mx-auto">
+            <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-3">
+                Skills &amp; Tech Stack
+            </h2>
+            <p class="text-slate-600 text-sm md:text-base">
+                The technologies I use to design, automate and operate modern infrastructure.
+            </p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex justify-center mb-10">
+            <div class="skill-tabs inline-flex items-center">
+                <button type="button" class="skill-tab active" data-skill-tab="devops">
+                    DevOps
+                </button>
+                <button type="button" class="skill-tab" data-skill-tab="programming">
+                    Programming
+                </button>
+                <button type="button" class="skill-tab" data-skill-tab="systems">
+                    Systems &amp; Network
+                </button>
+                <button type="button" class="skill-tab" data-skill-tab="security">
+                    Security
+                </button>
             </div>
         </div>
 
-        <div class="skill-item">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-slate-700 font-medium">AWS</span>
-                <span class="text-slate-800 font-semibold">70%</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
-                <div class="loading-bar bg-gradient-to-r from-sky-500 to-blue-600 h-3 rounded-full" style="--progress: 70%;"></div>
-            </div>
-        </div>
+        <!-- Panels wrapper -->
+        <div class="relative min-h-[260px]">
+            <!-- DevOps Panel (visible by default) -->
+            <div class="skill-panel skill-panel-active grid gap-6 md:grid-cols-2 xl:grid-cols-3" data-skill-panel="devops">
+                <!-- Azure -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/azure.png" alt="Microsoft Azure" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Microsoft Azure</h3>
+                        <p class="skill-item-desc">
+                            Resource groups, storage, identity, networking and monitoring. Currently focused on AZ-104.
+                        </p>
+                    </div>
+                </div>
 
-        <div class="skill-item">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-slate-700 font-medium">Docker</span>
-                <span class="text-slate-800 font-semibold">90%</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
-                <div class="loading-bar bg-gradient-to-r from-sky-500 to-blue-600 h-3 rounded-full" style="--progress: 90%;"></div>
-            </div>
-        </div>
+                <!-- AWS -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/aws.png" alt="Amazon Web Services" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Amazon Web Services</h3>
+                        <p class="skill-item-desc">
+                            EC2, S3 and IAM for hybrid setups and lab environments.
+                        </p>
+                    </div>
+                </div>
 
-        <div class="skill-item">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-slate-700 font-medium">Ansible & Terraform</span>
-                <span class="text-slate-800 font-semibold">90%</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
-                <div class="loading-bar bg-gradient-to-r from-sky-500 to-blue-600 h-3 rounded-full" style="--progress: 90%;"></div>
-            </div>
-        </div>
+                <!-- Docker -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/docker.png" alt="Docker" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Docker &amp; Containers</h3>
+                        <p class="skill-item-desc">
+                            Building and running services in reproducible containerized environments.
+                        </p>
+                    </div>
+                </div>
 
-        <div class="skill-item">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-slate-700 font-medium">Grafana & Nagios</span>
-                <span class="text-slate-800 font-semibold">90%</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
-                <div class="loading-bar bg-gradient-to-r from-sky-500 to-blue-600 h-3 rounded-full" style="--progress: 90%;"></div>
-            </div>
-        </div>
-
-        <div class="skill-item">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-slate-700 font-medium">CI/CD Pipelines</span>
-                <span class="text-slate-800 font-semibold">70%</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
-                <div class="loading-bar bg-gradient-to-r from-sky-500 to-blue-600 h-3 rounded-full" style="--progress: 70%;"></div>
-            </div>
-        </div>
-
-        <div class="skill-item">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-slate-700 font-medium">n8n</span>
-                <span class="text-slate-800 font-semibold">70%</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
-                <div class="loading-bar bg-gradient-to-r from-sky-500 to-blue-600 h-3 rounded-full" style="--progress: 70%;"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Programming Skills -->
-<div class="hover-card bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-white/50 shadow-xl stagger-item">
-    <div class="flex items-center mb-6">
-        <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mr-4">
-            <i class="fas fa-code text-white text-xl"></i>
-        </div>
-        <div>
-            <span class="text-sm uppercase tracking-wider text-slate-500 font-semibold">Development</span>
-            <h3 class="text-2xl font-bold text-slate-800">Programming</h3>
-        </div>
-    </div>
-
-    <div class="space-y-4">
-        <div class="skill-item">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-slate-700 font-medium">Python</span>
-                <span class="text-slate-800 font-semibold">80%</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
-                <div class="loading-bar bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full" style="--progress: 80%;"></div>
-            </div>
-        </div>
+                <!-- Ansible -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/ansible.png" alt="Ansible" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Ansible</h3>
+                        <p class="skill-item-desc">
+                            Agentless automation tool for provisioning servers, managing configurations, and orchestrating infrastructure at scale.
+                        </p>
+                    </div>
+                </div>
         
-        <div class="skill-item">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-slate-700 font-medium">Bash</span>
-                <span class="text-slate-800 font-semibold">80%</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
-                <div class="loading-bar bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full" style="--progress: 80%;"></div>
-            </div>
-        </div>
-
-        <div class="skill-item">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-slate-700 font-medium">GO</span>
-                <span class="text-slate-800 font-semibold">70%</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
-                <div class="loading-bar bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full" style="--progress: 70%;"></div>
-            </div>
-        </div>
-
-        <div class="skill-item">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-slate-700 font-medium">SQL</span>
-                <span class="text-slate-800 font-semibold">70%</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
-                <div class="loading-bar bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full" style="--progress: 70%;"></div>
-            </div>
-        </div>
-
-        <div class="skill-item">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-slate-700 font-medium">TypeScript</span>
-                <span class="text-slate-800 font-semibold">50%</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
-                <div class="loading-bar bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full" style="--progress: 50%;"></div>
-            </div>
-        </div>
-
-        <div class="skill-item">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-slate-700 font-medium">JavaScript</span>
-                <span class="text-slate-800 font-semibold">50%</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
-                <div class="loading-bar bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full" style="--progress: 50%;"></div>
-            </div>
-        </div>
-
-    </div>
-</div>
-
-<!-- System Administration -->
-<div class="hover-card bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-white/50 shadow-xl stagger-item">
-    <div class="flex items-center mb-6">
-        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mr-4">
-            <i class="fas fa-server text-white text-xl"></i>
-        </div>
-        <div>
-            <span class="text-sm uppercase tracking-wider text-slate-500 font-semibold">Infrastructure</span>
-            <h3 class="text-2xl font-bold text-slate-800">System & Network Admin</h3>
-        </div>
-    </div>
-
-    <div class="space-y-4">
-        <div class="skill-item">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-slate-700 font-medium">Linux Administration</span>
-                <span class="text-slate-800 font-semibold">90%</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
-                <div class="loading-bar bg-gradient-to-r from-purple-500 to-pink-600 h-3 rounded-full" style="--progress: 90%;"></div>
-            </div>
-        </div>
-
-        <div class="skill-item">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-slate-700 font-medium">Windows Server (2003-2022)</span>
-                <span class="text-slate-800 font-semibold">60%</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
-                <div class="loading-bar bg-gradient-to-r from-purple-500 to-pink-600 h-3 rounded-full" style="--progress: 60%;"></div>
-            </div>
-        </div>
-
-        <div class="skill-item">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-slate-700 font-medium">Windows Client</span>
-                <span class="text-slate-800 font-semibold">90%</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
-                <div class="loading-bar bg-gradient-to-r from-purple-500 to-pink-600 h-3 rounded-full" style="--progress: 90%;"></div>
-            </div>
-        </div>
-
-        <div class="skill-item">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-slate-700 font-medium">Computer maintenance</span>
-                <span class="text-slate-800 font-semibold">80%</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
-                <div class="loading-bar bg-gradient-to-r from-purple-500 to-pink-600 h-3 rounded-full" style="--progress: 80%;"></div>
-            </div>
-        </div>
-
-        <div class="skill-item">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-slate-700 font-medium">Network Protocols</span>
-                <span class="text-slate-800 font-semibold">90%</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
-                <div class="loading-bar bg-gradient-to-r from-purple-500 to-pink-600 h-3 rounded-full" style="--progress: 90%;"></div>
-            </div>
-        </div>
-
-        <div class="skill-item">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-slate-700 font-medium">Security Hardening</span>
-                <span class="text-slate-800 font-semibold">60%</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
-                <div class="loading-bar bg-gradient-to-r from-purple-500 to-pink-600 h-3 rounded-full" style="--progress: 60%;"></div>
-            </div>
-        </div>
-        <div class="skill-item">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-slate-700 font-medium">Proxmox & Vmware</span>
-                <span class="text-slate-800 font-semibold">80%</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 skill-progress">
-                <div class="loading-bar bg-gradient-to-r from-purple-500 to-pink-600 h-3 rounded-full" style="--progress: 80%;"></div>
-            </div>
-        </div>    
-    </div>
-</div>
+                <!-- Terraform -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/terraform.png" alt="Terraform" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Terraform</h3>
+                        <p class="skill-item-desc">
+                            Declarative infrastructure-as-code tool for provisioning cloud and on-prem resources using reusable modules and automated workflows.
+                        </p>
+                    </div>
+                </div>
 
 
-    </section>
+                <!-- CI/CD -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/jenkins-azure-pipeline.png" alt="CI/CD" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">CI/CD Pipelines</h3>
+                        <p class="skill-item-desc">
+                            Automating tests and deployments using Git-based workflows.
+                        </p>
+                    </div>
+                </div>
 
+                <!-- n8n -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/n8n.svg" alt="n8n" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">n8n Automations</h3>
+                        <p class="skill-item-desc">
+                            Low-code workflows for integrating services and building automations.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Git -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/git.png" alt="git" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Git</h3>
+                        <p class="skill-item-desc">
+                            Distributed version control system for tracking code changes, collaborating efficiently, and managing project history.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Grafana -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/grafana.png" alt="Grafana" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Grafana</h3>
+                        <p class="skill-item-desc">
+                            Visualization platform for building dashboards, analyzing metrics, and monitoring system performance in real time.
+                        </p>
+                    </div>
+                </div>
+
+
+                <!-- Nagios -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/nagios.png" alt="Nagios" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Nagios</h3>
+                        <p class="skill-item-desc">
+                            Monitoring system for tracking host and service health, generating alerts, and ensuring infrastructure uptime.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Programming Panel -->
+            <div class="skill-panel grid gap-6 md:grid-cols-2 xl:grid-cols-3 hidden" data-skill-panel="programming">
+                <!-- Python -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/python.png" alt="Python" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Python</h3>
+                        <p class="skill-item-desc">
+                            Automation scripts, APIs and tooling for DevOps and system tasks.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Bash -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/bash.png" alt="Bash" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Bash / Shell</h3>
+                        <p class="skill-item-desc">
+                            Everyday scripting for Linux servers, provisioning and diagnostics.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Go -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/Go_Logo_Blue.svg.png" alt="Go" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Go (Golang)</h3>
+                        <p class="skill-item-desc">
+                            Exploring fast CLIs and small backend services.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- SQL -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/SQL.png" alt="SQL" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">SQL</h3>
+                        <p class="skill-item-desc">
+                            Queries, joins and schema design for relational databases.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- TypeScript -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/ts.png" alt="TypeScript" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">TypeScript</h3>
+                        <p class="skill-item-desc">
+                            Safer front-end and tooling with static typing.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- JavaScript -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/js.png" alt="JavaScript" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">JavaScript</h3>
+                        <p class="skill-item-desc">
+                            Interactive UI elements and custom front-end behaviour.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Systems & Network Panel -->
+            <div class="skill-panel grid gap-6 md:grid-cols-2 xl:grid-cols-3 hidden" data-skill-panel="systems">
+                <!-- Linux -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/linux.png" alt="Linux" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Linux Administration</h3>
+                        <p class="skill-item-desc">
+                            Services, permissions, networking and hardening for production-like systems.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Windows Server -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/WServer.png" alt="Windows Server" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Windows Server (2003–2022)</h3>
+                        <p class="skill-item-desc">
+                            Managing roles, services and basic domain environments.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Windows Client -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/windows.png" alt="Windows Client" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Windows Client</h3>
+                        <p class="skill-item-desc">
+                            Desktop support, configuration and troubleshooting for end users.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- MSSQL -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/mssql.png" alt="MSSQL" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">MSSQL</h3>
+                        <p class="skill-item-desc">
+                            Relational database management system used for building structured, scalable, and performant data-driven applications.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Proxmox -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/Proxmox.png" alt="Proxmox" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Proxmox</h3>
+                        <p class="skill-item-desc">
+                            Open-source virtualization platform for managing VMs, containers, storage, and clustering in lab or production environments.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- VMware -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/Vmware.png" alt="VMware" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">VMware</h3>
+                        <p class="skill-item-desc">
+                            Enterprise-grade virtualization ecosystem for deploying and managing virtual machines, data centers, and scalable infrastructures.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Network Protocols -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills//cisco.png" alt="Network protocols" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Network Protocols (Certified)</h3>
+                        <p class="skill-item-desc">
+                            Practical understanding of TCP/IP, DNS, routing and troubleshooting.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="skill-panel grid gap-6 md:grid-cols-2 xl:grid-cols-3 hidden" data-skill-panel="security">
+            
+                <!-- Kali -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/kali.png" alt="Kali Linux" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Kali Linux</h3>
+                        <p class="skill-item-desc">
+                            Security-focused Linux distribution used for penetration testing, digital forensics, and cybersecurity research.
+                        </p>
+                    </div>
+                </div>
+            
+                <!-- Tor -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/tor.png" alt="Tor" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Tor</h3>
+                        <p class="skill-item-desc">
+                            Privacy-focused network and tools used to anonymize traffic, secure communications, and host hidden services.
+                        </p>
+                    </div>
+                </div>
+
+
+                <!-- Wireshark -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/wireshark.png" alt="Wireshark" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Wireshark</h3>
+                        <p class="skill-item-desc">
+                            Advanced packet analyzer for inspecting network traffic, troubleshooting connectivity issues, and identifying anomalies.
+                        </p>
+                    </div>
+                </div>
+
+
+                <!-- Matasploit -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/metasploit.png" alt="metasploit" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Metasploit</h3>
+                        <p class="skill-item-desc">
+                            Penetration testing framework for discovering vulnerabilities, validating exploits, and performing security assessments.
+                        </p>
+                    </div>
+                </div>
+
+
+                <!-- bitwarden -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/bitwarden.png" alt="bitwarden" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Bitwarden</h3>
+                        <p class="skill-item-desc">
+                            Open-source password manager for securely storing credentials, managing vaults, and enforcing good security practices.
+                        </p>
+                    </div>
+                </div>
+
+
+                <!-- Nmap -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/nmap.png" alt="nmap" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Nmap</h3>
+                        <p class="skill-item-desc">
+                            Network scanner used for host discovery, port scanning, service enumeration, and security auditing.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Suricata -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/suricata.png" alt="suricata" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Suricata</h3>
+                        <p class="skill-item-desc">
+                            High-performance IDS/IPS engine for monitoring network traffic, detecting threats, and generating security alerts.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Snort -->
+                <div class="skill-item-card">
+                    <div class="skill-item-image">
+                        <img src="assets/img/skills/snort.png" alt="snort" class="skill-item-logo">
+                    </div>
+                    <div class="skill-item-body">
+                        <h3 class="skill-item-title">Snort</h3>
+                        <p class="skill-item-desc">
+                            Signature-based intrusion detection and prevention system for analyzing traffic, identifying attacks, and enforcing network security.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
     <!-- Enhanced Experience Section -->
     <section id="experience" class="py-20 bg-white section-fade">
@@ -759,7 +1152,7 @@
                                             <span class="text-sky-600 font-medium text-sm">Mar 2025 – Jun 2025</span>
                                         </div>
                                         <p class="text-slate-600 leading-relaxed">
-Contributed to automating CI/CD pipelines using Azure DevOps and Terraform. Supported infrastructure provisioning and lifecycle management on Azure, ensuring high availability and scalability. Monitored and analyzed system performance with Grafana, and collaborated on .NET microservices projects using Docker for efficient containerization and deployment.
+                                            Contributed to automating CI/CD pipelines using Azure DevOps and Terraform. Supported infrastructure provisioning and lifecycle management on Azure, ensuring high availability and scalability. Monitored and analyzed system performance with Grafana, and collaborated on .NET microservices projects using Docker for efficient containerization and deployment.
                                         </p>
                                         <div class="flex flex-wrap gap-2 mt-4">
                                             <span class="px-3 py-1 bg-sky-100 text-sky-700 rounded-full text-xs font-medium">Azure</span>
@@ -1067,6 +1460,51 @@ Contributed to automating CI/CD pipelines using Azure DevOps and Terraform. Supp
                     </div>
                 </div>
 
+
+                <!-- Project 3 -->
+                <div class="project-card group">
+                    <div class="project-content bg-white rounded-2xl overflow-hidden shadow-xl border border-white/50 hover:shadow-2xl transition-all duration-500">
+                        <div class="relative overflow-hidden">
+                            <img src="assets/img/tor.jpg" 
+                                alt="TorCap" 
+                                class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <div class="absolute bottom-4 left-4 right-4">
+                                    <div class="flex space-x-2">
+                                        <span class="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs">Tor</span>
+                                        <span class="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs">Security</span>
+                                        <span class="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs">Python</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-xl font-bold text-slate-800">TorCap</h3>
+                                <div class="flex items-center text-blue-600">
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                                    <span class="text-sm font-medium">Deployed</span>
+                                </div>
+                            </div>
+                            
+                            <p class="text-slate-600 text-sm leading-relaxed mb-4">
+                                A Python tool that captures desktop screenshots and sends them anonymously via Tor, featuring a lightweight web viewer for private remote access.
+                            </p>
+
+                            <div class="flex items-center justify-between">
+                                <div class="flex space-x-2">
+                                    <span class="w-3 h-3 bg-purple-500 rounded-full"></span>
+                                    <span class="w-3 h-3 bg-green-500 rounded-full"></span>
+                                    <span class="w-3 h-3 bg-black rounded-full"></span>
+                                </div>
+                                <a href="https://github.com/ciscoAnass/torcap" class="text-sky-600 hover:text-sky-700 font-medium text-sm transition-colors duration-200 flex items-center group-hover:translate-x-2 transition-transform duration-300" target="_blank">
+                                    View Details <i class="fas fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Project 4 -->
                 <div class="project-card group">

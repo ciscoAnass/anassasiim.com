@@ -303,3 +303,40 @@ window.addEventListener('scroll', () => {
     navbar.classList.remove('shadow-lg', 'bg-white/90');
   }
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const tabs = document.querySelectorAll('[data-skill-tab]');
+    const panels = document.querySelectorAll('[data-skill-panel]');
+
+    if (!tabs.length || !panels.length) return;
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.getAttribute('data-skill-tab');
+
+            // If already active, do nothing
+            if (tab.classList.contains('active')) return;
+
+            // Switch active tab style
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            // Switch panels with animation
+            panels.forEach(panel => {
+                const isTarget = panel.getAttribute('data-skill-panel') === target;
+
+                if (isTarget) {
+                    // show target panel and animate in
+                    panel.classList.remove('hidden');
+                    // force reflow so transition triggers
+                    void panel.offsetWidth;
+                    panel.classList.add('skill-panel-active');
+                } else {
+                    // remove active animation, then hide
+                    panel.classList.remove('skill-panel-active');
+                    panel.classList.add('hidden');
+                }
+            });
+        });
+    });
+});
