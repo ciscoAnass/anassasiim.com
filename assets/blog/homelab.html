@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TorCap – A Self-Hosted Tor Screen Logger for Your Own Machines – Anass Assim</title>
+    <title>Homelab Docker Stack – Turning an Old Laptop into a Cloudflare-Protected Lab – Anass Assim</title>
     <link rel="icon" type="image/x-icon" href="/assets/img/anass1.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -281,32 +281,35 @@
             </div>
         </nav>
     </header>
+    <main class="pt-24 pb-16 bg-slate-50 min-h-screen">
 
-    <main class="pt-24 pb-16">
     <!-- Hero / Meta -->
     <section class="article-hero border-b border-slate-200">
         <div class="max-w-6xl mx-auto px-6 py-10">
             <div class="flex flex-wrap items-center justify-between gap-4 mb-6 text-xs text-slate-500">
                 <div class="flex items-center gap-3">
-                    <a href="/blog.html" class="inline-flex items-center text-slate-500 hover:text-sky-600">
+                    <a href="../../blog.html" class="inline-flex items-center text-slate-500 hover:text-sky-600">
                         <i class="fa-solid fa-arrow-left mr-2 text-xs"></i> Back to all posts
                     </a>
                     <span class="hidden sm:inline-block w-px h-4 bg-slate-300"></span>
                     <span class="inline-flex items-center gap-1">
                         <i class="fa-regular fa-calendar"></i>
-                        <span id="post-date">2025-11-21</span>
+                        <span id="post-date">2025-12-15</span>
                     </span>
                     <span class="inline-flex items-center gap-1">
                         <i class="fa-regular fa-clock"></i>
-                        <span id="read-time">~17 min read</span>
+                        <span id="read-time">~5 min read</span>
                     </span>
                 </div>
                 <div class="flex flex-wrap gap-2">
                     <span class="px-3 py-1 bg-sky-100 text-sky-700 text-[11px] font-semibold badge-pill">
-                        <i class="fa-solid fa-tag mr-1"></i> Self-Hosted
+                        <i class="fa-solid fa-tag mr-1"></i> Homelab
                     </span>
                     <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-[11px] font-semibold badge-pill">
-                        <i class="fa-solid fa-user-shield mr-1"></i> Personal Audit
+                        <i class="fa-solid fa-server mr-1"></i> Self-hosted
+                    </span>
+                    <span class="px-3 py-1 bg-amber-100 text-amber-700 text-[11px] font-semibold badge-pill">
+                        <i class="fa-solid fa-cloud mr-1"></i> Cloudflare Tunnel
                     </span>
                     <span class="px-3 py-1 bg-slate-900 text-slate-100 text-[11px] font-semibold badge-pill">
                         <i class="fa-solid fa-user-gear mr-1"></i> Anass Assim
@@ -317,19 +320,19 @@
             <div class="grid lg:grid-cols-[1.6fr,1fr] gap-10 items-start">
                 <div>
                     <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4 leading-tight">
-                        TorCap – A Self-Hosted Tor Screen Logger for Your Own Machines
+                        Homelab Docker Stack – Turning an Old Laptop into a Cloudflare-Protected Lab
                     </h1>
                     <p class="text-slate-600 text-sm md:text-base max-w-2xl">
-                        In this post I walk through <strong>TorCap</strong>: a personal Windows screen logger that
-                        periodically captures screenshots on your own accounts and uploads them over Tor to a private
-                        Debian server. There, a small Flask web UI lets you browse screenshots per user and per day
-                        through a hidden <code>.onion</code> service in Tor Browser.
+                        This post walks through my <strong>homelab</strong> stack: a headless Debian 13 server running
+                        multiple self-hosted services (Nextcloud, Grafana, n8n, Portainer, filebrowser, code-server, nginx
+                        dashboard and Cockpit) and publishing them <strong>securely through Cloudflare Tunnel</strong>
+                        instead of opening ports on the router.
                     </p>
                     <p class="mt-2 text-[12px] text-amber-700 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2 inline-flex items-start gap-2">
                         <i class="fa-solid fa-triangle-exclamation mt-0.5"></i>
                         <span>
-                            TorCap is for <strong>your own machines and accounts only</strong>.  
-                            Don’t use it to spy on other people’s devices. That’s unethical and usually illegal.
+                            All hostnames and secrets in the repo are placeholders.  
+                            Replace them with your own domain and strong passwords before running this in the real world.
                         </span>
                     </p>
                 </div>
@@ -347,11 +350,14 @@
                     </div>
                     <div class="p-4 font-mono text-[11px] leading-relaxed">
 <pre class="whitespace-pre-wrap"><code>{
-  "title": "TorCap – Self-Hosted Tor Screen Logger",
+  "title": "Homelab Docker Stack – Debian 13 + Cloudflare Tunnel",
   "status": "published",
-  "topics": ["self-hosted", "monitoring", "tor"],
-  "stack": ["Python", "Flask", "Tor", "Debian", "Windows"],
-  "repo": "github.com/ciscoAnass/torcap",
+  "topics": ["homelab", "self-hosted", "cloudflare-tunnel"],
+  "stack": [
+    "Debian 13", "Docker", "Cloudflare Tunnel",
+    "Nextcloud", "Grafana", "Portainer", "n8n", "Cockpit", "filebrowser", "code-server"
+  ],
+  "repo": "github.com/ciscoAnass/homelab",
   "location": "Seville, Spain"
 }</code></pre>
                     </div>
@@ -370,429 +376,450 @@
 
                     <!-- 1 -->
                     <h2 id="intro" class="text-xl font-semibold text-slate-900">
-                        1. Why TorCap? Transparent Logging for Your Own Devices
+                        1. Why This Homelab Exists – One Laptop, Many Services, Zero Port Forwarding
                     </h2>
                     <p>
-                        I’ve always liked the idea of having an <strong>“activity black box”</strong> for my own
-                        machines – something I can check when I break my workflow, mis-click a window, or want to
-                        reconstruct what I was doing at 01:00 last night on my Windows box.
+                        I had an “old” laptop with a decent CPU and RAM lying around and wanted to turn it into something
+                        actually useful: a <strong>24/7 homelab</strong> where I can run tools like Nextcloud,
+                        Grafana or n8n without paying for a VPS every month.
                     </p>
                     <p>
-                        Most tools that do screen logging either fall into two extremes:
+                        The constraints:
                     </p>
                     <ul class="list-disc pl-6 space-y-1">
-                        <li>Security / remote support products aimed at enterprises, with closed code and heavy agents.</li>
-                        <li>Sketchy “spyware” tools that are opaque, stealthy and clearly not built with ethics in mind.</li>
+                        <li>No noisy GUI – the machine lives in a corner, headless.</li>
+                        <li>All services should be containerized using Docker Compose.</li>
+                        <li>Remote access must be safe and simple, ideally without touching the ISP router.</li>
+                        <li>Everything should be <strong>documented and reproducible</strong> so I can rebuild it later.</li>
                     </ul>
                     <p class="mt-3">
-                        <strong>TorCap</strong> is a middle path:
-                    </p>
-                    <ul class="list-disc pl-6 space-y-1">
-                        <li><strong>Open and auditable:</strong> small Python codebase, clear config, no magic.</li>
-                        <li><strong>Self-hosted:</strong> screenshots live on your own Debian server, not a cloud SaaS.</li>
-                        <li><strong>Tor-only access:</strong> web UI is served as a private <code>.onion</code> site.</li>
-                        <li><strong>Non-stealthy by design:</strong> you configure it for your accounts, with clear paths and logs.</li>
-                    </ul>
-                    <p class="mt-3">
-                        The goal isn’t to spy on others, but to give <strong>yourself</strong> a forensic timeline of
-                        what happened on your Windows session, stored safely on a machine you control.
+                        The result is this repo: a <strong>Docker-based homelab</strong> on Debian 13, with
+                        <strong>Cloudflare Tunnel</strong> in front so I can expose selected services to the Internet
+                        using subdomains like <code>grafana.example.com</code> or <code>cloud.example.com</code> – no
+                        open ports, no dynamic DNS drama.
                     </p>
 
                     <!-- 2 -->
-                    <h2 id="architecture" class="mt-8 text-xl font-semibold text-slate-900">
-                        2. Architecture – Server, Client and Tor in the Middle
+                    <h2 id="hardware" class="mt-8 text-xl font-semibold text-slate-900">
+                        2. Hardware & Base OS – Free Performance on a “Dead” Laptop
                     </h2>
                     <p>
-                        TorCap consists of two main components: a Debian server with a Flask app, and a Windows client
-                        that captures screenshots and ships them over Tor.
-                    </p>
-
-                    <h3 class="mt-4 text-base font-semibold text-slate-900">
-                        2.1 Server (Debian) – Tor Hidden Service + Flask UI
-                    </h3>
-                    <p>
-                        The server side lives typically on a Debian 13 VPS or a home server:
+                        The homelab runs on:
                     </p>
                     <ul class="list-disc pl-6 space-y-1">
-                        <li><strong>Flask app (<code>tor_server.py</code>)</strong> listening on <code>127.0.0.1:5000</code>.</li>
-                        <li><strong>Tor</strong> configured to expose that app as a hidden service (e.g. <code>abc123.onion</code>).</li>
-                        <li><strong>Screenshot storage</strong> under a root folder like:
-                            <pre class="code-block mt-2"><code>/home/youruser/TorCap_data/
-├─ CiscoAnass/
-│  ├─ 21-11-2025/
-│  │  ├─ screenshot_20251121_000918.png
-│  │  └─ ...
-└─ nesrino186/
-   └─ 22-11-2025/</code></pre>
-                        </li>
-                        <li>Web UI to:
-                            <ul class="list-disc pl-6 mt-1 space-y-1">
-                                <li>Log in with admin credentials.</li>
-                                <li>Browse by user → day → thumbnail grid.</li>
-                                <li>Click a thumbnail to open a full-size preview modal.</li>
-                            </ul>
-                        </li>
+                        <li><strong>CPU:</strong> Intel i7-1255U (12th gen, mobile CPU).</li>
+                        <li><strong>RAM:</strong> 24 GB DDR4, enough for multiple containers.</li>
+                        <li><strong>Disk:</strong> NVMe SSD, hundreds of GB for data and images.</li>
+                        <li><strong>GPU:</strong> Integrated graphics – irrelevant for a headless server.</li>
                     </ul>
+                    <p class="mt-3">
+                        Operating system:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li><strong>Debian 13</strong>, no desktop environment.</li>
+                        <li>All management through SSH and web UIs (Portainer, Cockpit, Grafana, etc.).</li>
+                    </ul>
+                    <p class="mt-3">
+                        On top of the base install, I added a toolbox of packages: Docker / Docker Compose,
+                        programming runtimes (Python, Go, Node, Ruby), Tor, Cockpit, and Cloudflare’s
+                        <code>cloudflared</code> for tunnels. The goal is to be able to spin up almost anything from this
+                        one box.
+                    </p>
+
+                    <!-- Repo structure -->
+                    <h3 class="mt-6 text-base font-semibold text-slate-900">
+                        2.1 Repository Layout
+                    </h3>
+                    <p>
+                        The repo mirrors the way the homelab is organized:
+                    </p>
+
+<pre class="code-block mt-3"><code>homelab/
+├── README.md
+├── cloudflared/
+│   └── config.yml              # Cloudflare Tunnel config (example)
+└── docker/
+    ├── code-server/
+    │   └── docker-compose.yml  # VS Code in browser
+    ├── filebrowser/
+    │   └── docker-compose.yml  # Web file manager
+    ├── grafana/
+    │   └── docker-compose.yml  # Dashboards
+    ├── n8n/
+    │   └── docker-compose.yml  # Automation
+    ├── nextcloud/
+    │   └── docker-compose.yml  # Cloud storage + MariaDB + Adminer
+    ├── nginx/
+    │   └── docker-compose.yml  # Simple dashboard
+    └── portainer/
+        └── docker-compose.yml  # Docker management UI</code></pre>
 
                     <p class="mt-3">
-                        All server settings live in <code>server_config.json</code> (more on that later), not in random
-                        environment variables.
+                        Each service is isolated in its own folder so you can start, stop and tweak them independently.
                     </p>
-
-                    <h3 class="mt-6 text-base font-semibold text-slate-900">
-                        2.2 Client (Windows) – TorCap.exe Screen Logger
-                    </h3>
-                    <p>
-                        The Windows side is built from <code>app.py</code> into a single <code>TorCap.exe</code> using
-                        PyInstaller. It:
-                    </p>
-                    <ul class="list-disc pl-6 space-y-1">
-                        <li>Starts when <strong>you</strong> log into your account (via Task Scheduler).</li>
-                        <li>Takes screenshots every <code>interval_seconds</code> (default 10s).</li>
-                        <li>Saves them under a daily folder: <code>C:\Users\You\Pictures\Security\DD-MM-YYYY\</code>.</li>
-                        <li>Collects screenshots into batches and uploads them to the server via Tor (SOCKS proxy).</li>
-                        <li>Respects a <strong>max folder size</strong> and rotates old files to avoid filling the disk.</li>
-                    </ul>
-
-                    <p class="mt-3">
-                        Configuration lives in a local <code>config.json</code> placed next to the EXE: capture interval,
-                        screenshot folder, Tor SOCKS proxy, server <code>.onion</code> URL, shared upload password, etc.
-                    </p>
-
-                    <!-- Article image -->
-                    <div class="article-image-wrapper">
-                        <img src="/assets/img/torcap.png"
-                             alt="Diagram of TorCap architecture: Windows clients → Tor → Debian server → Tor Browser UI">
-                        <div class="article-image-caption">
-                            <span>High-level view – Windows clients capture screenshots and send them over Tor to a private Flask UI on Debian.</span>
-                        </div>
-                    </div>
-
-                    <h3 class="mt-6 text-base font-semibold text-slate-900">
-                        2.3 Why Tor and Not Plain HTTPS?
-                    </h3>
-                    <p>
-                        Using Tor for this kind of logging has some nice properties:
-                    </p>
-                    <ul class="list-disc pl-6 space-y-1">
-                        <li><strong>No public IP exposure:</strong> the Debian server doesn’t need a public port; Tor handles routing.</li>
-                        <li><strong>End-to-end encryption:</strong> Tor hidden services are encrypted by design.</li>
-                        <li><strong>Clear separation:</strong> you always access the UI explicitly via Tor Browser; there’s a mental barrier between “normal web” and “screenshot vault”.</li>
-                    </ul>
 
                     <!-- 3 -->
-                    <h2 id="implementation" class="mt-8 text-xl font-semibold text-slate-900">
-                        3. Implementation – From Debian Setup to Windows Scheduled Task
+                    <h2 id="services" class="mt-8 text-xl font-semibold text-slate-900">
+                        3. Docker Services – The Core Apps of the Homelab
                     </h2>
                     <p>
-                        Let’s walk through the main steps to get TorCap running on <strong>your own</strong> devices:
-                        server, Tor hidden service, Windows config and EXE build.
+                        Let’s look at what actually runs on the server and how each piece fits in.
                     </p>
 
                     <h3 class="mt-4 text-base font-semibold text-slate-900">
-                        3.1 Server Setup on Debian
+                        3.1 code-server – VS Code in the Browser
                     </h3>
                     <p>
-                        Basics on Debian 13:
-                    </p>
-
-<pre class="code-block mt-3"><code>sudo apt update
-sudo apt install python3 python3-venv python3-pip tor
-
-mkdir -p ~/TorCap
-cd ~/TorCap
-
-python3 -m venv venv
-source venv/bin/activate
-pip install flask</code></pre>
-
-                    <p class="mt-3">
-                        Copy the server files into <code>~/TorCap</code>:
+                        I use <strong>code-server</strong> as a browser-based VS Code instance:
                     </p>
                     <ul class="list-disc pl-6 space-y-1">
-                        <li><code>tor_server.py</code> – the Flask app.</li>
-                        <li><code>server_config.json</code> – your server config (create it next).</li>
+                        <li>Port: <code>8443</code> on the host.</li>
+                        <li>Workspace mapped from a host folder (for example <code>/home/anass24/code</code>).</li>
+                        <li>Password protection via an env variable in the compose file.</li>
                     </ul>
 
-                    <h4 class="mt-4 text-[15px] font-semibold text-slate-900">
-                        3.1.1 <code>server_config.json</code>
-                    </h4>
-                    <p>
-                        Example:
-                    </p>
-
-<pre class="code-block mt-3"><code>{
-  "root_folder": "/home/youruser/TorCap_data",
-  "web_username": "anass",
-  "web_password": "CHANGE_THIS_WEB_PASSWORD",
-  "upload_password": "CHANGE_THIS_UPLOAD_PASSWORD",
-  "site_name": "TorCap",
-  "session_secret": "CHANGE_THIS_SESSION_SECRET"
-}</code></pre>
+<pre class="code-block mt-3"><code>cd docker/code-server
+docker compose up -d</code></pre>
 
                     <p class="mt-3">
-                        Key values:
-                    </p>
-                    <ul class="list-disc pl-6 space-y-1">
-                        <li><code>root_folder</code> – where screenshots live on the server (per user/day).</li>
-                        <li><code>web_username</code> / <code>web_password</code> – login for the Tor web UI.</li>
-                        <li><code>upload_password</code> – shared secret; must match each Windows client.</li>
-                        <li><code>session_secret</code> – random string for Flask sessions.</li>
-                    </ul>
-
-                    <h4 class="mt-4 text-[15px] font-semibold text-slate-900">
-                        3.1.2 Tor Hidden Service
-                    </h4>
-                    <p>
-                        Edit <code>/etc/tor/torrc</code>:
-                    </p>
-
-<pre class="code-block mt-3"><code>sudo nano /etc/tor/torrc</code></pre>
-
-                    <p>Add at the bottom:</p>
-
-<pre class="code-block mt-3"><code>HiddenServiceDir /var/lib/tor/TorCap_service/
-HiddenServicePort 80 127.0.0.1:5000</code></pre>
-
-                    <p class="mt-3">
-                        Restart Tor and grab the hidden service hostname:
-                    </p>
-
-<pre class="code-block mt-3"><code>sudo systemctl restart tor
-sudo cat /var/lib/tor/TorCap_service/hostname</code></pre>
-
-                    <p class="mt-3">
-                        You’ll get something like:
-                        <code>nlbsg4kl2itgwcu5g6ysikwmx77lavxb5kh2c36mg7wlmazn2332hhid.onion</code>.
-                        That’s your private URL for:
-                    </p>
-                    <ul class="list-disc pl-6 space-y-1">
-                        <li>Tor Browser (web UI).</li>
-                        <li>Windows <code>config.json</code> as <code>server_url</code>.</li>
-                    </ul>
-
-                    <h4 class="mt-4 text-[15px] font-semibold text-slate-900">
-                        3.1.3 Running the Flask Server
-                    </h4>
-
-<pre class="code-block mt-3"><code>cd ~/TorCap
-source venv/bin/activate
-python tor_server.py</code></pre>
-
-                    <p class="mt-3">
-                        Now open Tor Browser and browse to:
-                        <code>http://YOUR_ONION_HOSTNAME.onion/</code>, then log in with your web credentials.
+                        Locally I hit <code>https://&lt;server-ip&gt;:8443</code>. Remotely I go through
+                        <code>code.example.com</code> routed by Cloudflare Tunnel.
                     </p>
 
                     <h3 class="mt-6 text-base font-semibold text-slate-900">
-                        3.2 Windows Client – Builder Machine
+                        3.2 filebrowser – Web File Manager for /data
                     </h3>
                     <p>
-                        On the machine where you build <code>TorCap.exe</code>:
-                    </p>
-
-<pre class="code-block mt-3"><code>cd C:\Users\YourUser\Desktop
-mkdir TorCap
-cd .\TorCap
-
-python -m venv venv
-.\venv\Scripts\activate
-
-pip install mss requests pysocks pyinstaller</code></pre>
-
-                    <p class="mt-3">
-                        Copy in:
+                        <strong>filebrowser</strong> gives me a lightweight file manager:
                     </p>
                     <ul class="list-disc pl-6 space-y-1">
-                        <li><code>app.py</code> – the Windows client code.</li>
-                        <li><code>config.json</code> – client configuration template.</li>
+                        <li>Port: <code>8082</code>.</li>
+                        <li>Host data root: <code>/data</code>.</li>
+                        <li>Its own DB stored inside <code>/data/filebrowser</code>.</li>
                     </ul>
 
-                    <h4 class="mt-4 text-[15px] font-semibold text-slate-900">
-                        3.2.1 <code>config.json</code> on Windows
-                    </h4>
+<pre class="code-block mt-3"><code>cd docker/filebrowser
+docker compose up -d
 
-<pre class="code-block mt-3"><code>{
-  "interval_seconds": 10,
-  "screenshot_folder": "C:/Users/YourUser/Pictures/Security",
-  "server_url": "http://YOUR_ONION_HOSTNAME.onion",
-  "upload_password": "CHANGE_THIS_UPLOAD_PASSWORD",
-  "upload_batch_size": 10,
-  "max_folder_size_mb": 500,
-  "tor_socks_proxy": "socks5h://127.0.0.1:9050",
-  "log_file": "screen_guard.log"
-}</code></pre>
+# Local:    http://&lt;server-ip&gt;:8082
+# Remote:   files.example.com via Cloudflare</code></pre>
 
-                    <p class="mt-3">
-                        Notes:
+                    <h3 class="mt-6 text-base font-semibold text-slate-900">
+                        3.3 Grafana – Metrics and Dashboards
+                    </h3>
+                    <p>
+                        <strong>Grafana</strong> is my main dashboard layer:
                     </p>
                     <ul class="list-disc pl-6 space-y-1">
-                        <li><code>server_url</code> uses <strong>http://</strong> (Tor handles encryption).</li>
-                        <li><code>upload_password</code> must match the server’s.</li>
-                        <li><code>tor_socks_proxy</code> points to your local Tor instance (service or Tor Browser).</li>
-                        <li><code>max_folder_size_mb</code> prevents your disk from filling up.</li>
+                        <li>Port: <code>3000</code>.</li>
+                        <li>Data stored in a named Docker volume (e.g. <code>grafana_data</code>).</li>
+                        <li>Usually paired with Prometheus (not shown here) for metrics.</li>
                     </ul>
 
-                    <h4 class="mt-4 text-[15px] font-semibold text-slate-900">
-                        3.2.2 Build TorCap.exe
-                    </h4>
+<pre class="code-block mt-3"><code>cd docker/grafana
+docker compose up -d
 
-<pre class="code-block mt-3"><code>.\venv\Scripts\activate
+# Local:  http://&lt;server-ip&gt;:3000
+# Remote: grafana.example.com</code></pre>
 
-pyinstaller --onefile --noconsole ^
-  --name="TorCap" ^
-  app.py</code></pre>
+                    <h3 class="mt-6 text-base font-semibold text-slate-900">
+                        3.4 n8n – Automation Workbench
+                    </h3>
+                    <p>
+                        <strong>n8n</strong> runs as my low-code automation hub:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li>Port: <code>5678</code>.</li>
+                        <li>Persistent data under <code>/data/n8n</code> on the host.</li>
+                        <li>Timezone set to <code>Europe/Madrid</code> so crons and timestamps match my life.</li>
+                    </ul>
+
+<pre class="code-block mt-3"><code>cd docker/n8n
+docker compose up -d
+
+# Local:  http://&lt;server-ip&gt;:5678
+# Remote: n8n.example.com</code></pre>
 
                     <p class="mt-3">
-                        After the build, your EXE will be at:
-                        <code>C:\Users\YourUser\Desktop\TorCap\dist\TorCap.exe</code>.
+                        In development I keep <code>N8N_SECURE_COOKIE=false</code> to avoid cookie issues behind plain
+                        HTTP, then switch to <code>true</code> once everything sits behind HTTPS.
                     </p>
 
                     <h3 class="mt-6 text-base font-semibold text-slate-900">
-                        3.3 Deploying to Your Own Windows PCs
+                        3.5 Nextcloud Stack – Files + MariaDB + Adminer
                     </h3>
                     <p>
-                        On each Windows machine you want to log (again: <strong>your own accounts</strong>):
+                        The Nextcloud stack bundles three containers:
                     </p>
                     <ul class="list-disc pl-6 space-y-1">
-                        <li>Create a folder, e.g. <code>C:\Program Files\TorCap\</code>.</li>
-                        <li>Copy <code>TorCap.exe</code> and a tailored <code>config.json</code> into it.</li>
+                        <li><strong>mariadb</strong> – database.</li>
+                        <li><strong>nextcloud</strong> – main web app.</li>
+                        <li><strong>adminer</strong> – tiny DB management UI.</li>
+                    </ul>
+                    <p class="mt-3">
+                        Ports:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li>Nextcloud: <code>8081</code>.</li>
+                        <li>Adminer: <code>8083</code>.</li>
+                        <li>MariaDB (internal): <code>3306</code>.</li>
                     </ul>
 
-                    <h4 class="mt-4 text-[15px] font-semibold text-slate-900">
-                        3.3.1 Task Scheduler – Run at Login
-                    </h4>
-                    <p>
-                        Configure a task that starts TorCap when <strong>you</strong> log in:
-                    </p>
-                    <ol class="list-decimal pl-6 space-y-1">
-                        <li>Open Task Scheduler.</li>
-                        <li>Create Task → Name: <code>TorCap</code>.</li>
-                        <li><strong>General</strong> tab:
-                            <ul class="list-disc pl-6 mt-1">
-                                <li>“Run only when user is logged on” (transparent behaviour).</li>
-                            </ul>
-                        </li>
-                        <li><strong>Triggers</strong> → New → “At log on” → select your user.</li>
-                        <li><strong>Actions</strong> → New → “Start a program”:
-                            <ul class="list-disc pl-6 mt-1">
-                                <li>Program: <code>C:\Program Files\TorCap\TorCap.exe</code></li>
-                                <li>Start in: <code>C:\Program Files\TorCap\</code></li>
-                            </ul>
-                        </li>
-                        <li>Save the task.</li>
-                    </ol>
+<pre class="code-block mt-3"><code>cd docker/nextcloud
+docker compose up -d
+
+# Local:
+#   Nextcloud: http://&lt;server-ip&gt;:8081
+#   Adminer:   http://&lt;server-ip&gt;:8083 (server: mariadb)</code></pre>
 
                     <p class="mt-3">
-                        Next time you log in, TorCap will start, follow the config, and begin sending screenshots to
-                        your Tor server, respecting the batch size and rotation rules.
+                        Before first start I always go through the compose file and replace all the
+                        <code>CHANGE_ME_...</code> values: DB root password, Nextcloud admin credentials, trusted
+                        domains and so on.
+                    </p>
+
+                    <h3 class="mt-6 text-base font-semibold text-slate-900">
+                        3.6 nginx Dashboard – Simple Landing Page for the Lab
+                    </h3>
+                    <p>
+                        A tiny <strong>nginx</strong> container serves a static dashboard:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li>Port: <code>8080</code>.</li>
+                        <li>Root file: <code>docker/nginx/index.html</code>.</li>
+                    </ul>
+
+<pre class="code-block mt-3"><code>cd docker/nginx
+# put your dashboard HTML into docker/nginx/index.html
+docker compose up -d
+
+# Local:  http://&lt;server-ip&gt;:8080
+# Remote: dashboard.example.com</code></pre>
+
+                    <p class="mt-3">
+                        That index page is just a clean landing page with links to everything: Nextcloud, filebrowser,
+                        Grafana, n8n, Portainer, Cockpit… basically a control panel for the homelab.
+                    </p>
+
+                    <h3 class="mt-6 text-base font-semibold text-slate-900">
+                        3.7 Portainer – Docker Management UI
+                    </h3>
+                    <p>
+                        <strong>Portainer</strong> gives me a visual way to inspect containers, volumes and networks:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li>HTTP: <code>9000</code>, HTTPS: <code>9443</code>.</li>
+                        <li>Mounts the Docker socket to control the local engine.</li>
+                        <li>Stores its data in a named volume (e.g. <code>portainer_data</code>).</li>
+                    </ul>
+
+<pre class="code-block mt-3"><code>cd docker/portainer
+docker compose up -d
+
+# Local:
+#   http://&lt;server-ip&gt;:9000
+#   https://&lt;server-ip&gt;:9443
+# Remote:
+#   docker.example.com (via Cloudflare)</code></pre>
+
+                    <h3 class="mt-6 text-base font-semibold text-slate-900">
+                        3.8 Cockpit – Host-Level Web UI
+                    </h3>
+                    <p>
+                        <strong>Cockpit</strong> is installed directly on Debian (not as a container). It runs on a
+                        custom port (for example <code>9091</code>) and gives a nice web view over systemd services,
+                        logs and storage.
+                    </p>
+                    <p class="mt-3">
+                        It’s also exposed through Cloudflare Tunnel as <code>cockpit.example.com</code>, but locked
+                        behind strong authentication.
                     </p>
 
                     <!-- 4 -->
-                    <h2 id="safety" class="mt-8 text-xl font-semibold text-slate-900">
-                        4. Behaviour, Safety and Ethical Boundaries
+                    <h2 id="cloudflare" class="mt-8 text-xl font-semibold text-slate-900">
+                        4. Cloudflare Tunnel – Publishing Services Without Opening Ports
                     </h2>
                     <p>
-                        TorCap is intentionally opinionated about how it behaves and how it should be used.
+                        Instead of forwarding ports from my home router, I use a single <strong>Cloudflare Tunnel</strong>
+                        that connects the server to Cloudflare’s edge. From there, subdomains on my zone are mapped to
+                        local services.
                     </p>
 
                     <h3 class="mt-4 text-base font-semibold text-slate-900">
-                        4.1 How the Client Behaves
-                    </h3>
-                    <ul class="list-disc pl-6 space-y-1">
-                        <li><strong>On startup:</strong>
-                            <ul class="list-disc pl-6 mt-1 space-y-1">
-                                <li>Loads <code>config.json</code> from the EXE directory.</li>
-                                <li>Ensures the base screenshot folder exists.</li>
-                                <li>Scans for existing <code>.png</code> files and treats them as pending uploads.</li>
-                            </ul>
-                        </li>
-                        <li><strong>Every <code>interval_seconds</code>:</strong>
-                            <ul class="list-disc pl-6 mt-1 space-y-1">
-                                <li>Creates a folder <code>DD-MM-YYYY</code> for the current day.</li>
-                                <li>Captures a screenshot named <code>screenshot_YYYYMMDD_HHMMSS.png</code>.</li>
-                                <li>Adds it to the pending upload queue.</li>
-                                <li>Runs rotation to keep total size under <code>max_folder_size_mb</code>.</li>
-                            </ul>
-                        </li>
-                        <li><strong>Upload logic:</strong>
-                            <ul class="list-disc pl-6 mt-1 space-y-1">
-                                <li>When pending files ≥ <code>upload_batch_size</code>, tries to POST them to
-                                    <code>/api/upload</code> on the Tor server via the SOCKS proxy.</li>
-                                <li>Sends username, day and file, with <code>X-Upload-Password</code> header.</li>
-                                <li>On HTTP 200: deletes the local file; on error: keeps it for retry.</li>
-                            </ul>
-                        </li>
-                    </ul>
-
-                    <h3 class="mt-6 text-base font-semibold text-slate-900">
-                        4.2 How the Server Behaves
-                    </h3>
-                    <ul class="list-disc pl-6 space-y-1">
-                        <li>Reads <code>server_config.json</code> on startup.</li>
-                        <li>Stores files under <code>root_folder / &lt;username&gt; / &lt;day&gt; / filename.png</code>.</li>
-                        <li>Validates the upload password on each request.</li>
-                        <li>Provides an authenticated web UI for browsing screenshots via Tor Browser only.</li>
-                    </ul>
-
-                    <h3 class="mt-6 text-base font-semibold text-slate-900">
-                        4.3 Ethics, Law and Responsible Use
+                        4.1 Example <code>cloudflared/config.yml</code>
                     </h3>
                     <p>
-                        This part is important:
+                        The config file defines the tunnel ID and the ingress rules:
                     </p>
-                    <ul class="list-disc pl-6 space-y-1">
-                        <li>TorCap is intended for <strong>self-monitoring and personal audit</strong> on machines you own.</li>
-                        <li>Using similar tooling to secretly record someone else’s screen without consent can be
-                            <strong>illegal</strong> and is definitely unethical.</li>
-                        <li>If multiple people use a machine, make sure everyone understands that TorCap is running.</li>
-                        <li>If you’re in a company context, follow local laws and internal policies – don’t roll your
-                            own monitoring without proper approval.</li>
-                    </ul>
+
+<pre class="code-block mt-3"><code>loglevel: info
+tunnel: &lt;YOUR_TUNNEL_ID&gt;
+credentials-file: /root/.cloudflared/&lt;YOUR_TUNNEL_ID&gt;.json
+
+ingress:
+  - hostname: grafana.example.com
+    service: http://localhost:3000
+  - hostname: n8n.example.com
+    service: http://localhost:5678
+  - hostname: cloud.example.com
+    service: http://localhost:8081
+  - hostname: files.example.com
+    service: http://localhost:8082
+  - hostname: sql.example.com
+    service: http://localhost:8083
+  - hostname: code.example.com
+    service: http://localhost:8443
+  - hostname: docker.example.com
+    service: http://localhost:9000
+  - hostname: cockpit.example.com
+    service: http://localhost:9091
+  - hostname: dashboard.example.com
+    service: http://localhost:8080
+  - service: http_status:404</code></pre>
 
                     <p class="mt-3">
-                        The repo even calls out that the code tries to avoid stealthy or malware-style tricks. The idea
-                        is transparency, not “hiding in the shadows”.
+                        Each subdomain points to a port on <code>localhost</code>. Cloudflare handles TLS certificates
+                        and DNS; the server only needs to talk plain HTTP on the LAN side.
+                    </p>
+
+                    <h3 class="mt-6 text-base font-semibold text-slate-900">
+                        4.2 Creating the Tunnel and DNS Routes
+                    </h3>
+                    <p>
+                        The basic flow:
+                    </p>
+
+<pre class="code-block mt-3"><code># 1) Login (opens browser)
+cloudflared tunnel login
+
+# 2) Create a tunnel
+cloudflared tunnel create homelab
+
+# 3) List and grab the ID
+cloudflared tunnel list</code></pre>
+
+                    <p class="mt-3">
+                        After updating <code>config.yml</code> with the tunnel ID, I link each hostname with the tunnel:
+                    </p>
+
+<pre class="code-block mt-3"><code>cloudflared tunnel route dns homelab grafana.example.com
+cloudflared tunnel route dns homelab n8n.example.com
+cloudflared tunnel route dns homelab cloud.example.com
+cloudflared tunnel route dns homelab files.example.com
+cloudflared tunnel route dns homelab sql.example.com
+cloudflared tunnel route dns homelab code.example.com
+cloudflared tunnel route dns homelab docker.example.com
+cloudflared tunnel route dns homelab cockpit.example.com
+cloudflared tunnel route dns homelab dashboard.example.com</code></pre>
+
+                    <h3 class="mt-6 text-base font-semibold text-slate-900">
+                        4.3 Running <code>cloudflared</code> as a Service
+                    </h3>
+                    <p>
+                        Finally I install it as a system service so the tunnel starts on boot:
+                    </p>
+
+<pre class="code-block mt-3"><code>sudo cloudflared service install
+sudo systemctl enable cloudflared
+sudo systemctl start cloudflared
+sudo systemctl status cloudflared</code></pre>
+
+                    <p class="mt-3">
+                        From that point on, the homelab behaves like a mini SaaS environment behind my own domain, but
+                        with zero open ports and full control.
                     </p>
 
                     <!-- 5 -->
-                    <h2 id="next" class="mt-8 text-xl font-semibold text-slate-900">
-                        5. What’s Next for TorCap?
+                    <h2 id="bootstrap" class="mt-8 text-xl font-semibold text-slate-900">
+                        5. From Fresh Debian to Full Homelab – Bootstrap Checklist
                     </h2>
                     <p>
-                        TorCap already does what I wanted: a reproducible, self-hosted screen logger for my own devices.
-                        But there’s a clear roadmap for improvements:
+                        If I had to rebuild this homelab from scratch on a new machine, this would be the order:
                     </p>
 
+                    <ol class="list-decimal pl-6 space-y-1">
+                        <li>Install Debian 13 (minimal), enable SSH.</li>
+                        <li>Install system tools, Docker / Compose, Tor, Cockpit, <code>cloudflared</code> and runtimes
+                            (Python, Go, Node, Ruby).
+                        </li>
+                        <li>Create base directories:
+                            <ul class="list-disc pl-6 mt-1">
+                                <li><code>/data</code> (root for shared storage).</li>
+                                <li>Subfolders like <code>/data/filebrowser</code>, <code>/data/nextcloud</code>,
+                                    <code>/data/mariadb</code>, <code>/data/n8n</code>.
+                                </li>
+                                <li>A code workspace folder, e.g. <code>/home/&lt;user&gt;/code</code>.</li>
+                            </ul>
+                        </li>
+                        <li>Clone the repo onto the server:
+<pre class="code-block mt-2"><code>git clone https://github.com/ciscoAnass/homelab.git
+cd homelab</code></pre>
+                        </li>
+                        <li>Edit all compose files and replace:
+                            <ul class="list-disc pl-6 mt-1">
+                                <li><code>CHANGE_ME_...</code> values with strong passwords.</li>
+                                <li><code>example.com</code> with your real domain.</li>
+                            </ul>
+                        </li>
+                        <li>Bring up each Docker stack:
+<pre class="code-block mt-2"><code>cd docker/&lt;service&gt;
+docker compose up -d</code></pre>
+                        </li>
+                        <li>Configure Cloudflare Tunnel and DNS mappings using <code>cloudflared/config.yml</code>.</li>
+                        <li>Harden access with Cloudflare Zero Trust / Access, strong passwords and regular updates.</li>
+                    </ol>
+
+                    <!-- 6 -->
+                    <h2 id="security" class="mt-8 text-xl font-semibold text-slate-900">
+                        6. Security Checklist & Next Steps
+                    </h2>
+                    <p>
+                        Even for a personal homelab, I treat this like a small production system. A few rules I follow:
+                    </p>
+
+                    <h3 class="mt-4 text-base font-semibold text-slate-900">
+                        6.1 Security Checklist
+                    </h3>
                     <ul class="list-disc pl-6 space-y-1">
-                        <li><strong>Better UI:</strong> filters, keyboard navigation, and a timeline view that lets you
-                            scrub through screenshots like a video.
+                        <li><strong>Passwords:</strong> never run with the default placeholder secrets – rotate everything before the first <code>docker compose up</code>.</li>
+                        <li><strong>Domains:</strong> stick to a dedicated domain or subdomain only for the homelab; don’t mix it with random personal sites.</li>
+                        <li><strong>Cloudflare Access:</strong> gate sensitive UIs (Portainer, Cockpit, n8n) with SSO / MFA if possible.</li>
+                        <li><strong>Updates:</strong> regularly patch Debian and refresh containers:
+                            <ul class="list-disc pl-6 mt-1">
+                                <li><code>sudo apt update &amp;&amp; sudo apt upgrade</code></li>
+                                <li>Pull new images and <code>docker compose up -d</code> again.</li>
+                            </ul>
                         </li>
-                        <li><strong>Multi-factor access:</strong> adding TOTP or hardware key support for the Tor web UI.</li>
-                        <li><strong>Advanced retention settings:</strong> per-user retention periods and automatic
-                            clean-up jobs on the server.
-                        </li>
-                        <li><strong>Integration with logs:</strong> link screenshots to system logs or activity logs for
-                            deeper debugging of “what happened at that time”.
-                        </li>
-                        <li><strong>Optional encryption at rest:</strong> encrypt screenshots on disk with a separate
-                            key, to add another layer on top of Tor’s transport encryption.
+                        <li><strong>Backups:</strong> back up:
+                            <ul class="list-disc pl-6 mt-1">
+                                <li><code>/data</code> (Nextcloud files, DBs, n8n data, filebrowser DB).</li>
+                                <li>Named volumes like <code>grafana_data</code>, <code>portainer_data</code>.</li>
+                            </ul>
                         </li>
                     </ul>
 
+                    <h3 class="mt-6 text-base font-semibold text-slate-900">
+                        6.2 What I Want to Add Next
+                    </h3>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li><strong>Central monitoring:</strong> Prometheus + Loki + Grafana for logs and metrics from all containers.</li>
+                        <li><strong>Offsite backups:</strong> encrypted snapshots to another location (cloud or a friend’s server).</li>
+                        <li><strong>More services:</strong> Jellyfin for media, a password manager vault, maybe a small Kubernetes lab.</li>
+                        <li><strong>IaC:</strong> move more of this setup to Ansible / Terraform to recreate the homelab automatically.</li>
+                    </ul>
+
                     <p class="mt-3">
-                        For now, TorCap is a nice example of combining Python, Flask, Tor and Windows scripting into a
-                        very focused tool that respects the boundary between <strong>personal observability</strong> and
-                        surveillance.
+                        For now, this homelab is exactly what I wanted: a single Debian box that behaves like my own
+                        little datacenter, exposed safely through Cloudflare and defined as code inside one public repo.
                     </p>
 
                     <div class="mt-8 p-4 rounded-2xl border border-sky-100 bg-sky-50/60 text-sm text-slate-700">
                         <p class="font-semibold text-slate-900 mb-1">
-                            💬 Want to discuss TorCap, Tor or self-hosted logging?
+                            💬 Want to discuss homelabs or this stack?
                         </p>
                         <p>
-                            Reach out on LinkedIn or send me an email. I’m happy to talk about Tor hidden services,
-                            Python tooling, and how to keep this kind of monitoring ethical and under your control.
+                            Reach out on LinkedIn or send me an email. I’m always happy to talk about homelab design,
+                            Cloudflare Tunnel, and self-hosting workflows on low-power hardware.
                         </p>
                     </div>
                 </div>
@@ -801,19 +828,19 @@ pyinstaller --onefile --noconsole ^
                 <div class="mt-10 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
                     <div class="flex flex-wrap gap-2">
                         <span class="px-3 py-1 bg-slate-900 text-slate-100 badge-pill">
-                            <i class="fa-solid fa-hashtag mr-1"></i> torcap
+                            <i class="fa-solid fa-hashtag mr-1"></i> homelab
                         </span>
                         <span class="px-3 py-1 bg-sky-100 text-sky-700 badge-pill">
-                            tor
-                        </span>
-                        <span class="px-3 py-1 bg-emerald-100 text-emerald-700 badge-pill">
                             self-hosted
                         </span>
+                        <span class="px-3 py-1 bg-emerald-100 text-emerald-700 badge-pill">
+                            docker
+                        </span>
                         <span class="px-3 py-1 bg-indigo-100 text-indigo-700 badge-pill">
-                            flask
+                            cloudflare-tunnel
                         </span>
                         <span class="px-3 py-1 bg-amber-100 text-amber-700 badge-pill">
-                            windows
+                            debian-13
                         </span>
                     </div>
                     <button id="copy-link-btn"
@@ -840,7 +867,7 @@ pyinstaller --onefile --noconsole ^
                                         Reading soundtrack
                                     </p>
                                     <p class="text-xs font-semibold text-slate-50">
-                                        Midnight Ops – Deep Focus
+                                        Homelab Nights – Focus Mix
                                     </p>
                                 </div>
                             </div>
@@ -863,69 +890,73 @@ pyinstaller --onefile --noconsole ^
                         </div>
 
                         <p class="mt-2 text-[10px] text-slate-400">
-                            Optional: hit play for a quiet background mix while you wire Tor, Flask and Windows together.
+                            Optional: hit play while you SSH into Debian, tweak Docker Compose files and wire Cloudflare.
                         </p>
 
                         <audio id="reading-audio" src="/assets/mp3/reading.mp3" preload="metadata"></audio>
                     </div>
 
-                    <!-- Guide Map -->
+                    <!-- Guide Map (replaces "On this page") -->
                     <div class="bg-white/95 border border-slate-200 rounded-2xl shadow-md p-5">
                         <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-[0.18em] mb-3 flex items-center gap-2">
                             <span class="inline-flex w-6 h-6 rounded-full bg-sky-100 text-sky-600 items-center justify-center text-xs">
                                 <i class="fa-solid fa-route"></i>
                             </span>
-                            TorCap Guide Map
+                            Homelab Guide Map
                         </h3>
 
                         <nav class="space-y-1.5 text-[13px] md:text-sm">
-                            <!-- 1 -->
                             <a href="#intro"
                                class="toc-link flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition">
                                 <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
                                 <div class="flex flex-col leading-tight">
-                                    <span class="font-semibold">1. Why TorCap?</span>
-                                    <span class="text-[11px] text-slate-500">Personal screen logging</span>
+                                    <span class="font-semibold">1. Why this homelab</span>
+                                    <span class="text-[11px] text-slate-500">Laptop → mini datacenter</span>
                                 </div>
                             </a>
 
-                            <!-- 2 -->
-                            <a href="#architecture"
+                            <a href="#hardware"
                                class="toc-link flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                                 <div class="flex flex-col leading-tight">
-                                    <span class="font-semibold">2. Architecture</span>
-                                    <span class="text-[11px] text-slate-500">Server, client & Tor</span>
+                                    <span class="font-semibold">2. Hardware & OS</span>
+                                    <span class="text-[11px] text-slate-500">Debian 13, /data layout</span>
                                 </div>
                             </a>
 
-                            <!-- 3 -->
-                            <a href="#implementation"
+                            <a href="#services"
                                class="toc-link flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition">
                                 <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
                                 <div class="flex flex-col leading-tight">
-                                    <span class="font-semibold">3. Implementation</span>
-                                    <span class="text-[11px] text-slate-500">Debian, Tor, Windows</span>
+                                    <span class="font-semibold">3. Docker services</span>
+                                    <span class="text-[11px] text-slate-500">Nextcloud, Grafana, n8n, etc.</span>
                                 </div>
                             </a>
 
-                            <!-- 4 -->
-                            <a href="#safety"
+                            <a href="#cloudflare"
                                class="toc-link flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition">
                                 <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
                                 <div class="flex flex-col leading-tight">
-                                    <span class="font-semibold">4. Safety & ethics</span>
-                                    <span class="text-[11px] text-slate-500">Behaviour & boundaries</span>
+                                    <span class="font-semibold">4. Cloudflare Tunnel</span>
+                                    <span class="text-[11px] text-slate-500">Subdomains & ingress rules</span>
                                 </div>
                             </a>
 
-                            <!-- 5 -->
-                            <a href="#next"
+                            <a href="#bootstrap"
                                class="toc-link flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition">
                                 <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
                                 <div class="flex flex-col leading-tight">
-                                    <span class="font-semibold">5. Roadmap</span>
-                                    <span class="text-[11px] text-slate-500">UI, retention, encryption</span>
+                                    <span class="font-semibold">5. Bootstrap steps</span>
+                                    <span class="text-[11px] text-slate-500">Fresh Debian → full stack</span>
+                                </div>
+                            </a>
+
+                            <a href="#security"
+                               class="toc-link flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition">
+                                <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                <div class="flex flex-col leading-tight">
+                                    <span class="font-semibold">6. Security & roadmap</span>
+                                    <span class="text-[11px] text-slate-500">Hardening & future ideas</span>
                                 </div>
                             </a>
                         </nav>
@@ -940,7 +971,7 @@ pyinstaller --onefile --noconsole ^
                             <p class="font-semibold">Written by Anass Assim</p>
                             <p class="text-slate-300">
                                 DevOps Junior &amp; SysAdmin based in Seville.  
-                                Enjoys building small self-hosted tools that stay under your control.
+                                Loves turning old hardware into useful, well-documented infrastructure.
                             </p>
                         </div>
                     </div>
@@ -949,6 +980,8 @@ pyinstaller --onefile --noconsole ^
         </div>
     </section>
 </main>
+
+
 
     <!-- Footer -->
     <footer class="py-12 bg-slate-900 text-white mt-10">
